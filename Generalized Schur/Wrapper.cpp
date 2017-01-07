@@ -152,7 +152,7 @@ double Toeplitz::traceProd_R(NumericVector acf2_R)
         return 0.0;
     }
     std::copy(acf2_R.begin(), acf2_R.end(), acf2);
-    TraceProd(acf2);
+    traceProd(acf2);
     double Trace_R;
     Trace_R = trace;
     return Trace_R;

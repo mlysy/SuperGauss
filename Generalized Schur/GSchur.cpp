@@ -355,13 +355,7 @@ void InverseToeplitz::Inverse(double* acf)
 	}
 	GschurMerge();
 
-	std::copy(gsM[0]->eta_IFFT->out, gsM[0]->eta_IFFT->out + n - 1, Phi);
-	Phi[n-1] = 0;
-	for(int ii = 0; ii < n - 1; ++ii)
-	{
-		Phi[ii+1] += gsM[0]->xi_IFFT->out[ii];
-	}
-	sigma2 = log(acf[0]);
+	double sigma2 = log(acf[0]);
 	ldV = sigma2;
 	for (int ii = 0; ii < n - 1; ++ii)
 	{
@@ -371,5 +365,15 @@ void InverseToeplitz::Inverse(double* acf)
 		}
 	}
 	sigma2 = exp(sigma2);
+
+	std::copy(gsM[0]->eta_IFFT->out, gsM[0]->eta_IFFT->out + n - 1, Phi);
+	Phi[n-1] = 0;
+	Phi[0] /= sigma2;
+	for(int ii = 1; ii < n; ++ii)
+	{
+		Phi[ii] += gsM[0]->xi_IFFT->out[ii-1];
+		Phi[ii] /= sigma2;
+
+	}
 	return;
 }

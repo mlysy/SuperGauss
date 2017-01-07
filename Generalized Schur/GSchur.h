@@ -68,7 +68,6 @@ public:
 	InverseToeplitz(int, int);
 	~InverseToeplitz();
 	double* Phi;
-	double sigma2;
 	double ldV;
 	void Inverse(double*);
 };

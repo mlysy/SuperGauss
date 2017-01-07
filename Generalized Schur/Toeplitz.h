@@ -14,75 +14,76 @@
 
 // InverseProduct
 class Toep {
+	// dimension
 	int n;
 	int d;
 	
-	// InverseProd part
-	VectorFFT* L1fft; // used
-	VectorFFT* L11fft; // used
-	VectorFFT* L2fft; // used
-	VectorFFT* L22fft; // used
-	VectorFFT* xfft;
-	VectorFFT* Lxfft;
-	
-	
-	// Trace part
-	VectorFFT* U1fft;
-	VectorFFT* U2fft;
-	
-	// Toep mult part
-    VectorFFT* Toepfft; // used
+	// fft space
+	VectorFFT* L1fft; // pre-assigned in .computeInv: fft(phi, 0)
+	VectorFFT* L11fft; // pre-assigned in .computeInv: transpose of L1fft
+	VectorFFT* L2fft; // pre-assigned in .computeInv: fft(0, rev(phi[-1]), 0)
+	VectorFFT* L22fft; // pre-assigned in .computeInv: transpose of L2fft
 
-	// Trace derv part
-	// VectorFFT* U1fft; // substituting L1Cfft
-	// VectprFFT* U2fft; // substituting L2Cfft
-    // VectorFFT* L1Dfft;
-	// VectorFFT* L2Dfft;
-	// VectorFFT* xfft; 
+	VectorFFT* xfft; // free space
+	VectorFFT* Lxfft; // free space
+	
+	VectorFFT* U1fft; // free space
+	VectorFFT* U2fft; // free space
+	
+    VectorFFT* Toepfft; // pre-assigned in .computeMult: fft(acf, 0, rev(acf[-1]))
 
-	// One InverseFFT is required
-	VectorIFFT* Invfft;
+	// inverse-fft space
+	VectorIFFT* Invfft; // free space
 
-	// double* phiD;
+	//
+	double* phi;
+	double* phi2;
+	double* temPhi;
 
 	// Flag controling the inner loop
 	bool hasMult;
 	bool hasAcf;
 	bool hasInv;
 
+	// Superfast Algorithm Space
 	InverseToeplitz* Gs;
 
+	// acf input
 	double* acf;
 
-	// void initialize(int n, int d);
-
 public:		
-	Toep(int, int); // second dimension default to be 1
-	~Toep(); // destructor
+	// d = 1 default
+	Toep(int, int);
+	~Toep();
 
 	// input the acf
 	void acfInput(double*);
 
-	// Toeplitz times matrix
+	// Toeplitz * vector
 	void computeMult(); // controled by hasMult, if hasMult = F, run this ,otherwise skip
 	void mult(double**); 
 
-	// Inverse Toeplitz times matrix 
+	// Toeplitz^-1 * vector 
 	void computeInv(); // controled by hasInv, if hasInv = F, run this ,otherwise skip
 	void solve(double**);
 	void detCheck();
-	// tracr of Inverse Topelitz times Toeplitz
-	void TraceProd(double*);
 	
-	// derivative of TraceProd
-	// void TraceDerv(double*, double*); // not done yet
+	// trace(Toeplitz^-1 * Toeplitz_i)
+	void traceProd(double*);
+	
+	// trace(Toeplitz^-1 * Toeplitz_i * Toeplitz^-1 * Toeplitz_j)
+	void traceDerv(double*, double*);
 
-	// return of mult and solve, matrix n by d
+	// return of mult and solve
 	double** Mult;
+
+	// log.deternimant
 	double det;
 
-	// return of TraceProd and TraceDerv, scale
+	// return of TraceProd
 	double trace;
 
+	// return of TraceDerv
+	double trace2;
 };
 //------------------------------------------------------
