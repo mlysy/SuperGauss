@@ -1,0 +1,3 @@
+useDynLib(Toeplitz)
+exportPattern("^[[:alpha:]]+")
+import(methods, Rcpp)
