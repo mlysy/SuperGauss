@@ -50,9 +50,8 @@ Toep::Toep(int n_, int d_ = 1){
 
     hasAcf = FALSE;
 
-    phi = new double[n];
     phi2 = new double[n];
-    temPhi = new double[n];
+    temVec = new double[n];
 }
  
 // requires edition
@@ -81,9 +80,8 @@ Toep::~Toep(){
     }
     delete[] Mult;
     
-    delete[] phi;
     delete[] phi2;
-    delete[] temPhi;
+    delete[] temVec;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -210,7 +208,7 @@ void Toep::detCheck(){
 }
 
 
-// trace part
+// trace(Toeplitz^-1 * Toeplitz_2)
 void Toep::traceProd(double* acf2){
     if(!hasAcf){
         cout << "Please input acf" << endl;
@@ -255,8 +253,8 @@ void Toep::traceProd(double* acf2){
     //return value stored in trace;
 }
 
-/*
-// New trace part, the TraceDerv function
+
+// trace(Toeplitz^-1 * Toeplitz_2 * Toeplitz^-1 * Toeplitz_3)
 void Toep::traceDerv(double* acf2, double* acf3){
     if(!hasAcf){
         cout << "Please input acf" << endl;
@@ -266,21 +264,22 @@ void Toep::traceDerv(double* acf2, double* acf3){
         computeInv();
     }
     trace2 = 0;
-    double temp2 = 0;
+    double temp;
 
-    // borrow the space Lxfft and xfft for computing phi2 = Toeplitz_j * phi
+    // phi2 = - Toeplitz^-1 * Toeplitz_2 * phi ------------------------------
+    // phi2 = Toeplitz_2 * phi
     std::copy(acf2, acf2 + n, Lxfft->in);
     std::copy(acf2 + 1, acf2 + n, Lxfft->in + n + 1);
     std::reverse(Lxfft->in + n + 1, Lxfft->in + 2 * n);
     Lxfft->fft();
-    std::fill(Lxfft->in + n, Lxfft->in + 2 * n); // readjust back to 0 assignment for latter half
-    std::copy(phi, phi + n, xfft->in);
+    std::fill(Lxfft->in + n, Lxfft->in + 2 * n, 0); // (readjust back to 0 assignment for latter half)
+    std::copy(Gs->Phi, Gs->Phi + n, xfft->in);
     xfft->fft();
     CompMult(Invfft->in, Lxfft->out, xfft->out, 2*(n/2 + 1));
     Invfft->Ifft(); 
     std::copy(Invfft->out, Invfft->out + n, phi2);
     
-    // borrow the space xfft for computing phi2 = - Toeplitz^-1 * phi2
+    // phi2 = - Toeplitz^-1 * phi2
     std::copy(phi2, phi2 + n, xfft->in);
 	xfft->fft();
 
@@ -302,39 +301,105 @@ void Toep::traceDerv(double* acf2, double* acf3){
 	CompMult(Invfft->in, L2fft->out, Lxfft->out, 2 * (n / 2 + 1));
 	Invfft->Ifft(); 
 
-    // phi2 = -1/sigma2 * (L1 L1'x - L2 L2'x) 
+    // phi2 = -1/phi[1] * (L1 L1'x - L2 L2'x) 
     for(int ii = 0; ii < n; ++ii)
     {
         phi2[ii] -= Invfft->out[ii];
         phi2[ii] /= Gs->Phi[0];
-        phi2[ii] *= -1;
+        // phi2[ii] *= -1;
     }
+    // phi2 is obtained ----------------------------------------------------
 
-    // -phi2[1]/phi[1] * trace(Toeplitz^-1 * Toeplitz_j)
+    // tr = phi2[1] * tr(Toeplitz^-1 * Toeplitz_3) + 2 * tr(L1(-phi2) * L1(phi)'
+    //      * Toeplitz_3) - 2 * tr(_L2(-phi2) * _L2(phi)' * Toeplitz_3)
+    
+
+    // 1, phi2[1] * tr(Toeplitz^-1 * Toeplitz_3)
     traceProd(acf3);
-    trace2 = -1 * phi2[0] / phi[0] * trace;
+    trace2 = phi2[0] * trace;
 
-    // trace(L1iL1' Toep;itz_j)
-    // = trace(L(acf3)L(phi2) * (L(acf3)L(phi))')
-    // displacement structure of Toeplitz_j stored in U1fft and U2fft
-    // use Lxfft for L(phi2) and xfft for L2(phi2)
+    // 2, tr(L1(-phi2) * L1(phi)' * Toeplitz_3) = -tr(L1(phi2) * L1(phi)' * L1'(acf3)
+    //    * L1(acf3)) + tr(L1(phi2) * L1(phi)' * L2'(acf3) * L2(acf3))
+
+    // 2.1, tr(L1(phi2) * L1(phi)' * L1'(acf3) * L1(acf3)) = TraceComp(L1(acf3) * L1(phi2), 
+    //      L1(acf3) * L1(phi)) = temp
     std::copy(acf3, acf3 + n, U1fft->in);
     U1fft->fft();
-    std::copy(acf3 + 1, acf3 + n, U2fft->in + 1);
-    U2fft->fft();
 
     std::copy(phi2, phi2 + n, Lxfft->in);
     Lxfft->fft();
-    std::copy(phi2 + 1, phi2 + n, xfft->in + 1);
-    std::reverse(xfft->in + 1, xfft->in + n);
-    xfft->fft();
-
     CompMult(Invfft->in, U1fft->out, Lxfft->out, 2 * (n / 2 + 1));
     Invfft->Ifft();
-    std::copy(Invfft->out, Invfft->out + n, temPhi);
 
+    std::copy(Invfft->out, Invfft->out + n, temVec);
 
+    std::copy(Gs->Phi, Gs->Phi + n, xfft->in);
+    xfft->fft();
+    CompMult(Invfft->in, U1fft->out, xfft->out, 2 * (n / 2 + 1));
+    Invfft->Ifft();
 
+    TraceComp(Invfft->out, temVec, n, temp);
+
+    trace2 -= 2 * temp / acf3[0];
+
+    // 2.2, tr(L1(phi2) * L1(phi)' * L2'(acf3) * L2(acf3)) = TraceComp(L2(acf3) * L1(phi2), 
+    //      L2(acf3) * L1(phi)) = temp
+    U2fft->in[0] = 0;
+    std::copy(acf3 + 1, acf3 + n, U2fft->in + 1);
+    U2fft->fft();
+
+    CompMult(Invfft->in, U2fft->out, Lxfft->out, 2 * (n / 2 + 1));
+    Invfft->Ifft();
+
+    std::copy(Invfft->out, Invfft->out + n, temVec);
+
+    CompMult(Invfft->in, U2fft->out, xfft->out, 2 * (n / 2 + 1));
+    Invfft->Ifft();
+
+    TraceComp(Invfft->out, temVec, n, temp);
+
+    trace2 += 2 * temp / acf3[0];
+
+    // 3, tr(_L2(phi2) * _L2(phi)' * Toeplitz_3) = tr(_L2(phi2) * _L2'(phi) * L1'(acf3)
+    //    * L1(acf3)) / acf3[1] - tr(_L2(phi2) * _L2(phi)' * L2'(acf3) * L2(acf3)) / acf3[1]
+
+    // 3.1, tr(L2(phi2) * L2'(phi) * L1'(acf3) * L1(acf3)) = TraceComp(L1(acf3) * _L2(phi2), 
+    //      L1(acf3) * _L2(phi)) = temp
+    Lxfft->in[0] = 0;
+    std::copy(phi2 + 1, phi2 + n, Lxfft->in + 1);
+    std::reverse(Lxfft->in + 1, Lxfft->in + n);
+    Lxfft->fft();
+    CompMult(Invfft->in, U1fft->out, Lxfft->out, 2 * (n / 2 + 1));
+    Invfft->Ifft();
+
+    std::copy(Invfft->out, Invfft->out + n, temVec);
+
+    xfft->in[0] = 0;
+    std::copy(Gs->Phi + 1, Gs->Phi + n, xfft->in + 1);
+    std::reverse(xfft->in + 1, xfft->in + n);
+    xfft->fft();
+    CompMult(Invfft->in, U1fft->out, xfft->out, 2 * (n / 2 + 1));
+    Invfft->Ifft();
+    
+    TraceComp(Invfft->out, temVec, n, temp);
+
+    trace2 += 2 * temp / acf3[0];
+
+    // 3.2, tr(_L2(phi2) * _L2(phi)' * L2'(acf3) * L2(acf3)) = TraceComp(L2(acf3) * _L2(phi2), 
+    //      L2(acf3) * _L2(phi)) = temp
+    CompMult(Invfft->in, U2fft->out, Lxfft->out, 2 * (n / 2 + 1));
+    Invfft->Ifft();
+
+    std::copy(Invfft->out, Invfft->out + n, temVec);
+
+    CompMult(Invfft->in, U2fft->out, xfft->out, 2 * (n / 2 + 1));
+    Invfft->Ifft();
+
+    TraceComp(Invfft->out, temVec, n, temp);
+
+    trace2 -= 2 * temp / acf3[0];
+
+    // tr = tr / phi[1]
+    trace2 /= Gs->Phi[0];
 }
 
-*/

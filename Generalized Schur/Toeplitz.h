@@ -36,9 +36,8 @@ class Toep {
 	VectorIFFT* Invfft; // free space
 
 	//
-	double* phi;
 	double* phi2;
-	double* temPhi;
+	double* temVec;
 
 	// Flag controling the inner loop
 	bool hasMult;
@@ -68,10 +67,10 @@ public:
 	void solve(double**);
 	void detCheck();
 	
-	// trace(Toeplitz^-1 * Toeplitz_i)
+	// trace(Toeplitz^-1 * Toeplitz_2)
 	void traceProd(double*);
 	
-	// trace(Toeplitz^-1 * Toeplitz_i * Toeplitz^-1 * Toeplitz_j)
+	// trace(Toeplitz^-1 * Toeplitz_2 * Toeplitz^-1 * Toeplitz_3)
 	void traceDerv(double*, double*);
 
 	// return of mult and solve

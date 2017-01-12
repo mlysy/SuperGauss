@@ -1,1 +1,1 @@
-# SuperGauss
+A Header-only C++ library for superfast Toeplitz matrix computation

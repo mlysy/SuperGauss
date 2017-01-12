@@ -7,11 +7,10 @@ class Toeplitz : private Toep
 private:
     int n_R;
     int d_R;
-	// NumericVector Phi_R;
-    // NumericVector Prod_R;
-    // generating memories for c++ interface
+
     double* acf;
     double* acf2;
+    double* acf3;
     double** x;
     double* vec;
 public:
@@ -23,7 +22,8 @@ public:
     Rcpp::NumericMatrix mult_R(NumericMatrix); // wrapper for mult
     Rcpp::NumericMatrix solve_R(NumericMatrix); // wrapper for solve
     double det_R(); // wrapper returns the determinant of Toeplitz matrix
-	double traceProd_R(NumericVector);
+	double traceProd_R(NumericVector); // traceProd
+    double traceDerv_R(NumericVector, NumericVector); // traceDerv
 };
 
 Toeplitz::Toeplitz(int n_, int d_): Toep(n_, d_)
@@ -33,6 +33,7 @@ Toeplitz::Toeplitz(int n_, int d_): Toep(n_, d_)
     // Phi_R = NumericVector(n_R);
     acf = new double[n_R];
     acf2 = new double[n_R];
+    acf3 = new double[n_R];
     x = new double*[d_R];
     for(int ii = 0; ii < d_R; ++ii) {
         x[ii] = new double[n_R];
@@ -46,6 +47,7 @@ Toeplitz::Toeplitz(int n_): Toep(n_, 1)
     // Phi_R = NumericVector(n_R);
     acf = new double[n_R];
     acf2 = new double[n_R];
+    acf3 = new double[n_R];
     x = new double*[d_R];
     for(int ii = 0; ii < d_R; ++ii) {
         x[ii] = new double[n_R];
@@ -56,6 +58,7 @@ Toeplitz::~Toeplitz()
 {
     delete[] acf;
     delete[] acf2;
+    delete[] acf3;
     for(int ii = 0; ii < d_R; ++ii) {
         delete x[ii];
     }
@@ -142,7 +145,6 @@ double Toeplitz::det_R() {
 }
 
 
-
 // return the TraceProd result
 double Toeplitz::traceProd_R(NumericVector acf2_R)
 {
@@ -158,32 +160,20 @@ double Toeplitz::traceProd_R(NumericVector acf2_R)
     return Trace_R;
 }
 
-/* Trace functions are not functioning 
-
-NumericMatrix Toeplitz::InverseProd_R(NumericMatrix x_R)
-{
-    if((x_R.nrow() != n_R) | (x_R.ncol() != d_R))
+double Toeplitz::traceDerv_R(NumericVector acf2_R, NumericVector acf3_R){
+    if(!(acf2_R.size() == n_R & acf3_R.size() == n_R))
     {
-        cout << "non-conformable arguments" << endl;
-        return NumericMatrix();
+        cout << "non-conformable acf2" << endl;
+        return 0.0;
     }
-    if(!check)
-    {
-        cout << "gschur not run yet" << endl;
-        return NumericMatrix();
-    }
-    for(int ii = 0; ii < d_R; ++ii)
-    {
-        std::copy(x_R.column(ii).begin(), x_R.column(ii).end(), x[ii]);
-    }
-    InverseProd(x);
-    for(int ii = 0; ii < d_R; ++ii)
-    {
-        std::copy(Mult[ii], Mult[ii] + n_R, Mult_R.column(ii).begin());
-    }
-    return Mult_R;
+    std::copy(acf2_R.begin(), acf2_R.end(), acf2);
+    std::copy(acf3_R.begin(), acf3_R.end(), acf3);
+    traceDerv(acf2, acf3);
+    double Trace2_R;
+    Trace2_R = trace2;
+    return Trace2_R;
 }
-*/
+
 
 // wrapper
 
@@ -199,6 +189,7 @@ RCPP_MODULE(Toeplitz)
     .method("solve", &Toeplitz::solve_R)
     .method("mult", &Toeplitz::mult_R)
     .method("traceprod", &Toeplitz::traceProd_R)
+    .method("tracederv", &Toeplitz::traceDerv_R)
     ;
 }
 
