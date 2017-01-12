@@ -166,6 +166,27 @@ sNorm.Hess <- function(X, mu, acf, dmu, dacf, d2mu, d2acf){
     "dimension check for mu, acf, dmu, dacf, d2mu, d2acf"
     "make sure that d2mu d2acf are array data"
   }
+  if(length(mu) != N){
+    stop("X has incompatible dimensions with mu.")
+  }
+  if(length(acf) != N){
+    stop("X has incompatible dimensions with acf")
+  }
+  if(nrow(dmu) != N){
+    stop("X has incompatible dimensions with dmu")
+  }
+  if(nrow(dacf) != N || ncol(dacf) != p){
+    stop("dmu has incompatible dimensions with dacf")
+  }
+  if(!is.array(d2mu) || !is.array(d2acf)){
+    stop("d2mu and d2acf should be array data")
+  }
+  if(!prod(as.numeric(dim(d2mu) == c(N, p, p)))){
+    stop("dimension of d2mu is incompatible with X and dmu")
+  }
+  if(!prod(as.numeric(dim(d2acf) == c(N, p, p)))){
+    stop("dimension of d2acf is incompatible with X and dmu")
+  }
   temp <- acf
   acf <- new(Toeplitz, N, 1)
   Comp <- (acf$Compute(temp))
