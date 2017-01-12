@@ -306,7 +306,6 @@ void Toep::traceDerv(double* acf2, double* acf3){
     {
         phi2[ii] -= Invfft->out[ii];
         phi2[ii] /= Gs->Phi[0];
-        // phi2[ii] *= -1;
     }
     // phi2 is obtained ----------------------------------------------------
 
@@ -401,5 +400,6 @@ void Toep::traceDerv(double* acf2, double* acf3){
 
     // tr = tr / phi[1]
     trace2 /= Gs->Phi[0];
+    trace2 *= -1;
 }
 
