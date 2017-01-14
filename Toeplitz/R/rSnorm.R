@@ -98,14 +98,14 @@ dSnorm <- function(X, mean, acf, Toep, log = FALSE){
   if(missing(Toep)){
     Toep <- new(Toeplitz, n)
   } else{
-    if(Toep$dimCheck() != n){
+    if(Toep$DimCheck() != n){
       stop("Toep has incompatible dimension with X")
     }
   }
-  Toep$acfInput(acf)
+  Toep$AcfInput(acf)
   X <- X - mean
-  density <- crossprod(X, acf$solve(X))
-  density <- density + N * log(2*pi) + Toep$det()
+  density <- crossprod(X, acf$Solve(X))
+  density <- density + N * log(2*pi) + Toep$Det()
   density <- density / -2
   if(log){
     density
@@ -144,22 +144,22 @@ Snorm.grad <- function(X, mean, acf, dmean, dacf, Toep){
     Toep <- new(Toeplitz, n)
   }
   else{
-    if(Toep$dimCheck() != n){
+    if(Toep$DimCheck() != n){
       stop("Toep has incompatible dimensions with X")
     }
   }
   X <- X - mean
-  Toep$acfInput(acf)
-  SigX <- Toep$solve(X)
+  Toep$AcfInput(acf)
+  SigX <- Toep$Solve(X)
   trace <- rep(NA, p)
   for(ii in 1:p){
-    trace[ii] <- Toep$traceprod(dacf[, ii])
+    trace[ii] <- Toep$TraceProd(dacf[, ii])
   }
   grad <- rep(NA, p)
   for(ii in 1:p){
     grad.val <- -crossprod(dmean[, ii], SigX)
-    Toep$acfInput(dacf[, ii])
-    grad.val <- grad[ii] + crossprod(SigX, Toep$mult(SigX)) / 2
+    Toep$AcfInput(dacf[, ii])
+    grad.val <- grad[ii] + crossprod(SigX, Toep$Mult(SigX)) / 2
     grad[ii] <- grad.val
   }
   grad <- grad - trace / 2
@@ -208,40 +208,40 @@ Snorm.Hess <- function(X, mean, acf, dmean, dacf, d2mean, d2acf, Toep){
   if(missing(Toep)){
     Toep <- new(Toeplitz, n)
   } else{
-    if(Toep$dimCheck() != n){
+    if(Toep$DimCheck() != n){
       stop("dimension of Toep is incompatible with X")
     }
   }
   X <- X - mean
-  Toep$acfInput(acf)
-  SigX <- Toep$solve(X)     # stores Sigma^-1 * X
+  Toep$AcfInput(acf)
+  SigX <- Toep$Solve(X)     # stores Sigma^-1 * X
   hess <- matrix(NA, p, p)
   SigMu <- matrix(NA, n, p) # stores Sigma^-1 * Mean_i
   for(ii in 1:p){
-    SigMu[,ii] <- Toep$solve(dmean[, ii])
+    SigMu[,ii] <- Toep$Solve(dmean[, ii])
   }
   Sig2X <- matrix(NA, n, p) # stores Sigma_i * SigX
   for(ii in 1:p){
-    Toep$acfInput(dacf[, ii])
-    Sig2X <- Toep$mult(SigX)
+    Toep$AcfInput(dacf[, ii])
+    Sig2X <- Toep$Mult(SigX)
   }
   Sigd2X <- matrix(NA, p, p) # stores SigX' * Sigma_ij * SigX
   for(ii in 1:p){
     for(jj in ii:p){ # symmetric hessian matrix
-      Toep$acfInput(d2acf[, ii, jj])
-      Sigd2X[ii, jj] <- crossprod(SigX, Toep$mult(SigX))
+      Toep$AcfInput(d2acf[, ii, jj])
+      Sigd2X[ii, jj] <- crossprod(SigX, Toep$Mult(SigX))
     }
   }
-  Toep$acfInput(acf)
+  Toep$AcfInput(acf)
   for(ii in 1:p){
     for(jj in ii:p){ # symmetric hessian matrix
       hess.val <- -crossprod(d2mean[, ii, jj], SigX)
       hess.val <- hess.val + crossprod(SigMu[,ii], Sig2X[, jj])
       hess.val <- hess.val - crossprod(SigMu[,jj], Sig2X[, ii])
-      hess.val <- hess.val + crossprod(dmean[, ii], Toep$solve(dmean[, jj]))
-      hess.val <- hess.val + crossprod(Sig2X[, jj], Toep$solve(Sig2X[, ii]))
-      hess.val <- hess.val - Toep$traceprod(d2acf[, ii, jj]) / 2
-      hess.val <- hess.val + Toep$tracederv(dacf[, jj], dacf[, ii]) / 2
+      hess.val <- hess.val + crossprod(dmean[, ii], Toep$Solve(dmean[, jj]))
+      hess.val <- hess.val + crossprod(Sig2X[, jj], Toep$Aolve(Sig2X[, ii]))
+      hess.val <- hess.val - Toep$TraceProd(d2acf[, ii, jj]) / 2
+      hess.val <- hess.val + Toep$TraceDeriv(dacf[, jj], dacf[, ii]) / 2
       hess[ii, jj] <- hess.val
     }
   }

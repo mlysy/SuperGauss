@@ -18,7 +18,9 @@ public:
     int dimCheck_R(); // wrapper for dimension check
 	void acfInput_R(NumericVector); // wapper for acfInput
     Rcpp::NumericMatrix mult_R(NumericMatrix); // wrapper for mult
+    Rcpp::NumericMatrix mult_R(NumericVector);
     Rcpp::NumericMatrix solve_R(NumericMatrix); // wrapper for solve
+    Rcpp::NumericMatrix solve_R(NumericVector);
     double det_R(); // wrapper returns the determinant of Toeplitz matrix
 	double traceProd_R(NumericVector); // traceProd
     double traceDerv_R(NumericVector, NumericVector); // traceDerv
@@ -70,6 +72,18 @@ NumericMatrix Toeplitz::mult_R(NumericMatrix x_R){
     return Mult_R;
 }
 
+NumericMatrix Toeplitz::mult_R(NumericVector x_R){
+    if(x_R.size() != n_R) {
+        cout << "non-conformable arguments" << endl;
+        return NumericMatrix();
+    }
+    NumericMatrix Mult_R(n_R, 1);
+    std::copy(x_R.begin(), x_R.end(), x);
+    mult(x);
+    std::copy(Mult, Mult + n_R, Mult_R.column(0).begin());
+    return Mult_R;
+}
+
 NumericMatrix Toeplitz::solve_R(NumericMatrix x_R){
     if(x_R.nrow() != n_R) {
         cout << "non-conformable arguments" << endl;
@@ -82,6 +96,18 @@ NumericMatrix Toeplitz::solve_R(NumericMatrix x_R){
         solve(x);
         std::copy(Mult, Mult + n_R, Mult_R.column(ii).begin());
     }
+    return Mult_R;
+}
+
+NumericMatrix Toeplitz::solve_R(NumericVector x_R){
+    if(x_R.size() != n_R) {
+        cout << "non-conformable arguments" << endl;
+        return NumericMatrix();
+    } 
+    NumericMatrix Mult_R(n_R, 1);
+    std::copy(x_R.begin(), x_R.end(), x);
+    solve(x);
+    std::copy(Mult, Mult + n_R, Mult_R.column(0).begin());
     return Mult_R;
 }
 
