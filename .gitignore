@@ -251,3 +251,9 @@ pip-log.txt
 # R history and R environment
 
 *.Rhistory
+
+# VS code file
+*.browse.vc.db
+
+# github file
+*.gitignore

@@ -62,143 +62,165 @@ rSnorm <- function(n, acf, Z, fft = TRUE, fft.plan,
   X
 }
 
-#' Toeplitz matrix multiplication
-#'
-#' @details requires packages \code{fftw}.
-Toep.mult <- function(acf, x){
-  M <- ncol(x)
-  N <- nrow(x)
-  if(N != length(acf)){
-    stop("acf and x have incompatible dimensions.")
-  }
-  fft.plan <- planFFT(2*N)
-  #
-  rst <- matrix(NA, N, M)
-  acf.fft <- FFT(x = c(acf, 0, acf[N:2]), plan = fft.plan)
-  rst <- sapply(1:M, function(ii){
-    Re(IFFT(acf.fft * FFT(x = c(x[,ii], rep(0, N)), plan = fft.plan), plan = fft.plan))[1:N]
-  })
-  rst
-}
-
-
-#' density function of multivariant Normal distribution
+#' density function of multivariant Normal distribution with specific Toeplitz variance
 #' @note package "Toeplitz" is required
-#' @param X \code{M x n} matrix
-#' @param mu \code{n} vector
-#' @param acf \code{n} vector, or a envirnnment, Toeplitz class
-#' @param log return the log-density of True
+#' @param X, \code{n x d} matrix, d i.i.d. vector follows N(mean, Variance)
+#' @param mean, \code{n} vector or matrix
+#' @param acf, \code{n} vector or matrix, first column of variance matrix
+#' @param Toep, \code{n x d} Toeplitz class, space for Toeplitz-related computation
+#' @param log, logic, return the log-density of True
 #' @export
-dsNorm <- function(X, mu, acf, log = FALSE){
-  M <- ncol(X)
-  N <- nrow(X)
-  if(length(mu) != N){
-    stop("X has incompatible dimensions with mu.")
+dSnorm <- function(X, mu, acf, Toep, log = FALSE){
+  n <- ncol(X)
+  d <- nrow(X)
+  if(length(mean) != n){
+    stop("mean has incompatible dimension with X")
   }
-  if(!(is.vector(acf)||(is.environment(acf)))){
-    stop("data type of acf should be vector or Toeplitz class")
+  if(length(acf) != n){
+    stop("acf has incompatible dimension with X")
   }
-  if(is.vector(acf)){
-    if(length(acf) != N){
-      stop("X has incompatible dimensions with acf.")
+  if(missing(Toep)){
+    Toep <- new(Toeplitz, n)
+  } else{
+    if(Toep$dimCheck() != n){
+      stop("Toep has incompatible dimension with X")
     }
-    temp <- acf
-    acf <- new(Toeplitz, N, M)
-    invisible(acf$Compute(temp))
   }
-  density <- diag(t(X - mu) %*% acf$InverseProd(X-mu)) + N * log(2*pi) + acf$Det()
+  Toep$acfInput(acf)
+  X <- X - mean
+  density <- crossprod(X, acf$solve(X))
+  density <- density + N * log(2*pi) + Toep$det()
   density <- density / -2
   if(log){
-    return(density)
+    density
   }
-  return(exp(density))
+  else{
+    exp(density)
+  }
 }
 
-#' score function of multivariant Normal distribution
+#' gradiant function of multivariant Normal distribution
 #' @note package "Toeplitz" is required
-#' @param X \code{n} vector
-#' @param mu \code{n} vector
-#' @param acf \code{n} vector, or a envirnnment, Toeplitz class
-#' @param dmu \code{n x p} matrix, where p is the number of parameters in \code{Theta}
-#' @param dacf \code{n x p} matrix
+#' @param X, \code{n x d} matrix, d i.i.d. vector follows N(mean, Variance)
+#' @param mean, \code{n} vector or matrix
+#' @param acf, \code{n} vector or matrix, first column of variance matrix
+#' @param Toep, \code{n x 1} Toeplitz class, space for Toeplitz-related computation
+#' @param dmean \code{n x p} matrix, where p is the number of parameters, each column is the partial derivative of mean
+#' @param dacf \code{n x p} matrix, each column is the partial deruvative of acf
 #' @export
-sNorm.score <- function(X, mu, acf, dmu, dacf){
-  N <- nrow(X)
-  p <- ncol(dmu)
-  if(length(mu) != N){
-    stop("X has incompatible dimensions with mu.")
+Snorm.grad <- function(X, mean, acf, dmean, dacf, Toep){
+  n <- nrow(X)
+  p <- ncol(dmean)
+  if(length(mean) != n){
+    stop("mean has incompatible dimensions with X")
   }
-  if((nrow(dmu) != N)||(nrow(dacf) != N)||(ncol(dacf) != p)){
-    stop("dmu and dacf has incompatible dimensions.")
+  if(length(acf) != n){
+    stop("acf has incompatible dimensions with X")
   }
-  if(!(is.vector(acf)||(is.environment(acf)))){
-    stop("data type of acf should be vector or Toeplitz class")
+  if((nrow(dmean) != n)||(nrow(dacf) != n)||(ncol(dacf) != p)){
+    stop("dmean and dacf has incompatible dimensions.")
   }
-  if(is.vector(acf)){
-    if(length(acf) != N){
-      stop("X has incompatible dimensions with acf.")
+  if(missing(Toep)){
+    Toep <- new(Toeplitz, n)
+  }
+  else{
+    if(Toep$dimCheck() != n){
+      stop("Toep has incompatible dimensions with X")
     }
-    temp <- acf
-    acf <- new(Toeplitz, N, 1)
-    invisible(acf$Compute(temp))
   }
-  Xprod <- acf$InverseProd(X-mu)
-  score <- sapply(1:p, function(ii){
-    -t(dmu[,ii]) %*% Xprod + 1/2 * t(Xprod) %*% Toep.mult(dacf[,ii], Xprod) - 1/2 * acf$TraceProd(dacf[,ii])
-  })
-  return(score)
+  X <- X - mean
+  Toep$acfInput(acf)
+  SigX <- Toep$solve(X)
+  trace <- rep(NA, p)
+  for(ii in 1:p){
+    trace[ii] <- Toep$traceprod(dacf[, ii])
+  }
+  grad <- rep(NA, p)
+  for(ii in 1:p){
+    grad.val <- -crossprod(dmean[, ii], SigX)
+    Toep$acfInput(dacf[, ii])
+    grad.val <- grad[ii] + crossprod(SigX, Toep$mult(SigX)) / 2
+    grad[ii] <- grad.val
+  }
+  grad <- grad - trace / 2
+  grad
 } 
 
 #' Hessian matrix of multivariant Normal distribution
 #' @note package "Toeplitz" is required
-#' @param X \code{n} vector
-#' @param mu \code{n} vector
-#' @param acf \code{n} vector, or a envirnnment, Toeplitz class
-#' @param dmu \code{n x p} matrix, where p is the number of parameters in \code{Theta}
-#' @param dacf \code{n x p} matrix
-#' @param d2mu \code{n x p x p} array
+#' @param X, \code{n x d} matrix, d i.i.d. vector follows N(mean, Variance)
+#' @param mean, \code{n} vector or matrix
+#' @param acf, \code{n} vector or matrix, first column of variance matrix
+#' @param Toep, \code{n x 1} Toeplitz class, space for Toeplitz-related computation
+#' @param dmean \code{n x p} matrix, where p is the number of parameters, each column is the partial derivative of mean
+#' @param dacf \code{n x p} matrix, each column is the partial deruvative of acf
+#' @param d2mean \code{n x p x p} array
 #' @param d2acf \code{n x p x p} array
 #' @export
-sNorm.Hess <- function(X, mu, acf, dmu, dacf, d2mu, d2acf){
-  N <- length(X)
+Snorm.Hess <- function(X, mean, acf, dmean, dacf, d2mean, d2acf, Toep){
+  n <- length(X)
   p <- ncol(dmu)  
-  {
-    "dimension check for mu, acf, dmu, dacf, d2mu, d2acf"
-    "make sure that d2mu d2acf are array data"
+  if(length(mean) != n){
+    stop("X has incompatible dimensions with mean")
   }
-  if(length(mu) != N){
-    stop("X has incompatible dimensions with mu.")
-  }
-  if(length(acf) != N){
+  if(length(acf) != n){
     stop("X has incompatible dimensions with acf")
   }
-  if(nrow(dmu) != N){
-    stop("X has incompatible dimensions with dmu")
+  if(nrow(dmean) != n){
+    stop("X has incompatible dimensions with dmean")
   }
-  if(nrow(dacf) != N || ncol(dacf) != p){
-    stop("dmu has incompatible dimensions with dacf")
+  if(nrow(dacf) != n || ncol(dacf) != p){
+    stop("dacf has incompatible dimensions with dmean")
   }
-  if(!is.array(d2mu) || !is.array(d2acf)){
+  if(!is.array(d2mean) || !is.array(d2acf)){
     stop("d2mu and d2acf should be array data")
   }
-  if(!prod(as.numeric(dim(d2mu) == c(N, p, p)))){
-    stop("dimension of d2mu is incompatible with X and dmu")
+  if(!prod(as.numeric(dim(d2mean) == c(n, p, p)))){
+    stop("dimension of d2mu is incompatible with X and dmean")
   }
-  if(!prod(as.numeric(dim(d2acf) == c(N, p, p)))){
-    stop("dimension of d2acf is incompatible with X and dmu")
+  if(!prod(as.numeric(dim(d2acf) == c(n, p, p)))){
+    stop("dimension of d2acf is incompatible with X and dmean")
   }
-  temp <- acf
-  acf <- new(Toeplitz, N, 1)
-  Comp <- (acf$Compute(temp))
-  ## in obtaining Hessian_{i,j}
-  phi <- Comp$phi *  Comp$sigma2
-  dphi[,jj] <- -acf$InverseProd(Toep.mult(dacf[,jj], phi))
-  
-  #
-  Xprod <- acf$InverseProd(X - mu)
-  Mprod <- acf$InverseProd(dmu)
-  Hess[ii,jj] <- -t(d2mu[ii,jj,]) %*% Xprod + t(Mprod[,ii]) %*% Toep.mult(dacf[,jj],Xprod) -
-                 t(Mprod[,jj]) %*% Toep.mult(dacf[,ii],Xprod) + t(dmu[,ii]) %*% Mprod[,jj] +
-                 t(Xprod) %*% Toep.mult(dacf[,jj], acf$InverseProd(Toep.mult(dacf[, ii], Xprod))) + 
-                 1/2 * t(Xprod) %*% Toep.mult(d2acf[ii,jj,], Xprod) - 1/2 * "trace part"
+  if(missing(Toep)){
+    Toep <- new(Toeplitz, n)
+  } else{
+    if(Toep$dimCheck() != n){
+      stop("dimension of Toep is incompatible with X")
+    }
+  }
+  X <- X - mean
+  Toep$acfInput(acf)
+  SigX <- Toep$solve(X)     # stores Sigma^-1 * X
+  hess <- matrix(NA, p, p)
+  SigMu <- matrix(NA, n, p) # stores Sigma^-1 * Mean_i
+  for(ii in 1:p){
+    SigMu[,ii] <- Toep$solve(dmean[, ii])
+  }
+  Sig2X <- matrix(NA, n, p) # stores Sigma_i * SigX
+  for(ii in 1:p){
+    Toep$acfInput(dacf[, ii])
+    Sig2X <- Toep$mult(SigX)
+  }
+  Sigd2X <- matrix(NA, p, p) # stores SigX' * Sigma_ij * SigX
+  for(ii in 1:p){
+    for(jj in ii:p){ # symmetric hessian matrix
+      Toep$acfInput(d2acf[, ii, jj])
+      Sigd2X[ii, jj] <- crossprod(SigX, Toep$mult(SigX))
+    }
+  }
+  Toep$acfInput(acf)
+  for(ii in 1:p){
+    for(jj in ii:p){ # symmetric hessian matrix
+      hess.val <- -crossprod(d2mean[, ii, jj], SigX)
+      hess.val <- hess.val + crossprod(SigMu[,ii], Sig2X[, jj])
+      hess.val <- hess.val - crossprod(SigMu[,jj], Sig2X[, ii])
+      hess.val <- hess.val + crossprod(dmean[, ii], Toep$solve(dmean[, jj]))
+      hess.val <- hess.val + crossprod(Sig2X[, jj], Toep$solve(Sig2X[, ii]))
+      hess.val <- hess.val - Toep$traceprod(d2acf[, ii, jj]) / 2
+      hess.val <- hess.val + Toep$tracederv(dacf[, jj], dacf[, ii]) / 2
+      hess[ii, jj] <- hess.val
+    }
+  }
+  hess <- hess + Sigd2X / 2
+  hess
 }
