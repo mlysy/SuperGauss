@@ -16,7 +16,7 @@
 class Toep {
 	// dimension
 	int n;
-	int d;
+	// int d;
 	
 	// fft space
 	VectorFFT* L1fft; // pre-assigned in .computeInv: fft(phi, 0)
@@ -51,8 +51,7 @@ class Toep {
 	double* acf;
 
 public:		
-	// d = 1 default
-	Toep(int, int);
+	Toep(int);
 	~Toep();
 
 	// input the acf
@@ -60,11 +59,11 @@ public:
 
 	// Toeplitz * vector
 	void computeMult(); // controled by hasMult, if hasMult = F, run this ,otherwise skip
-	void mult(double**); 
+	void mult(double*); 
 
 	// Toeplitz^-1 * vector 
 	void computeInv(); // controled by hasInv, if hasInv = F, run this ,otherwise skip
-	void solve(double**);
+	void solve(double*);
 	void detCheck();
 	
 	// trace(Toeplitz^-1 * Toeplitz_2)
@@ -74,7 +73,7 @@ public:
 	void traceDerv(double*, double*);
 
 	// return of mult and solve
-	double** Mult;
+	double* Mult;
 
 	// log.deternimant
 	double det;

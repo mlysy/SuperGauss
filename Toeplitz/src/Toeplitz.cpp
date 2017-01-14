@@ -20,9 +20,8 @@ void TraceComp(double* acf1, double* acf2, int n, double& trace){
 }
 
 
-Toep::Toep(int n_, int d_ = 1){
+Toep::Toep(int n_){
     n = n_;
-    d = d_;
 
 	Gs = new InverseToeplitz(n, 64); // default base is choosen to be 64 ,which is the most efficient, according to numerical test
 	
@@ -42,11 +41,7 @@ Toep::Toep(int n_, int d_ = 1){
     Invfft = new VectorIFFT(2 * n);
 
     acf = new double[n];
-    Mult = new double*[d];
-
-    for(int ii = 0; ii < d; ++ii){
-        Mult[ii] = new double[n];
-    }
+    Mult = new double[n];
 
     hasAcf = FALSE;
 
@@ -75,9 +70,6 @@ Toep::~Toep(){
 
     delete[] acf;
 
-    for(int ii = 0; ii < d; ++ii){
-        delete Mult[ii];
-    }
     delete[] Mult;
     
     delete[] phi2;
@@ -106,7 +98,7 @@ void Toep::computeMult(){
 }
 
 // Toeplitz matrix vector multiplication
-void Toep::mult(double** x){
+void Toep::mult(double* x){
     if(!hasAcf){
         cout << "Please input acf" << endl;
         return;
@@ -116,14 +108,11 @@ void Toep::mult(double** x){
         computeMult();
     }
 
-    for(int ii = 0; ii < d; ++ii){
-        std::copy(x[ii], x[ii] + n, xfft->in);
-        xfft->fft();
-        CompMult(Invfft->in, Toepfft->out, xfft->out, 2*(n/2 + 1));
-        Invfft->Ifft(); 
-        std::copy(Invfft->out, Invfft->out + n, Mult[ii]);
-    }
-    // return value stored in Mult.
+    std::copy(x, x + n, xfft->in);
+    xfft->fft();
+    CompMult(Invfft->in, Toepfft->out, xfft->out, 2*(n/2 + 1));
+    Invfft->Ifft(); 
+    std::copy(Invfft->out, Invfft->out + n, Mult);
 } 
 
 //-------------------------------------------------------------------------------------------------
@@ -153,7 +142,7 @@ void Toep::computeInv(){
 }
 
 
-void Toep::solve(double** x){
+void Toep::solve(double* x){
     if(!hasAcf){
         cout << "Please input acf" << endl;
         return;
@@ -163,37 +152,34 @@ void Toep::solve(double** x){
         computeInv();
     }
 
-	for(int ii = 0; ii < d; ++ii){
-        std::copy(x[ii], x[ii] + n, xfft->in);
-		xfft->fft();
+    std::copy(x, x + n, xfft->in);
+	xfft->fft();
 
-        //L1 * L1' * x
-		CompMult(Invfft->in, L11fft->out, xfft->out, 2 * (n / 2 + 1));
-		Invfft->Ifft(); 
-        std::copy(Invfft->out, Invfft->out + n, Lxfft->in); 
-		Lxfft->fft();
-		CompMult(Invfft->in, L1fft->out, Lxfft->out, 2 * (n / 2 + 1));
-		Invfft->Ifft(); 
+    //L1 * L1' * x
+	CompMult(Invfft->in, L11fft->out, xfft->out, 2 * (n / 2 + 1));
+	Invfft->Ifft(); 
+    std::copy(Invfft->out, Invfft->out + n, Lxfft->in); 
+	Lxfft->fft();
+	CompMult(Invfft->in, L1fft->out, Lxfft->out, 2 * (n / 2 + 1));
+	Invfft->Ifft(); 
 
-        // stored in Mult[ii]
-        std::copy(Invfft->out, Invfft->out + n, Mult[ii]);
+    // stored in Mult
+    std::copy(Invfft->out, Invfft->out + n, Mult);
 
-        // L2 * L2' * x
-		CompMult(Invfft->in, L22fft->out, xfft->out, 2 * (n / 2 + 1));
-		Invfft->Ifft(); 
-        std::copy(Invfft->out, Invfft->out + n, Lxfft->in);
-		Lxfft->fft();
-		CompMult(Invfft->in, L2fft->out, Lxfft->out, 2 * (n / 2 + 1));
-		Invfft->Ifft(); 
+    // L2 * L2' * x
+	CompMult(Invfft->in, L22fft->out, xfft->out, 2 * (n / 2 + 1));
+	Invfft->Ifft(); 
+    std::copy(Invfft->out, Invfft->out + n, Lxfft->in);
+	Lxfft->fft();
+	CompMult(Invfft->in, L2fft->out, Lxfft->out, 2 * (n / 2 + 1));
+	Invfft->Ifft(); 
 
-        // 1/sigma2 (L1 L1'x - L2 L2'x) 
-        for(int jj = 0; jj < n; ++jj)
-        {
-            Mult[ii][jj] -= Invfft->out[jj];
-            Mult[ii][jj] /= Gs->Phi[0];
-        }
+    // 1/sigma2 (L1 L1'x - L2 L2'x) 
+    for(int ii = 0; ii < n; ++ii)
+    {
+        Mult[ii] -= Invfft->out[ii];
+        Mult[ii] /= Gs->Phi[0];
     }
-    // return value stored in Mult
 }
 
 void Toep::detCheck(){

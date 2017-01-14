@@ -14,7 +14,7 @@ More about what it does (maybe more than one line)
 Package: \tab Toeplitz\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2017-01-11\cr
+Date: \tab 2017-01-14\cr
 License: \tab GPL (>= 2)\cr
 }
 ~~ An overview of how to use the package, including the most important functions ~~

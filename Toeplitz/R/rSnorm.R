@@ -64,20 +64,36 @@ rSnorm <- function(n, acf, Z, fft = TRUE, fft.plan,
 
 #' density function of multivariant Normal distribution with specific Toeplitz variance
 #' @note package "Toeplitz" is required
+#' @note When input {X, mean, acf} data type can be either vector or matrix, if vector, convert it into \code{n x 1} matrix
 #' @param X, \code{n x d} matrix, d i.i.d. vector follows N(mean, Variance)
 #' @param mean, \code{n} vector or matrix
 #' @param acf, \code{n} vector or matrix, first column of variance matrix
 #' @param Toep, \code{n x d} Toeplitz class, space for Toeplitz-related computation
 #' @param log, logic, return the log-density of True
 #' @export
-dSnorm <- function(X, mu, acf, Toep, log = FALSE){
-  n <- ncol(X)
-  d <- nrow(X)
-  if(length(mean) != n){
-    stop("mean has incompatible dimension with X")
+dSnorm <- function(X, mean, acf, Toep, log = FALSE){
+  if(is.vector(X)){
+    n <- length(X)
+    X <- matrix(X, n, 1)
+  } else{
+    n <- ncol(X)
+    d <- nrow(X)
+  }
+  if(length(mean) == 1){
+    mean <- matrix(mean, n, 1)
+  } else{
+    if(length(mean) != n){
+      stop("mean has incompatible dimension with X")
+    }
+    if(is.vector(mean)){
+      mean <- matrix(mean, n, 1)
+    }
   }
   if(length(acf) != n){
     stop("acf has incompatible dimension with X")
+  }
+  if(is.vector(acf)){
+    acf <- matrix(acf, n, 1)
   }
   if(missing(Toep)){
     Toep <- new(Toeplitz, n)
@@ -111,8 +127,12 @@ dSnorm <- function(X, mu, acf, Toep, log = FALSE){
 Snorm.grad <- function(X, mean, acf, dmean, dacf, Toep){
   n <- nrow(X)
   p <- ncol(dmean)
-  if(length(mean) != n){
-    stop("mean has incompatible dimensions with X")
+  if(length(mean) == 1){
+    mean <- rep(mean, n)
+  } else{
+    if(length(mean) != n){
+      stop("mean has incompatible dimension with X")
+    } 
   }
   if(length(acf) != n){
     stop("acf has incompatible dimensions with X")
@@ -160,8 +180,12 @@ Snorm.grad <- function(X, mean, acf, dmean, dacf, Toep){
 Snorm.Hess <- function(X, mean, acf, dmean, dacf, d2mean, d2acf, Toep){
   n <- length(X)
   p <- ncol(dmu)  
-  if(length(mean) != n){
-    stop("X has incompatible dimensions with mean")
+  if(length(mean) == 1){
+    mean <- rep(mean, n)
+  } else{
+    if(length(mean) != n){
+      stop("mean has incompatible dimension with X")
+    } 
   }
   if(length(acf) != n){
     stop("X has incompatible dimensions with acf")

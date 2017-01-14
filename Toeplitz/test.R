@@ -10,57 +10,36 @@ acf <- exp(-(1:n)^2/102)*102
 x <- matrix(rnorm(n*d), n, d)
 y <- matrix(rnorm(n*d), n, d)
 z <- matrix(rnorm(n*d), n, d)
-T1 <- new(Toeplitz, n, d)
-## dimension check
-T1$dimCheck()
-## run the function
-T1$acfInput(acf)
-## InverseProd part
-msg <- T1$mult(x)
-range(msg - toeplitz(acf)%*%x)
-msg <- T1$solve(y)
-msg1 <- T1$solve(x)
-msg2 <- T1$solve(z)
-range(toeplitz(acf) %*% msg - y)
-# determinant part
-T1$det() - log(det(toeplitz(acf)))
-# determinant part
-acf2 <- exp(-(1:n)^2/12)*12
-T1$acfInput(acf2)
-T1$det() - log(det(toeplitz(acf2)))
-
-n <- 46
 T1 <- new(Toeplitz, n)
 ## dimension check
-T1$dimCheck()
+T1$DimCheck()
 ## run the function
-T1$acfInput(acf)
+T1$AcfInput(acf)
 ## InverseProd part
-msg <- T1$mult(x)
+msg <- T1$Mult(x)
 range(msg - toeplitz(acf)%*%x)
-msg <- T1$solve(y)
-msg1 <- T1$solve(x)
-msg2 <- T1$solve(z)
+msg <- T1$Solve(y)
+msg1 <- T1$Solve(x)
+msg2 <- T1$Solve(z)
 range(toeplitz(acf) %*% msg - y)
 # determinant part
-T1$det() - log(det(toeplitz(acf)))
+T1$Det() - log(det(toeplitz(acf)))
 # determinant part
 acf2 <- exp(-(1:n)^2/12)*12
-T1$acfInput(acf2)
-T1$det() - log(det(toeplitz(acf2)))
-
+T1$AcfInput(acf2)
+T1$Det() - log(det(toeplitz(acf2)))
 
 # traceProd test ----------------------------------------------------------
 require(Toeplitz)
 tr <- function(X) sum(diag(X)) # matrix trace
 n <- 46
 acf <- exp(-(1:n)^2/102)*102
-T1 <- new(Toeplitz, n, 1)
-T1$acfInput(acf)
+T1 <- new(Toeplitz, n)
+T1$AcfInput(acf)
 acf2 <- rnorm(n)
 acf3 <- rnorm(n)
-T1$traceprod(acf2) - tr(solve(toeplitz(acf)) %*% toeplitz(acf2))
-T1$traceprod(acf3) - tr(solve(toeplitz(acf)) %*% toeplitz(acf3))
+T1$TraceProd(acf2) - tr(solve(toeplitz(acf)) %*% toeplitz(acf2))
+T1$TraceProd(acf3) - tr(solve(toeplitz(acf)) %*% toeplitz(acf3))
 ## delete
 rm(T1)
 
@@ -72,10 +51,10 @@ tr <- function(X) sum(diag(X)) # matrix trace
 n <- 6
 acf <- exp(-(1:n)^2/102)*102
 T1 <- new(Toeplitz, n)
-T1$acfInput(acf)
+T1$AcfInput(acf)
 acf2 <- rnorm(n)
 acf3 <- rnorm(n)
-T1$tracederv(acf2, acf3) - traceDerv.R(acf, acf2, acf3)
+T1$TraceDeriv(acf2, acf3) - traceDerv.R(acf, acf2, acf3)
 
 traceDerv.R <- function(acf, acf2, acf3, debug = F){
   if(debug) browser()

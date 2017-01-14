@@ -20,6 +20,7 @@ install() # installs the package
 # First Time Installation -------------------------------------------------
 # setwd("D:/GitHub/SuperGauss")
 require(Rcpp)
+require(RcppEigen)
 
 pkg.name <- "Toeplitz"
 pkg.path <- getwd()
@@ -39,6 +40,12 @@ rm <- file.remove(file.path(pkg.path, pkg.name, "src", "rcpp_module.cpp"))
 rm <- file.remove(file.path(pkg.path, pkg.name, "src", "stdVector.cpp"))
 
 cat("loadModule(\"Toeplitz\", TRUE)\n", file = file.path(pkg.path, pkg.name, "R", "zzz.R"))
+
+# link to RcppEigen
+DESCRIPTION <- read.dcf(file = file.path(pkg.path, pkg.name, "DESCRIPTION"))
+DESCRIPTION[,"LinkingTo"] <- paste0(DESCRIPTION[,"LinkingTo"], ", RcppEigen")
+write.dcf(DESCRIPTION, file = file.path(pkg.path, pkg.name, "DESCRIPTION"))
+compileAttributes(pkgdir = file.path(pkg.path, pkg.name))
 
 # link to FFTW library (windows only)
 cat("PKG_CXXFLAGS=-I\"C:/fftw\" `${R_HOME}/bin/Rscript -e \"Rcpp:::CxxFlags()\"`",
