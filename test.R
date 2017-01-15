@@ -10,6 +10,7 @@ acf <- exp(-(1:n)^2/102)*102
 x <- matrix(rnorm(n*d), n, d)
 y <- matrix(rnorm(n*d), n, d)
 z <- matrix(rnorm(n*d), n, d)
+xv <- rnorm(n)
 T1 <- new(Toeplitz, n)
 ## dimension check
 T1$DimCheck()
@@ -17,11 +18,16 @@ T1$DimCheck()
 T1$AcfInput(acf)
 ## InverseProd part
 msg <- T1$Mult(x)
-range(msg - toeplitz(acf)%*%x)
+msxv <- T1$MultVec(xv)
+range(msg - toeplitz(acf) %*% x)
+range(msxv - toeplitz(acf) %*% xv)
 msg <- T1$Solve(y)
 msg1 <- T1$Solve(x)
 msg2 <- T1$Solve(z)
 range(toeplitz(acf) %*% msg - y)
+# overload for vector
+msgv <- T1$SolveVec(xv)
+range(toeplitz(acf) %*% msgv - xv)
 # determinant part
 T1$Det() - log(det(toeplitz(acf)))
 # determinant part

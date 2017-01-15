@@ -1,11 +1,16 @@
 #' FFT-Based Simulation of Stationary Gaussian Process.
 #'
 #' @param Z optional \code{(2*N-2) x n} matrix of iid standard normals to use in circulant embedding.
-#' @param fft logical, whether or not to use the fft-based algorithm of Dietrich & Newsam (1997) or that of Durbin-Levinson.  The former is much faster but doesn't apply to all Toeplitz variance matrices.
+#' @param fft logical, whether or not to use the fft-based algorithm of Dietrich & Newsam (1997) or that of Durbin-Levinson.  
+#'        The former is much faster but doesn't apply to all Toeplitz variance matrices.
 #' @param fft.plan optional plan to pass to fftw.
-#' @param ncut length of time series to cut from the end for fft method.  This way, \code{acf} can be "padded" to embed into a circulant matrix and then cut to the correct size.  See details.
+#' @param ncut length of time series to cut from the end for fft method.  This way, \code{acf} can be "padded" to embed into 
+#'        a circulant matrix and then cut to the correct size.  See details.
 #' @param tol relative tolerance on negative eigenvalues.  See details.
-#' @details TODO: Explain exactly what ncut and tol do.  Basically, acf can be made longer than needed, and ncut values of the time series are cut off the end.  tol is used to avoid roundoff error on tiny eigenvalues which makes them look negative, i.e., all negative eigenvalues which are less than a \code{tol} fraction of the maximum eigenvalue \code{evMax} are set to \code{tol * evMax}.
+#' @details TODO: Explain exactly what ncut and tol do.  Basically, acf can be made longer than needed, and ncut values of the 
+#'          time series are cut off the end.  tol is used to avoid roundoff error on tiny eigenvalues which makes them look 
+#'          negative, i.e., all negative eigenvalues which are less than a \code{tol} fraction of the maximum eigenvalue 
+#'          \code{evMax} are set to \code{tol * evMax}.
 #' @export
 rSnorm <- function(n, acf, Z, fft = TRUE, fft.plan,
                    ncut = 0, tol = 1e-6,
@@ -45,7 +50,8 @@ rSnorm <- function(n, acf, Z, fft = TRUE, fft.plan,
     iS0 <- psd < 0 & abs(psd)/Smax < tol
     psd[iS0] <- tol * Smax
     if(any(psd < 0)) {
-      stop("toeplitz(acf) does not embed directly into a +ve definite circulant matrix.  Set fft = FALSE to use Durbin-Levinson algorithm.")
+      stop("toeplitz(acf) does not embed directly into a +ve definite circulant matrix.  Set fft = FALSE to use Durbin-Levinson 
+           algorithm.")
     }
     psd <- sqrt(psd)
     psd[2:N] <- psd[2:N]/sqrt(2)
@@ -76,24 +82,21 @@ dSnorm <- function(X, mean, acf, Toep, log = FALSE){
     n <- length(X)
     X <- matrix(X, n, 1)
   } else{
-    n <- ncol(X)
-    d <- nrow(X)
+    n <- nrow(X)
+    d <- ncol(X)
   }
   if(length(mean) == 1){
-    mean <- matrix(mean, n, 1)
+    mean <- rep(mean, n)
   } else{
     if(length(mean) != n){
       stop("mean has incompatible dimension with X")
     }
-    if(is.vector(mean)){
-      mean <- matrix(mean, n, 1)
+    if(is.matrix(mean)){
+      mean <- as.vector(mean)
     }
   }
   if(length(acf) != n){
     stop("acf has incompatible dimension with X")
-  }
-  if(is.vector(acf)){
-    acf <- matrix(acf, n, 1)
   }
   if(missing(Toep)){
     Toep <- new(Toeplitz, n)
@@ -102,11 +105,15 @@ dSnorm <- function(X, mean, acf, Toep, log = FALSE){
       stop("Toep has incompatible dimension with X")
     }
   }
+  
   Toep$AcfInput(acf)
   X <- X - mean
-  density <- crossprod(X, acf$Solve(X))
-  density <- density + N * log(2*pi) + Toep$Det()
-  density <- density / -2
+  density <- rep(NA, d)
+  for(ii in 1:d){
+    density[ii] <- crossprod(X[, ii], acf$SolveVec(X[, ii]))
+  }
+    density <- density + N * log(2*pi) + Toep$Det()
+    density <- density / -2
   if(log){
     density
   }
@@ -125,31 +132,45 @@ dSnorm <- function(X, mean, acf, Toep, log = FALSE){
 #' @param dacf \code{n x p} matrix, each column is the partial deruvative of acf
 #' @export
 Snorm.grad <- function(X, mean, acf, dmean, dacf, Toep){
-  n <- nrow(X)
-  p <- ncol(dmean)
+  if(is.vector(X)){
+    n <- length(X)
+    X <- matrix(X, n, 1)
+  } else{
+    if(ncol(X) != 1){
+      stop("X should have only 1 column")
+    }
+    n <- nrow(X)
+    p <- ncol(dmean)
+  }
   if(length(mean) == 1){
     mean <- rep(mean, n)
   } else{
     if(length(mean) != n){
       stop("mean has incompatible dimension with X")
-    } 
+    }
+    if(is.matrix(mean)){
+      mean <- as.vector(mean)
+    }
   }
   if(length(acf) != n){
-    stop("acf has incompatible dimensions with X")
-  }
-  if((nrow(dmean) != n)||(nrow(dacf) != n)||(ncol(dacf) != p)){
-    stop("dmean and dacf has incompatible dimensions.")
+    stop("acf has incompatible dimension with X")
   }
   if(missing(Toep)){
     Toep <- new(Toeplitz, n)
-  }
-  else{
+  } else{
     if(Toep$DimCheck() != n){
-      stop("Toep has incompatible dimensions with X")
+      stop("Toep has incompatible dimension with X")
     }
   }
-  X <- X - mean
+  if((nrow(dmean) != n)||(nrow(dacf) != n)){
+    stop("dmean or dacf has incompatible dimensions with X.")
+  }
+  if(ncol(dacf) != p){
+    stop("dmean has incompatible dimensions with dacf.")
+  }
+  
   Toep$AcfInput(acf)
+  X <- X - mean
   SigX <- Toep$Solve(X)
   trace <- rep(NA, p)
   for(ii in 1:p){
@@ -157,10 +178,8 @@ Snorm.grad <- function(X, mean, acf, dmean, dacf, Toep){
   }
   grad <- rep(NA, p)
   for(ii in 1:p){
-    grad.val <- -crossprod(dmean[, ii], SigX)
     Toep$AcfInput(dacf[, ii])
-    grad.val <- grad[ii] + crossprod(SigX, Toep$Mult(SigX)) / 2
-    grad[ii] <- grad.val
+    grad[ii] <- -crossprod(dmean[, ii], SigX) + crossprod(SigX, Toep$Mult(SigX)) / 2
   }
   grad <- grad - trace / 2
   grad
@@ -178,52 +197,64 @@ Snorm.grad <- function(X, mean, acf, dmean, dacf, Toep){
 #' @param d2acf \code{n x p x p} array
 #' @export
 Snorm.Hess <- function(X, mean, acf, dmean, dacf, d2mean, d2acf, Toep){
-  n <- length(X)
-  p <- ncol(dmu)  
+  if(is.vector(X)){
+    n <- length(X)
+    X <- matrix(X, n, 1)
+  } else{
+    if(ncol(X) != 1){
+      stop("X should have only 1 column")
+    }
+    n <- nrow(X)
+    p <- ncol(dmean)
+  }
   if(length(mean) == 1){
     mean <- rep(mean, n)
   } else{
     if(length(mean) != n){
       stop("mean has incompatible dimension with X")
-    } 
+    }
+    if(is.matrix(mean)){
+      mean <- as.vector(mean)
+    }
   }
   if(length(acf) != n){
-    stop("X has incompatible dimensions with acf")
-  }
-  if(nrow(dmean) != n){
-    stop("X has incompatible dimensions with dmean")
-  }
-  if(nrow(dacf) != n || ncol(dacf) != p){
-    stop("dacf has incompatible dimensions with dmean")
-  }
-  if(!is.array(d2mean) || !is.array(d2acf)){
-    stop("d2mu and d2acf should be array data")
-  }
-  if(!prod(as.numeric(dim(d2mean) == c(n, p, p)))){
-    stop("dimension of d2mu is incompatible with X and dmean")
-  }
-  if(!prod(as.numeric(dim(d2acf) == c(n, p, p)))){
-    stop("dimension of d2acf is incompatible with X and dmean")
+    stop("acf has incompatible dimension with X")
   }
   if(missing(Toep)){
     Toep <- new(Toeplitz, n)
   } else{
     if(Toep$DimCheck() != n){
-      stop("dimension of Toep is incompatible with X")
+      stop("Toep has incompatible dimension with X")
     }
   }
+  if((nrow(dmean) != n)||(nrow(dacf) != n)){
+    stop("dmean or dacf has incompatible dimensions with X.")
+  }
+  if(ncol(dacf) != p){
+    stop("dmean has incompatible dimensions with dacf.")
+  }
+  if(!is.array(d2mean) || !is.array(d2acf)){
+    stop("d2mu and d2acf should be array data")
+  }
+  if(!prod(as.numeric(dim(d2mean) == c(n, p, p)))){
+    stop("dimension of d2mu is incompatible with dmean")
+  }
+  if(!prod(as.numeric(dim(d2acf) == c(n, p, p)))){
+    stop("dimension of d2acf is incompatible with dmean")
+  }
+
   X <- X - mean
   Toep$AcfInput(acf)
   SigX <- Toep$Solve(X)     # stores Sigma^-1 * X
   hess <- matrix(NA, p, p)
   SigMu <- matrix(NA, n, p) # stores Sigma^-1 * Mean_i
   for(ii in 1:p){
-    SigMu[,ii] <- Toep$Solve(dmean[, ii])
+    SigMu[,ii] <- Toep$SolveVec(dmean[, ii])
   }
   Sig2X <- matrix(NA, n, p) # stores Sigma_i * SigX
   for(ii in 1:p){
     Toep$AcfInput(dacf[, ii])
-    Sig2X <- Toep$Mult(SigX)
+    Sig2X[, ii] <- Toep$Mult(SigX)
   }
   Sigd2X <- matrix(NA, p, p) # stores SigX' * Sigma_ij * SigX
   for(ii in 1:p){
@@ -235,16 +266,13 @@ Snorm.Hess <- function(X, mean, acf, dmean, dacf, d2mean, d2acf, Toep){
   Toep$AcfInput(acf)
   for(ii in 1:p){
     for(jj in ii:p){ # symmetric hessian matrix
-      hess.val <- -crossprod(d2mean[, ii, jj], SigX)
-      hess.val <- hess.val + crossprod(SigMu[,ii], Sig2X[, jj])
-      hess.val <- hess.val - crossprod(SigMu[,jj], Sig2X[, ii])
-      hess.val <- hess.val + crossprod(dmean[, ii], Toep$Solve(dmean[, jj]))
-      hess.val <- hess.val + crossprod(Sig2X[, jj], Toep$Aolve(Sig2X[, ii]))
-      hess.val <- hess.val - Toep$TraceProd(d2acf[, ii, jj]) / 2
-      hess.val <- hess.val + Toep$TraceDeriv(dacf[, jj], dacf[, ii]) / 2
-      hess[ii, jj] <- hess.val
+      hess[ii, jj] <- -crossprod(d2mean[, ii, jj], SigX) + crossprod(SigMu[,ii], Sig2X[, jj]) - 
+        crossprod(SigMu[,jj], Sig2X[, ii]) + crossprod(dmean[, ii], Toep$SolveVec(dmean[, jj])) + 
+        crossprod(Sig2X[, jj], Toep$SolveVec(Sig2X[, ii])) - Toep$TraceProd(d2acf[, ii, jj]) / 2 + 
+        Toep$TraceDeriv(dacf[, jj], dacf[, ii]) / 2
     }
   }
   hess <- hess + Sigd2X / 2
+  hess[lower.tri(hess)] <- t(hess)[lower.tri(hess)]
   hess
 }

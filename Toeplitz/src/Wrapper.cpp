@@ -18,9 +18,9 @@ public:
     int dimCheck_R(); // wrapper for dimension check
 	void acfInput_R(NumericVector); // wapper for acfInput
     Rcpp::NumericMatrix mult_R(NumericMatrix); // wrapper for mult
-    Rcpp::NumericMatrix mult_R(NumericVector);
+    Rcpp::NumericMatrix mult_Vec(NumericVector);
     Rcpp::NumericMatrix solve_R(NumericMatrix); // wrapper for solve
-    Rcpp::NumericMatrix solve_R(NumericVector);
+    Rcpp::NumericMatrix solve_Vec(NumericVector);
     double det_R(); // wrapper returns the determinant of Toeplitz matrix
 	double traceProd_R(NumericVector); // traceProd
     double traceDerv_R(NumericVector, NumericVector); // traceDerv
@@ -72,7 +72,7 @@ NumericMatrix Toeplitz::mult_R(NumericMatrix x_R){
     return Mult_R;
 }
 
-NumericMatrix Toeplitz::mult_R(NumericVector x_R){
+NumericMatrix Toeplitz::mult_Vec(NumericVector x_R){
     if(x_R.size() != n_R) {
         cout << "non-conformable arguments" << endl;
         return NumericMatrix();
@@ -99,7 +99,7 @@ NumericMatrix Toeplitz::solve_R(NumericMatrix x_R){
     return Mult_R;
 }
 
-NumericMatrix Toeplitz::solve_R(NumericVector x_R){
+NumericMatrix Toeplitz::solve_Vec(NumericVector x_R){
     if(x_R.size() != n_R) {
         cout << "non-conformable arguments" << endl;
         return NumericMatrix();
@@ -151,14 +151,15 @@ double Toeplitz::traceDerv_R(NumericVector acf2_R, NumericVector acf3_R){
 // wrapper
 RCPP_MODULE(Toeplitz)
 {
-    using namespace Rcpp;
     class_<Toeplitz>("Toeplitz")
     .constructor<int>()
     .method("DimCheck", &Toeplitz::dimCheck_R)
     .method("AcfInput", &Toeplitz::acfInput_R)
     .method("Det", &Toeplitz::det_R)
     .method("Solve", &Toeplitz::solve_R)
+    .method("SolveVec", &Toeplitz::solve_Vec)
     .method("Mult", &Toeplitz::mult_R)
+    .method("MultVec", &Toeplitz::mult_Vec)
     .method("TraceProd", &Toeplitz::traceProd_R)
     .method("TraceDeriv", &Toeplitz::traceDerv_R)
     ;
