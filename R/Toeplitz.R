@@ -2,7 +2,8 @@
 #'
 #' Describe it.
 #'
+#' @name Toeplitz
 #' @examples
-#' @name Toeplitz-Class
 #' T <- new(Toeplitz, 10, 3)
+#' @export
 NULL

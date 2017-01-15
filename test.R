@@ -12,6 +12,7 @@ y <- matrix(rnorm(n*d), n, d)
 z <- matrix(rnorm(n*d), n, d)
 xv <- rnorm(n)
 T1 <- new(Toeplitz, n)
+
 ## dimension check
 T1$DimCheck()
 ## run the function

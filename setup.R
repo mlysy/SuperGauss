@@ -8,7 +8,7 @@ require(Rcpp)
 require(devtools)
 
 compileAttributes() # regenerates Rcpp interface (i.e., RcppExports)
-#document()
+document()
 install() # installs the package
 # build() # builds a tar.gz file
 
@@ -30,8 +30,8 @@ remove.packages(pkg.name)
 unlink(file.path(pkg.path, pkg.name), recursive = TRUE)
 
 # minimum number of files to get the package started
-Rcpp.package.skeleton(name = pkg.name, path = pkg.path, cpp_files = 
-                        c("Toeplitz.h", "Toeplitz.cpp", "VectorFFT.cpp", "VectorFFT.h", "GSchur.cpp", "GSchur.h", "Wrapper.cpp"), 
+Rcpp.package.skeleton(name = pkg.name, path = pkg.path, cpp_files =
+                        c("Toeplitz.h", "Toeplitz.cpp", "VectorFFT.cpp", "VectorFFT.h", "GSchur.cpp", "GSchur.h", "Wrapper.cpp"),
                       example_code = FALSE, force = TRUE, module = TRUE)
 
 ## removing the generated Sample code
