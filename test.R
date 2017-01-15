@@ -1,6 +1,6 @@
-#--- basic test of Toeplitz package ---------------------------------------------
+#--- basic test of SuperGauss package --------------------------------------
 
-require(Toeplitz)
+require(SuperGauss)
 
 # Toeplitz class
 tr <- function(X) sum(diag(X)) # matrix trace
@@ -35,8 +35,9 @@ acf2 <- exp(-(1:n)^2/12)*12
 T1$AcfInput(acf2)
 T1$Det() - log(det(toeplitz(acf2)))
 
-# traceProd test ----------------------------------------------------------
-require(Toeplitz)
+#--- traceProd test --------------------------------------------------------
+
+require(SuperGauss)
 tr <- function(X) sum(diag(X)) # matrix trace
 n <- 46
 acf <- exp(-(1:n)^2/102)*102
@@ -50,18 +51,12 @@ T1$TraceProd(acf3) - tr(solve(toeplitz(acf)) %*% toeplitz(acf3))
 rm(T1)
 
 
-# traceDerv test ----------------------------------------------------------
-require(Toeplitz)
+#--- traceDerv test --------------------------------------------------------
+
+require(SuperGauss)
 require(numDeriv)
 tr <- function(X) sum(diag(X)) # matrix trace
-n <- 6
-acf <- exp(-(1:n)^2/102)*102
-T1 <- new(Toeplitz, n)
-T1$AcfInput(acf)
-acf2 <- rnorm(n)
-acf3 <- rnorm(n)
-T1$TraceDeriv(acf2, acf3) - traceDerv.R(acf, acf2, acf3)
-
+# derivative trace in R
 traceDerv.R <- function(acf, acf2, acf3, debug = F){
   if(debug) browser()
   T1 <- toeplitz(acf)
@@ -71,34 +66,34 @@ traceDerv.R <- function(acf, acf2, acf3, debug = F){
   sT1 <- solve(T1)
   phi <- matrix(sT1[,1], n, 1)
   phi2 <- - sT1 %*% T2 %*% phi
-  
+
   phi <- as.vector(phi)
   phi2 <- as.vector(phi2)
-  
+
   L1.phi2 <- toeplitz(phi2)
   L1.phi2[upper.tri(L1.phi2)] <- 0
-  
+
   L1.phi <- toeplitz(phi)
   L1.phi[upper.tri(L1.phi)] <- 0
-  
+
   L2.phi2 <- toeplitz(c(0, rev(phi2[-1])))
   L2.phi2[upper.tri(L2.phi2)] <- 0
-  
+
   L2.phi <- toeplitz(c(0, rev(phi[-1])))
-  L2.phi[upper.tri(L2.phi)] <- 0  
-  
+  L2.phi[upper.tri(L2.phi)] <- 0
+
   trace <- - phi2[1] * tr(sT1 %*% T3)
-  
+
   trace <- trace + 2 * tr(L1.phi2 %*% t(L1.phi) %*% T3)
-  
+
   # knowing that T3 = 1/acf3[1] * (L3 L3' - L4 L4')
   L3 <- toeplitz(acf3)
   L3[upper.tri(L3)] <- 0
   L4 <- toeplitz(c(0, acf3[-1]))
   L4[upper.tri(L4)] <- 0
-  
+
   trace <- trace - 2 * tr(L2.phi2 %*% t(L2.phi) %*% T3)
-  
+
   -trace / phi[1]
 }
 
@@ -117,6 +112,14 @@ acf.fun1 <- function(theta, lambda, N){
   acf <- lambda * exp(-acf) * acf / theta
   acf
 }
+
+n <- 6
+acf <- exp(-(1:n)^2/102)*102
+T1 <- new(Toeplitz, n)
+T1$AcfInput(acf)
+acf2 <- rnorm(n)
+acf3 <- rnorm(n)
+T1$TraceDeriv(acf2, acf3) - traceDerv.R(acf, acf2, acf3)
 
 range(grad(func = acf.fun0, x = 2, lambda = 2, N = 1) - acf.fun1(2, 2, 1))
 # good
@@ -138,7 +141,7 @@ traceDerv.R(acf, acf1, acf2) - tr(sT1 %*% T2 %*% sT1 %*% T3)
 ## delete
 rm(T1)
 
-#--- Durbin-Levinson functions --------------------------------------------------
+#--- Durbin-Levinson functions ---------------------------------------------
 
 # inner product
 n <- 50
@@ -203,17 +206,22 @@ system.time({
   for(ii in 1:nrep){
     acf <- exp(-(1:n)^2/102)*102
     X <- matrix(rnorm(n*k), n, k)
-    Toep1$acfInput(acf)
-    Toep1$mult(X)
+    Toep1$AcfInput(acf)
+    Toep1$Mult(X)
   }
 })
+
+#--- depreciated -----------------------------------------------------------
+
+if(FALSE) {
 # 2
 Toep2 <- new(Toeplitz, n, k)
 system.time({
   for(ii in 1:nrep){
     acf <- exp(-(1:n)^2/102)*102
     X <- matrix(rnorm(n*k), n, k)
-    Toep2$acfInput(acf)
-    Toep2$mult(X)
+    Toep2$AcfInput(acf)
+    Toep2$Mult(X)
   }
 })
+}
