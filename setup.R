@@ -2,7 +2,7 @@
 
 # for recompiling package
 # quit R, then setwd() to where setup.R is found. then:
-# setwd("D:/GitHub/SuperGauss/Toeplitz")
+# setwd("D:/GitHub/SuperGauss")
 
 require(Rcpp)
 require(devtools)

@@ -1,6 +1,6 @@
-\name{Toeplitz-package}
-\alias{Toeplitz-package}
-\alias{Toeplitz}
+\name{SuperGauss-package}
+\alias{SuperGauss-package}
+\alias{SuperGauss}
 \docType{package}
 \title{
 What the package does (short line)
@@ -11,10 +11,10 @@ More about what it does (maybe more than one line)
 }
 \details{
 \tabular{ll}{
-Package: \tab Toeplitz\cr
+Package: \tab SuperGauss\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2017-01-14\cr
+Date: \tab 2017-01-16\cr
 License: \tab GPL (>= 2)\cr
 }
 ~~ An overview of how to use the package, including the most important functions ~~

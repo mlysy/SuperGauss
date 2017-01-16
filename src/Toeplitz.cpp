@@ -23,6 +23,8 @@ void TraceComp(double* acf1, double* acf2, int n, double& trace){
 Toep::Toep(int n_){
     n = n_;
 
+    cout <<" constructor is called" << endl;
+    
 	Gs = new InverseToeplitz(n, 64); // default base is choosen to be 64 ,which is the most efficient, according to numerical test
 	
     L1fft = new VectorFFT(2 * n);
@@ -51,6 +53,9 @@ Toep::Toep(int n_){
  
 // requires edition
 Toep::~Toep(){
+    
+    cout << "destructor working" << endl;
+
     delete Gs;
 
 	delete L1fft;
