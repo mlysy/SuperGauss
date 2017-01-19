@@ -140,7 +140,7 @@ T3 <- toeplitz(acf2)
 traceDerv.R(acf, acf1, acf2) - tr(sT1 %*% T2 %*% sT1 %*% T3)
 # good
 ## delete
-rm(T1)
+gc()
 
 #--- Durbin-Levinson functions ---------------------------------------------
 
