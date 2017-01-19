@@ -12,10 +12,13 @@ Description: R wrapper to a C++ library for linear algebra with positive-
     by the fftw library. In addition to the solver, the package provides superfast
     algorithms for matrix-vector multiplication and determinants. The C++ code is
     provided as a header-only library for low-level usage outside of R.
-License: GPL (>= 2)
+License: GPL (>= 3)
 Imports:
+    methods
     Rcpp (>= 0.12.4),
     fftw
 LinkingTo: Rcpp, RcppEigen
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
 SystemRequirements: fftw library
 RoxygenNote: 5.0.1
