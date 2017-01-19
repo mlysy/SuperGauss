@@ -1,11 +1,21 @@
 Package: SuperGauss
 Type: Package
-Title: What the package does (short line)
-Version: 1.0
-Date: 2017-01-16
-Author: Your Name
-Maintainer: Your Name <your@email.com>
-Description: More about what it does (maybe more than one line)
+Title: Linear Algebra with Toeplitz Matrices
+Version: 0.0.1.9001
+Date: 2017-01-14
+Author: Yun Ling, Martin Lysy
+Maintainer: Yun Ling <y22ling@uwaterloo.ca>
+Description: R wrapper to a C++ library for linear algebra with positive-
+    definite Toeplitz matrices. In particular, a "superfast" O(n log^2 n) solver
+    for Toeplitz systems is provided, whereas the more common Levinson algorithm for
+    such systems is O(n^2). The implementation uses Fast Fourier Transforms provided
+    by the fftw library. In addition to the solver, the package provides superfast
+    algorithms for matrix-vector multiplication and determinants. The C++ code is
+    provided as a header-only library for low-level usage outside of R.
 License: GPL (>= 2)
-Imports: methods, Rcpp (>= 0.12.4)
+Imports:
+    Rcpp (>= 0.12.4),
+    fftw
 LinkingTo: Rcpp, RcppEigen
+SystemRequirements: fftw library
+RoxygenNote: 5.0.1
