@@ -10,7 +10,7 @@ require(devtools)
 compileAttributes() # regenerates Rcpp interface (i.e., RcppExports)
 document()
 install() # installs the package
-# build() # builds a tar.gz file
+build(vignettes = FALSE) # builds a tar.gz file
 
 # restart R before testing changes
 

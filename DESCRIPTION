@@ -1,7 +1,7 @@
 Package: SuperGauss
 Type: Package
 Title: Linear Algebra with Toeplitz Matrices
-Version: 0.0.1.9001
+Version: 0.0.1.9002
 Date: 2017-01-14
 Author: Yun Ling, Martin Lysy
 Maintainer: Yun Ling <y22ling@uwaterloo.ca>
@@ -20,5 +20,5 @@ Imports:
 LinkingTo: Rcpp, RcppEigen
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
-SystemRequirements: fftw library
+SystemRequirements: fftw3 (>= 3.1.2)
 RoxygenNote: 5.0.1
