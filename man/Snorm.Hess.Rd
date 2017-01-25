@@ -4,14 +4,14 @@
 \alias{Snorm.Hess}
 \title{Hessian of a Stationary Gaussian Log-Likelihood}
 \usage{
-Snorm.Hess(X, mean, acf, dmean, dacf, d2mean, d2acf, Toep)
+Snorm.Hess(X, mean, acf, dmean, dacf, d2mean, d2acf, Toep, debug = FALSE)
 }
 \arguments{
 \item{X}{\code{n x d} matrix, d i.i.d. vector follows N(mean, Variance).}
 
 \item{mean}{\code{n} vector or matrix.}
 
-\item{acf}{\code{n} vector or matrix, first column of variance matrix}
+\item{acf}{\code{n} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
 
 \item{dmean}{\code{n x p} matrix, where p is the number of parameters, each column is the partial derivative of mean}
 
@@ -20,8 +20,6 @@ Snorm.Hess(X, mean, acf, dmean, dacf, d2mean, d2acf, Toep)
 \item{d2mean}{\code{n x p x p} array}
 
 \item{d2acf}{\code{n x p x p} array}
-
-\item{Toep}{\code{n x 1} Toeplitz class, space for Toeplitz-related computation.}
 }
 \value{
 The Hessian matrix of the log-likelihood.
@@ -30,6 +28,8 @@ The Hessian matrix of the log-likelihood.
 Efficient calculation of the Hessian matrix of the log-likelihood of stationary Gaussian data.
 }
 \note{
-package "Toeplitz" is required
+package "SuperGauss" is required
+
+if d2mean and d2acf is \code{n x 1} matrix or array, it only works when p = 1
 }
 

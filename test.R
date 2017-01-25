@@ -12,12 +12,15 @@ y <- matrix(rnorm(n*d), n, d)
 z <- matrix(rnorm(n*d), n, d)
 xv <- rnorm(n)
 T1 <- new(Toeplitz, n)
-
+acf <- matrix(0, n, 1)
+T1$AcfInput(acf)
+head(T1$Mult(x))
 ## dimension check
 T1$DimCheck()
 ## run the function
 T1$AcfInput(acf)
 ## InverseProd part
+x <- matrix(0, n, d)
 msg <- T1$Mult(x)
 msxv <- T1$MultVec(xv)
 range(msg - toeplitz(acf) %*% x)
@@ -46,8 +49,10 @@ T1 <- new(Toeplitz, n)
 T1$AcfInput(acf)
 acf2 <- rnorm(n)
 acf3 <- rnorm(n)
+acf4 <- rep(0, n)
 T1$TraceProd(acf2) - tr(solve(toeplitz(acf)) %*% toeplitz(acf2))
 T1$TraceProd(acf3) - tr(solve(toeplitz(acf)) %*% toeplitz(acf3))
+T1$TraceProd(acf4) - tr(solve(toeplitz(acf)) %*% toeplitz(acf4))
 ## delete
 rm(T1)
 

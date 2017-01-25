@@ -4,20 +4,18 @@
 \alias{Snorm.grad}
 \title{Gradient of a Stationary Gaussian Log-Likelihood}
 \usage{
-Snorm.grad(X, mean, acf, dmean, dacf, Toep)
+Snorm.grad(X, mean, acf, dmean, dacf, Toep, debug = FALSE)
 }
 \arguments{
 \item{X}{\code{n x d} matrix, d i.i.d. vector follows N(mean, Variance).}
 
 \item{mean}{\code{n} vector or matrix.}
 
-\item{acf}{\code{n} vector or matrix, first column of variance matrix.}
+\item{acf}{\code{n} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
 
 \item{dmean}{\code{n x p} matrix, where \code{p} is the number of parameters, each column is the partial derivative of mean.}
 
 \item{dacf}{\code{n x p} matrix, each column is the partial deruvative of acf.}
-
-\item{Toep}{\code{n x 1} Toeplitz class, space for Toeplitz-related computation.}
 }
 \value{
 The gradient of the log-likelihood.
@@ -26,6 +24,6 @@ The gradient of the log-likelihood.
 Efficient evaluation of log-likelihood gradient for stationary Gaussian data.
 }
 \note{
-package "Toeplitz" is required
+package "SuperGauss" is required
 }
 
