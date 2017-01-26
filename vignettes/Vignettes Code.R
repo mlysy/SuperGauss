@@ -16,14 +16,15 @@ dT <- 1/60
 H <- 0.4
 lambda <- 200 * dT
 mu <- 1
+theta <- c(mu, H, lambda)
 
 # three parts of X
 drift <- mean.fun(mu, dT, N)
-fBM <- rSnorm(d, acf = fbm.acf(H, dT, N))
+fbm <- rSnorm(d, acf = fbm.acf(H, dT, N))
 exp2 <- rSnorm(d, acf = exp2.acf(lambda, dT, N))
 
 # X and plot
-dX <- matrix(drift + fBM + exp2, N)
+dX <- matrix(drift + fbm + exp2, N)
 X <- cumsum(dX)
 plot(X, col = "blue")
 
@@ -140,9 +141,53 @@ iterate <- function(X, dT, start, Toep, check = FALSE, difference = 1e-4){
     theta.new <- Newton.Raphson(theta.old, X, dT, Toep, check)
     loop <- loop + 1
   }
-  list(theta = theta.new, times = loop)
+  list(est = theta.new, times = loop)
 }
 
 Toep <- new(Toeplitz, N)
-iterate(dX, dT, c(1, 0.5, 4), Toep)
-c(mu, H, lambda)
+theta.start <- c(0.7, 0.5, 4)
+theta.est <- iterate(dX, dT, theta.start, Toep)
+signif(cbind(theta.est$est, theta))
+# simulating drift with estimated data
+
+rep <- 100
+
+mu.est <- theta.est$est[1]
+H.est <- theta.est$est[2]
+lambda.est <- theta.est$est[3]
+
+dX.sim <- matrix(NA, N, rep)
+for(ii in 1:rep){
+  drift.tmp <- mean.fun(mu.est, dT, N)
+  fbm.tmp <- rSnorm(1, acf = fbm.acf(H.est, dT, N))
+  exp2.tmp <- rSnorm(1, acf = exp2.acf(lambda.est, dT, N))
+  dX.sim[, ii] <- drift.tmp + fbm.tmp + exp2.tmp
+}
+X.sim <- apply(dX.sim, 2, cumsum)
+
+band <- conf.band(X.sim)
+
+plot(X, col = "red", ylim = c(-2, 46))
+par(new = TRUE)
+plot(band[,1], col = "green", ylim = c(-2, 46))
+par(new = TRUE)
+plot(band[,2], col = "green", ylim = c(-2, 46))
+
+## true parameter simulation
+
+dX.true <- matrix(NA, N, rep)
+for(ii in 1:rep){
+  drift.tmp <- mean.fun(mu, dT, N)
+  fbm.tmp <- rSnorm(1, acf = fbm.acf(H, dT, N))
+  exp2.tmp <- rSnorm(1, acf = exp2.acf(lambda, dT, N))
+  dX.true[, ii] <- drift.tmp + fbm.tmp + exp2.tmp
+}
+X.true <- apply(dX.true, 2, cumsum)
+
+band.true <- conf.band(X.true)
+
+plot(X, col = "red", ylim = c(-2, 46))
+par(new = TRUE)
+plot(band[,1], col = "green", ylim = c(-2, 46))
+par(new = TRUE)
+plot(band[,2], col = "green", ylim = c(-2, 46))

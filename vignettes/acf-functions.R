@@ -140,6 +140,26 @@ fdyn.acf <- function(alpha, sigma, dT, N) {
   msd2acf(eta)
 }
 
+#' square form mean function
 mean.fun <- function(mu, dT, N){
   mu^2 * dT * matrix(1, N, 1)
+}
+
+#' Confidence Band Computation, Gaussian
+#'
+#' @param n indicate the dimension of X
+#' @param X by row, nrow(X) is the length of time series and ncol(X) is the replication
+#' @param conf.level is the confidence level, default to be 95%
+conf.band <- function(X, conf.level = .95){
+  X <- as.matrix(X)
+  q <- qnorm(.5 + .5*conf.level)
+  N <- nrow(X)
+  nrep <- ncol(X)
+  band <- matrix(NA, 2, N)
+  band <- sapply(1:N, function(ii){
+    mean <- mean(X[ii,])
+    se <- sqrt(var(X[ii,]))
+    c(mean-q*se, mean+q*se)
+  })
+  t(band)
 }
