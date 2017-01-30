@@ -4,9 +4,9 @@ require(SuperGauss)
 
 # Toeplitz class
 tr <- function(X) sum(diag(X)) # matrix trace
-n <- 46
+n <- 200
 d <- 4
-acf <- exp(-(1:n)^2/102)*102
+acf <- exp(-(1:n-1)^2/102)*102
 x <- matrix(rnorm(n*d), n, d)
 y <- matrix(rnorm(n*d), n, d)
 z <- matrix(rnorm(n*d), n, d)

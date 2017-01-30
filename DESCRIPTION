@@ -18,7 +18,8 @@ Imports:
     Rcpp (>= 0.12.4),
     fftw
 LinkingTo: Rcpp, RcppEigen
-Suggests: knitr, rmarkdown
+Suggests: knitr, rmarkdown,
+    testthat
 VignetteBuilder: knitr
 SystemRequirements: fftw library
 RoxygenNote: 5.0.1
