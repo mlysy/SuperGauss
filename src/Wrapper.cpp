@@ -37,7 +37,6 @@ Toeplitz::Toeplitz(int n_): Toep(n_)
 
 Toeplitz::~Toeplitz()
 {
-    // cout <<"rcpp destructor called" << endl;
     delete[] acf;
     delete[] acf2;
     delete[] acf3;

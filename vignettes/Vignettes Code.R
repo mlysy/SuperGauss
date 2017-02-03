@@ -1,37 +1,38 @@
 # Vignettes Code
-# instructions on obtaining `fftw`
+
+# Instruction On FFTW -----------------------------------------------------
+
+
 
 # Example of Simulation and Estimation ------------------------------------
+
 setwd("D:/GitHub/SuperGauss/vignettes")
 require(numDeriv)
 require(SuperGauss)
 require(fftw)
 source("acf-functions.R")
 
-# Simulating Data
+# Data Simulation ---------------------------------------------------------
+
 # model: fBM + stochastic drift
 N <- 2000
 d <- 1
 dT <- 1/60
 H <- 0.4
 lambda <- 200 * dT
-mu <- 1
+mu <- 0.5
 theta <- c(mu, H, lambda)
 
-# three parts of X
 drift <- mean.fun(mu, dT, N)
 fbm <- rSnorm(d, acf = fbm.acf(H, dT, N))
 exp2 <- rSnorm(d, acf = exp2.acf(lambda, dT, N))
 
-# X and plot
 dX <- matrix(drift + fbm + exp2, N)
 X <- cumsum(dX)
 plot(X, col = "blue")
 
-# Estimating Parameters
-# using Newton-Raphson
+# Parameter Estimation Using Newton-Raphson -------------------------------
 
-# the acf function and its derivatives
 acf.fun <- function(H, lambda, dT = dT, N = N){
   acf1 <- fbm.acf(H, dT, N)
   acf2 <- exp2.acf(lambda, dT, N)
@@ -70,24 +71,7 @@ d2.exp2 <- function(lambda, dT = dT, N = N){
   matrix(acf, N, 1)
 }
 
-# dSnorm for checking
-dSnorm.check <- function(theta, X, dT, Toep){
-  n <- nrow(X)
-  mu <- theta[1]
-  H <- theta[2]
-  lambda <- theta[3]
-  mean <- mean.fun(mu, dT, n)
-  acf <- acf.fun(H, lambda, dT, n)
-  X <- X - mean
-  Toep$AcfInput(acf)
-  density <- crossprod(X, Toep$Solve(X))
-  density <- density + Toep$Det()
-  density / -2
-}
-
-
-# parameter theta = {H, lambda}
-Newton.Raphson <- function(theta, X, dT, Toep, check = FALSE){
+Newton.Raphson <- function(theta, X, dT, Toep){
   n <- nrow(X)
   d <- ncol(X)
   p <- 3
@@ -114,41 +98,67 @@ Newton.Raphson <- function(theta, X, dT, Toep, check = FALSE){
   grad <- Snorm.grad(X, mean, acf, dmean, dacf, Toep)
   hess <- Snorm.Hess(X, mean, acf, dmean, dacf, d2mean, d2acf, Toep)
   
-  # checking part
-  if(check){
-    grad.check <- grad(func = dSnorm.check, x = theta, X = X, dT = dT, Toep = Toep)
-    hess.check <- hessian(func = dSnorm.check, x = theta, X = X, dT = dT, Toep = Toep)
-    
-    if(max(range(c(grad - grad.check, hess - hess.check))) > 1e-4){
-      print(hess)
-      print(hess.check) 
-    }
-  }
-  # check end
-  
   theta.new <- theta - solve(hess, grad)
   theta.new
 }
 
-Newton.Raphson(c(1, 0.5, 3), dX, dT, Toep, TRUE)
-
-iterate <- function(X, dT, start, Toep, check = FALSE, difference = 1e-4){
+iterate <- function(X, dT, start, Toep, difference = 1e-4){
   theta.old <- start
   theta.new <- Newton.Raphson(theta.old, X, dT, Toep)
   loop <- 1
   while(max(theta.new - theta.old) > difference){
     theta.old <- theta.new
-    theta.new <- Newton.Raphson(theta.old, X, dT, Toep, check)
+    theta.new <- Newton.Raphson(theta.old, X, dT, Toep)
     loop <- loop + 1
   }
   list(est = theta.new, times = loop)
 }
 
 Toep <- new(Toeplitz, N)
-theta.start <- c(0.7, 0.5, 4)
+theta.start <- c(0.5, 0.5, 4)
 theta.est <- iterate(dX, dT, theta.start, Toep)
 signif(cbind(theta.est$est, theta))
-# simulating drift with estimated data
+
+# Newton-Raphson Using Function 'nlm' -------------------------------------
+
+dSnorm.para <- function(theta, X, dT, Toep){
+  n <- nrow(X)
+  mu <- theta[1]
+  H <- theta[2]
+  lambda <- theta[3]
+  p <- length(theta)
+  mean <- mean.fun(mu, dT, n)
+  acf <- acf.fun(H, lambda, dT, n)
+  
+  dmean <- matrix(0, n, p)
+  dmean[, 1] <- d.mu(mu, dT, n)
+  
+  dacf <- matrix(0, n, p)
+  dacf[, 2] <- d.fbm(H, dT, n)
+  dacf[, 3] <- d.exp2(lambda, dT, n)
+  
+  d2mean <- array(0, c(n, 3, 3))
+  d2mean[, 1, 1] <- d2.mu(mu, dT, n)
+  
+  d2acf <- array(0, c(n, 3, 3))
+  d2acf[, 2, 2] <- d2.fbm(H, dT, n)
+  d2acf[, 3, 3] <- d2.exp2(lambda, dT, n)
+  
+  X1 <- X - mean
+  Toep$AcfInput(acf)
+  density <- crossprod(X1, Toep$Solve(X1))
+  density <- (density + Toep$Det()) / 2
+  attr(density, "gradient") <- -1 * Snorm.grad(X, mean, acf, dmean, dacf, Toep)
+  attr(density, "hessian") <- -1 * Snorm.Hess(X, mean, acf, dmean, dacf, d2mean, d2acf, Toep)
+  density
+}
+
+theta.start <- c(0.5, 0.5, 3)
+theta.nlm <- nlm(f = dSnorm.para, p = theta.start, X = dX, dT = dT, Toep = Toep)
+signif(cbind(theta.nlm$estimate, theta))
+
+
+# Estimated Parameter Simulation ------------------------------------------
 
 rep <- 100
 
@@ -173,7 +183,8 @@ plot(band[,1], col = "green", ylim = c(-2, 46))
 par(new = TRUE)
 plot(band[,2], col = "green", ylim = c(-2, 46))
 
-## true parameter simulation
+# True Parameter Simulation -----------------------------------------------
+
 
 dX.true <- matrix(NA, N, rep)
 for(ii in 1:rep){
@@ -188,6 +199,6 @@ band.true <- conf.band(X.true)
 
 plot(X, col = "red", ylim = c(-2, 46))
 par(new = TRUE)
-plot(band[,1], col = "green", ylim = c(-2, 46))
+plot(band.true[,1], col = "green", ylim = c(-2, 46))
 par(new = TRUE)
-plot(band[,2], col = "green", ylim = c(-2, 46))
+plot(band.true[,2], col = "green", ylim = c(-2, 46))

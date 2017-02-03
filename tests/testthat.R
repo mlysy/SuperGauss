@@ -1,63 +1,51 @@
-library(testthat)
 library(SuperGauss)
-library(RUnit)
+context("Computation of Positive Definite Toeplitz matrix")
 
-test_check("SuperGauss")
-
-# dimension
 N <- round(abs(rnorm(n = 1, mean = 200, sd = 10)))
 d <- round(abs(rnorm(n = 1, mean = 10, sd = 3)))
 
-# creating the class
 Toep <- new(Toeplitz, N)
 
+test_that("dimension check", {
+  expect_identical(Toep$DimCheck(), N)
+})
 
-# dimension check for Toeplitz
-checkEquals(Toep$DimCheck(), N)
-
-
-# input acf
-lambda <- 100
-acf <- exp(-(1:N)^2/lambda) * lambda
-
-# input data can be vector, matrix or array, only requirement is total length should be N
+lambda <- rnorm(n = 1, mean = 100, sd = 10)
+acf <- exp(-(1:N-1)^2/lambda) * lambda
+acf.mat <- toeplitz(acf)
 Toep$AcfInput(acf)
-Toep$AcfInput(matrix(acf, N, 1))
-Toep$AcfInput(array(acf, c(N, 1, 1)))
 
-Toep.mat <- toeplitz(acf)
-
-# if total length is wrong, it will stop, but the previous information is not overwritten
-Toep$AcfInput(c(acf, 0))
-Toep$AcfInput(acf[-1])
-
-# Toeplitz - matrix multiplication
 X <- matrix(rnorm(N * d), N, d)
+zero <- matrix(0, N, d)
+Y <- matrix(rnorm(N * d), N, d) * 1e10
+Z <- matrix(rnorm(N * d), N, d) * 1e-7
 
-checkEquals(Toep$Mult(X), Toep.mat %*% X)
+acf0 <- rep(0, N)
+acf1 <- rnorm(N)
+acf2 <- rnorm(N) * 1e10
+acf3 <- rnorm(N) * 1e-7
 
-# inverse Toeplitz - matrix multiplication
+test_that("Toeplitz-matrix multiplication", {
+  expect_equal(Toep$Mult(X), acf.mat %*% X)
+  expect_equal(Toep$Mult(zero), acf.mat %*% zero)
+  expect_equal(Toep$Mult(Y), acf.mat %*% Y)
+  expect_equal(Toep$Mult(Z), acf.mat %*% Z)
+})
 
-checkEquals(Toep.mat %*% Toep$Solve(X), X)
+test_that("Toeplitz-matrix solution", {
+  expect_equal(Toep$Solve(X), acf.mat %*% X)
+  expect_equal(Toep$Solve(zero), acf.mat %*% zero)
+  expect_equal(Toep$Solve(Y), acf.mat %*% Y)
+  expect_equal(Toep$Solve(Z), acf.mat %*% Z)
+})
 
-# determinant 
+test_that("determinant check", {
+  expect_equal(Toep$Det(), log(det(acf.mat)))
+})
 
-checkEquals(log(det(Toep.mat)), Toep$Det())
-
-# traceProd
-
-
-# traceDeriv
-
-
-# dSnorm
-
-
-# Snorm.grad
-
-
-# Snorm.hess
-
-## some idea:
-## we should check the accuracy of GSchur againts Durbin-Levinson or Choleski?
-## if we wannna compare the outcome of 
+test_that("traceProd check", {
+  expect_equal(Toep$TraceProd(acf0), tr(solve(acf.mat, toeplitz(acf0))))
+  expect_equal(Toep$TraceProd(acf1), tr(solve(acf.mat, toeplitz(acf1))))
+  expect_equal(Toep$TraceProd(acf2), tr(solve(acf.mat, toeplitz(acf2))))
+  expect_equal(Toep$TraceProd(acf3), tr(solve(acf.mat, toeplitz(acf3))))
+})
