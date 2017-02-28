@@ -43,7 +43,8 @@ class Toep {
 	bool hasMult;
 	bool hasAcf;
 	bool hasInv;
-
+	bool acf_is_0;
+	
 	// Superfast Algorithm Space
 	InverseToeplitz* Gs;
 

@@ -63,9 +63,7 @@ NumericMatrix Toeplitz::mult_R(NumericMatrix x_R){
         return NumericMatrix();
     }
     int d_R = x_R.ncol();
-    if(!acf[0]){
-        return NumericMatrix(n_R, d_R);
-    }
+
     NumericMatrix Mult_R(n_R, d_R);
     for(int ii = 0; ii < d_R; ii++){
         std::copy(x_R.column(ii).begin(), x_R.column(ii).end(), x);
@@ -80,9 +78,7 @@ NumericMatrix Toeplitz::mult_Vec(NumericVector x_R){
         cout << "non-conformable arguments" << endl;
         return NumericMatrix();
     }
-    if(!acf[0]){
-        return NumericMatrix(n_R, 1);
-    }
+
     NumericMatrix Mult_R(n_R, 1);
     std::copy(x_R.begin(), x_R.end(), x);
     mult(x);
@@ -133,15 +129,11 @@ double Toeplitz::traceProd_R(NumericVector acf2_R)
         cout << "non-conformable acf2" << endl;
         return NA_REAL;
     }
-    if(!acf2_R(0) | !acf[0]){
-        return 0.0;
-    } else{
-        std::copy(acf2_R.begin(), acf2_R.end(), acf2);
-        traceProd(acf2);
-        double Trace_R;
-        Trace_R = trace;
-        return Trace_R;
-    }
+    std::copy(acf2_R.begin(), acf2_R.end(), acf2);
+    traceProd(acf2);
+    double Trace_R;
+    Trace_R = trace;
+    return Trace_R;
 }
 
 double Toeplitz::traceDerv_R(NumericVector acf2_R, NumericVector acf3_R){
@@ -150,9 +142,7 @@ double Toeplitz::traceDerv_R(NumericVector acf2_R, NumericVector acf3_R){
         cout << "non-conformable acf2" << endl;
         return NA_REAL;
     }
-    if(!acf2_R(0) | !acf3_R(0)){
-        return 0.0;
-    }
+
     std::copy(acf2_R.begin(), acf2_R.end(), acf2);
     std::copy(acf3_R.begin(), acf3_R.end(), acf3);
     traceDerv(acf2, acf3);

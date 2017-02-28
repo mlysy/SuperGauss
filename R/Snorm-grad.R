@@ -70,7 +70,9 @@ Snorm.grad <- function(X, mean, acf, dmean, dacf, Toep, debug = FALSE){
     if(length(dmean) == 1 || length(dmean) == n){
       dmean <- matrix(dmean, n, p)
     } else{
-      stop("dmean has incompatible dimensions with dacf")
+      if(!(is.matrix(dmean) && ncol(dmean) == p && nrow(dmean) == n)){
+        stop("dmean has incompatible dimensions with dacf")
+      }
     }
   }
   

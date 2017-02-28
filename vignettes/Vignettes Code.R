@@ -23,13 +23,20 @@ lambda <- 200 * dT
 mu <- 0.5
 theta <- c(mu, H, lambda)
 
-drift <- mean.fun(mu, dT, N)
-fbm <- rSnorm(d, acf = fbm.acf(H, dT, N))
-exp2 <- rSnorm(d, acf = exp2.acf(lambda, dT, N))
+d.drift <- mean.fun(mu, dT, N)
+d.fbm <- rSnorm(d, acf = fbm.acf(H, dT, N))
+d.exp2 <- rSnorm(d, acf = exp2.acf(lambda, dT, N))
 
-dX <- matrix(drift + fbm + exp2, N)
-X <- cumsum(dX)
-plot(X, col = "blue")
+dX <- matrix(d.drift + d.fbm + d.exp2, N)
+drift <- cumsum(matrix(d.drift + d.fbm, N))
+vol <- cumsum(matrix(d.exp2, N))
+X <- drift + vol
+rng <- range(c(X, drift, vol))
+plot(X, col = "blue", type = "l", ylim = rng, xlab = "", ylab = "")
+par(new = TRUE)
+plot(drift, col = "red", type = "l", ylim = rng, xlab = "", ylab = "")
+par(new = TRUE)
+plot(vol, col = "green", type = "l", ylim = rng, xlab = "", ylab = "")
 
 # Parameter Estimation Using Newton-Raphson -------------------------------
 
@@ -71,55 +78,7 @@ d2.exp2 <- function(lambda, dT = dT, N = N){
   matrix(acf, N, 1)
 }
 
-Newton.Raphson <- function(theta, X, dT, Toep){
-  n <- nrow(X)
-  d <- ncol(X)
-  p <- 3
-  mu <- theta[1]
-  H <- theta[2]
-  lambda <- theta[3]
-  mean <- mean.fun(mu, dT, n)
-  acf <- acf.fun(H, lambda, dT, N)
-  
-  dmean <- matrix(0, n, p)
-  dmean[, 1] <- d.mu(mu, dT, n)
-  
-  dacf <- matrix(0, n, p)
-  dacf[, 2] <- d.fbm(H, dT, n)
-  dacf[, 3] <- d.exp2(lambda, dT, n)
-  
-  d2mean <- array(0, c(n, 3, 3))
-  d2mean[, 1, 1] <- d2.mu(mu, dT, n)
-  
-  d2acf <- array(0, c(n, 3, 3))
-  d2acf[, 2, 2] <- d2.fbm(H, dT, n)
-  d2acf[, 3, 3] <- d2.exp2(lambda, dT, n)
-
-  grad <- Snorm.grad(X, mean, acf, dmean, dacf, Toep)
-  hess <- Snorm.Hess(X, mean, acf, dmean, dacf, d2mean, d2acf, Toep)
-  
-  theta.new <- theta - solve(hess, grad)
-  theta.new
-}
-
-iterate <- function(X, dT, start, Toep, difference = 1e-4){
-  theta.old <- start
-  theta.new <- Newton.Raphson(theta.old, X, dT, Toep)
-  loop <- 1
-  while(max(theta.new - theta.old) > difference){
-    theta.old <- theta.new
-    theta.new <- Newton.Raphson(theta.old, X, dT, Toep)
-    loop <- loop + 1
-  }
-  list(est = theta.new, times = loop)
-}
-
-Toep <- new(Toeplitz, N)
-theta.start <- c(0.5, 0.5, 4)
-theta.est <- iterate(dX, dT, theta.start, Toep)
-signif(cbind(theta.est$est, theta))
-
-# Newton-Raphson Using Function 'nlm' -------------------------------------
+# Newton-Raphson Using Function 'nlm'
 
 dSnorm.para <- function(theta, X, dT, Toep){
   n <- nrow(X)
@@ -153,52 +112,81 @@ dSnorm.para <- function(theta, X, dT, Toep){
   density
 }
 
-theta.start <- c(0.5, 0.5, 3)
+Toep <- new(Toeplitz, N)
+theta.start <- c(0.1, 0.5, 3)
 theta.nlm <- nlm(f = dSnorm.para, p = theta.start, X = dX, dT = dT, Toep = Toep)
 signif(cbind(theta.nlm$estimate, theta))
 
 
-# Estimated Parameter Simulation ------------------------------------------
+# Drift Simulation --------------------------------------------------------
 
-rep <- 100
+# Drift simulation technique with true parameter
+dT <- 1/60
+N <- 2000
+param <- theta
+mu.para <- param[1]
+H.para <- param[2]
+lambda.para <- param[3]
+Toep <- new(Toeplitz, N)
+mean <- mean.fun(mu.para, dT, N)
+acf1 <- fbm.acf(H.para, dT, N)
+acf2 <- exp2.acf(lambda.para, dT, N)
 
-mu.est <- theta.est$est[1]
-H.est <- theta.est$est[2]
-lambda.est <- theta.est$est[3]
+# simu
+nSim <- 100
+path.sim <- matrix(NA, N, nSim)
+e1 <- rSnorm(nSim, acf = acf1)
+e2 <- rSnorm(nSim, acf = acf2)
+Toep$AcfInput(acf1 + acf2)
 
-dX.sim <- matrix(NA, N, rep)
-for(ii in 1:rep){
-  drift.tmp <- mean.fun(mu.est, dT, N)
-  fbm.tmp <- rSnorm(1, acf = fbm.acf(H.est, dT, N))
-  exp2.tmp <- rSnorm(1, acf = exp2.acf(lambda.est, dT, N))
-  dX.sim[, ii] <- drift.tmp + fbm.tmp + exp2.tmp
+for(ii in 1:nSim){
+  sim <- Toep$Solve(dX - mean - e1[, ii] - e2[, ii])
+  Toep$AcfInput(acf1)
+  path.sim[, ii] <- mean + e1[, ii] + Toep$Mult(sim)
 }
-X.sim <- apply(dX.sim, 2, cumsum)
 
-band <- conf.band(X.sim)
+path.sim.cum <- apply(path.sim, 2, cumsum)
 
-plot(X, col = "red", ylim = c(-2, 46))
+band.sim <- conf.band(path.sim.cum)
+rng <- range(c(band.sim, drift))
+plot(drift, col = "red", type = "l", ylim = rng, xlab = "", ylab = "")
 par(new = TRUE)
-plot(band[,1], col = "green", ylim = c(-2, 46))
+plot(band.sim[,1], col = "blue", type = "l", ylim = rng, xlab = "", ylab = "")
 par(new = TRUE)
-plot(band[,2], col = "green", ylim = c(-2, 46))
-
-# True Parameter Simulation -----------------------------------------------
+plot(band.sim[,2], col = "blue", type = "l", ylim = rng, xlab = "", ylab = "")
 
 
-dX.true <- matrix(NA, N, rep)
-for(ii in 1:rep){
-  drift.tmp <- mean.fun(mu, dT, N)
-  fbm.tmp <- rSnorm(1, acf = fbm.acf(H, dT, N))
-  exp2.tmp <- rSnorm(1, acf = exp2.acf(lambda, dT, N))
-  dX.true[, ii] <- drift.tmp + fbm.tmp + exp2.tmp
+# Drift simulation technique with estimated parameter
+dT <- 1/60
+N <- 2000
+param <- theta.nlm$estimate
+mu.para <- param[1]
+H.para <- param[2]
+lambda.para <- param[3]
+Toep <- new(Toeplitz, N)
+mean <- mean.fun(mu.para, dT, N)
+acf1 <- fbm.acf(H.para, dT, N)
+acf2 <- exp2.acf(lambda.para, dT, N)
+
+# simu
+nSim <- 100
+path.sim <- matrix(NA, N, nSim)
+e1 <- rSnorm(nSim, acf = acf1)
+e2 <- rSnorm(nSim, acf = acf2)
+Toep$AcfInput(acf1 + acf2)
+
+for(ii in 1:nSim){
+  sim <- Toep$Solve(dX - mean - e1[, ii] - e2[, ii])
+  Toep$AcfInput(acf1)
+  path.sim[, ii] <- mean + e1[, ii] + Toep$Mult(sim)
 }
-X.true <- apply(dX.true, 2, cumsum)
 
-band.true <- conf.band(X.true)
+path.sim.cum <- apply(path.sim, 2, cumsum)
 
-plot(X, col = "red", ylim = c(-2, 46))
+band.sim <- conf.band(path.sim.cum)
+rng <- range(c(band.sim, drift))
+plot(drift, col = "red", type = "l", ylim = rng, xlab = "", ylab = "")
 par(new = TRUE)
-plot(band.true[,1], col = "green", ylim = c(-2, 46))
+plot(band.sim[,1], col = "blue", type = "l", ylim = rng, xlab = "", ylab = "")
 par(new = TRUE)
-plot(band.true[,2], col = "green", ylim = c(-2, 46))
+plot(band.sim[,2], col = "blue", type = "l", ylim = rng, xlab = "", ylab = "")

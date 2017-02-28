@@ -6,32 +6,21 @@ require(SuperGauss)
 tr <- function(X) sum(diag(X)) # matrix trace
 n <- 200
 d <- 4
-acf <- exp(-(1:n-1)^2/102)*102
+acf <- exp(-(1:n)^2/102)*102
 x <- matrix(rnorm(n*d), n, d)
 y <- matrix(rnorm(n*d), n, d)
 z <- matrix(rnorm(n*d), n, d)
-xv <- rnorm(n)
 T1 <- new(Toeplitz, n)
-acf <- matrix(0, n, 1)
 T1$AcfInput(acf)
-head(T1$Mult(x))
 ## dimension check
 T1$DimCheck()
-## run the function
-T1$AcfInput(acf)
 ## InverseProd part
-x <- matrix(0, n, d)
 msg <- T1$Mult(x)
-msxv <- T1$MultVec(xv)
 range(msg - toeplitz(acf) %*% x)
-range(msxv - toeplitz(acf) %*% xv)
 msg <- T1$Solve(y)
 msg1 <- T1$Solve(x)
 msg2 <- T1$Solve(z)
 range(toeplitz(acf) %*% msg - y)
-# overload for vector
-msgv <- T1$SolveVec(xv)
-range(toeplitz(acf) %*% msgv - xv)
 # determinant part
 T1$Det() - log(det(toeplitz(acf)))
 # determinant part
