@@ -8,14 +8,16 @@
 #' @return An autocorrelation vector of length \code{N}.
 #' @details The fBM autocorrelation is given by:
 #' @export
-fbm.acf <- function(H, dT, N) {
-  if(N == 1) {
-    acf <- dT^(2*H)
-  } else {
-    acf <- (dT*(0:N))^(2*H)
-    acf <- .5 * (acf[1:N+1] + c(acf[2], acf[1:(N-1)]) - 2*acf[1:N])
-  }
-  acf
+fbm.acf <- function(H, dT, N, incr = TRUE){
+   gam <- (dT*(0:N+1))^(2*H)
+   if(incr){
+     # increments
+     ans <- -1/2 * acf2incr(gam)
+   } else{
+     # observations
+     ans <- gam[1:N]
+   }
+   ans
 }
 
 #' Autocorrelation of Squared-Exponential
@@ -136,4 +138,28 @@ fdyn.msd <- function(alpha, sigma, t){
 fdyn.acf <- function(alpha, sigma, dT, N) {
   eta <- fdyn.msd(alpha, sigma, dT*1:N)
   msd2acf(eta)
+}
+
+#' square form mean function
+mean.fun <- function(mu, dT, N){
+  mu^2 * dT * matrix(1, N, 1)
+}
+
+#' Confidence Band Computation, Gaussian
+#'
+#' @param n indicate the dimension of X
+#' @param X by row, nrow(X) is the length of time series and ncol(X) is the replication
+#' @param conf.level is the confidence level, default to be 95%
+conf.band <- function(X, conf.level = .95){
+  X <- as.matrix(X)
+  q <- qnorm(.5 + .5*conf.level)
+  N <- nrow(X)
+  nrep <- ncol(X)
+  band <- matrix(NA, 2, N)
+  band <- sapply(1:N, function(ii){
+    mean <- mean(X[ii,])
+    se <- sqrt(var(X[ii,]))
+    c(mean-q*se, mean+q*se)
+  })
+  t(band)
 }

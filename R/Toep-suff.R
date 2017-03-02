@@ -55,12 +55,12 @@ toep.suff <- function(Y, X, V, acf, npred = 0,
   p <- (!noBeta) * ncol(X)
   # dimension check for Toep
   if(missing(Toep)){
-    Toep <- new(Toeplitz, n, q+p+npred)
+    Toep <- new(Toeplitz, n)
   }
   else{
     # assuming that we have a given environment Toep
-    if(!(n == Toep$dimCheck()$N && ((q+p+npred) == Toep$dimCheck()$d || Toep$dimCheck()$d == 1))){
-      stop("Given Toep is incompatible with nrow(Y) or ncol(Y).")
+    if(!(n == Toep$DimCheck())){
+      stop("Given Toep is incompatible with nrow(Y).")
     }
   }
   # inner product calculations
@@ -113,9 +113,9 @@ toep.suff <- function(Y, X, V, acf, npred = 0,
     # Z' * toeplitz(acf[1:n])^{-1} * Z
     # if is.numeric(acf), create space
     # if class(acf) == "Toeplitz", don't create.
-    Toep$acfInput(acf[1:n])
-    IP <- crossprod(Z, Toep$solve(Z))
-    ldV <- Toep$det()
+    Toep$AcfInput(acf[1:n])
+    IP <- crossprod(Z, Toep$Solve(Z))
+    ldV <- Toep$Det()
     # DL <- DurbinLevinsonEigen(X = t(Z), Y = matrix(0),
     #                           acf = acf[1:n], calcMode = 1)
     # IP <- DL$IP

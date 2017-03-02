@@ -4,31 +4,23 @@ require(SuperGauss)
 
 # Toeplitz class
 tr <- function(X) sum(diag(X)) # matrix trace
-n <- 46
+n <- 200
 d <- 4
 acf <- exp(-(1:n)^2/102)*102
 x <- matrix(rnorm(n*d), n, d)
 y <- matrix(rnorm(n*d), n, d)
 z <- matrix(rnorm(n*d), n, d)
-xv <- rnorm(n)
 T1 <- new(Toeplitz, n)
-
+T1$AcfInput(acf)
 ## dimension check
 T1$DimCheck()
-## run the function
-T1$AcfInput(acf)
 ## InverseProd part
 msg <- T1$Mult(x)
-msxv <- T1$MultVec(xv)
 range(msg - toeplitz(acf) %*% x)
-range(msxv - toeplitz(acf) %*% xv)
 msg <- T1$Solve(y)
 msg1 <- T1$Solve(x)
 msg2 <- T1$Solve(z)
 range(toeplitz(acf) %*% msg - y)
-# overload for vector
-msgv <- T1$SolveVec(xv)
-range(toeplitz(acf) %*% msgv - xv)
 # determinant part
 T1$Det() - log(det(toeplitz(acf)))
 # determinant part
@@ -46,8 +38,10 @@ T1 <- new(Toeplitz, n)
 T1$AcfInput(acf)
 acf2 <- rnorm(n)
 acf3 <- rnorm(n)
+acf4 <- rep(0, n)
 T1$TraceProd(acf2) - tr(solve(toeplitz(acf)) %*% toeplitz(acf2))
 T1$TraceProd(acf3) - tr(solve(toeplitz(acf)) %*% toeplitz(acf3))
+T1$TraceProd(acf4) - tr(solve(toeplitz(acf)) %*% toeplitz(acf4))
 ## delete
 rm(T1)
 

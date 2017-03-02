@@ -11,9 +11,7 @@ dSnorm(X, mean, acf, Toep, log = FALSE)
 
 \item{mean}{\code{n} vector or matrix}
 
-\item{acf}{\code{n} vector or matrix, first column of variance matrix}
-
-\item{Toep}{\code{n x d} Toeplitz class, space for Toeplitz-related computation}
+\item{acf}{\code{n} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
 
 \item{log}{logical, if \code{TRUE} returns log-densities.}
 
@@ -23,7 +21,7 @@ dSnorm(X, mean, acf, Toep, log = FALSE)
 Efficient density evaluation for the multivariate normal distribution with Toeplitz variance matrix.
 }
 \note{
-package "Toeplitz" is required
+package "SuperGauss" is required
 
 When input {X, mean, acf} data type can be either vector or matrix, if vector, convert it into \code{n x 1} matrix
 }

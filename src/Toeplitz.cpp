@@ -19,11 +19,19 @@ void TraceComp(double* acf1, double* acf2, int n, double& trace){
     return;
 }
 
+void TestZero(double* acf, int n, bool& acf_is_0){
+    acf_is_0 = true;
+    for(int ii = 0; ii < n; ++ii){
+        if(acf[ii]){
+            acf_is_0 = false;
+            break;
+        }
+    }
+    return;        
+}
 
 Toep::Toep(int n_){
     n = n_;
-
-    //cout <<" constructor is called" << endl;
     
 	Gs = new InverseToeplitz(n, 64); // default base is choosen to be 64 ,which is the most efficient, according to numerical test
 	
@@ -54,8 +62,6 @@ Toep::Toep(int n_){
 // requires edition
 Toep::~Toep(){
     
-    //cout << "destructor working" << endl;
-
     delete Gs;
 
 	delete L1fft;
@@ -83,9 +89,13 @@ Toep::~Toep(){
 
 //-------------------------------------------------------------------------------------------------
 void Toep::acfInput(double* acfA){
-    // copy the acfA into Toep::acf
-    std::copy(acfA, acfA + n, acf);
-    // turn the flag into False
+
+    TestZero(acfA, n, acf_is_0);
+
+    if(!acf_is_0){
+        std::copy(acfA, acfA + n, acf);
+    }
+
     hasMult = FALSE;
     hasInv = FALSE;
     hasAcf = TRUE;
@@ -93,8 +103,6 @@ void Toep::acfInput(double* acfA){
 
 //-------------------------------------------------------------------------------------------------
 void Toep::computeMult(){
-    // preparation for Toeplitz times Matrix
-    // fft(c(acf, acf[n-1:2]))
     std::copy(acf, acf + n, Toepfft->in);
     std::copy(acf + 1, acf + n, Toepfft->in + n + 1);
     std::reverse(Toepfft->in + n + 1, Toepfft->in + 2 * n);
@@ -108,7 +116,12 @@ void Toep::mult(double* x){
         cout << "Please input acf" << endl;
         return;
     }
-    
+
+    if(acf_is_0){
+        std::fill(Mult, Mult + n, 0);
+        return;
+    }
+
     if(!hasMult){
         computeMult();
     }
@@ -153,6 +166,11 @@ void Toep::solve(double* x){
         return;
     }
 
+    if(acf_is_0){
+        cout << "illegal to inverse a zero matrix" << endl;
+        return;
+    }
+
     if(!hasInv){
         computeInv();
     }
@@ -192,6 +210,12 @@ void Toep::detCheck(){
         cout << "Please input acf" << endl;
         return;
     }
+
+    if(acf_is_0){
+        cout << "determinant of a zero matrix is 0" << endl;
+        return;
+    }
+
     if(!hasInv){
         computeInv();
     }
@@ -205,6 +229,19 @@ void Toep::traceProd(double* acf2){
         cout << "Please input acf" << endl;
         return;
     }
+
+    if(acf_is_0){
+        cout << "illegal to inverse a zero matrix" << endl;
+        return;
+    }
+
+    bool acf2_is_0;
+    TestZero(acf2, n, acf2_is_0);
+    if(acf2_is_0){
+        trace = 0;
+        return;
+    }
+
     if(!hasInv){
         computeInv();
     }
@@ -251,6 +288,20 @@ void Toep::traceDerv(double* acf2, double* acf3){
         cout << "Please input acf" << endl;
         return;
     }
+
+    if(acf_is_0){
+        cout << "illegal to inverse a zero matrix" << endl;
+        return;
+    }
+
+    bool acf2_is_0, acf3_is_0;
+    TestZero(acf2, n, acf2_is_0);    
+    TestZero(acf3, n, acf3_is_0);
+    if(acf2_is_0 | acf3_is_0){
+        trace2 = 0;
+        return;
+    }
+
     if(!hasInv){
         computeInv();
     }

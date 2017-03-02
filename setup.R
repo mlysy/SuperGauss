@@ -8,7 +8,7 @@ require(Rcpp)
 require(devtools)
 
 compileAttributes() # regenerates Rcpp interface (i.e., RcppExports)
-document()
+#document()
 install() # installs the package
 # build() # builds a tar.gz file
 
