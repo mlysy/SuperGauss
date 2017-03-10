@@ -20,8 +20,6 @@ fbm.acf.SGtest <- function(H, dT, N, incr = TRUE){
    ans
 }
 
-d.fbm.acf.SGtest <- function(H, dT, N, incr = TRUE)
-
 exp2.acf.SGtest <- function(lambda, dT, N, incr = TRUE) {
   # process autocorrelation
   gam <- exp(-(0:N*dT/lambda)^2)
@@ -65,30 +63,34 @@ matern.acf.SGtest <- function(lambda, nu, dT, N, incr = TRUE) {
 }
 
 acf.get.SGtest <- function(N, type, dT, incr = TRUE){
-  lambda <- abs(rnorm(n = 1, mean = 3, sd = 1))
-  H <- runif(n = 1)
-  nu <- ceiling(runif(n = 1) * 4)
+  lambda <- 3.3
+  H <- 0.4
+  nu <- 3
   if(type == "exp2"){
-    exp2.acf(lambda, dT, N, incr)
+    acf <- exp2.acf.SGtest(lambda, dT, N, incr)
   }
   if(type == "exp"){
-    exp.acf(lambda, dT, N, incr)
+    acf <- exp.acf.SGtest(lambda, dT, N, incr)
   }
   if(type == "fbm"){
-    fbm.acf(H, dT, N, incr)
+    acf <- fbm.acf.SGtest(H, dT, N, incr)
   }
   if(type == "martern"){
-    matern.acf(lambda, nu, dT, N, incr)
+    acf <- matern.acf.SGtest(lambda, nu, dT, N, incr)
   }
   if(type == "zero"){
-    rep(0, N)
+    acf <- rep(0, N)
   }
   if(type == "rnd"){
-    rnorm(N)
+    acf <- rnorm(N)
   }
+  if(!acf[1]){
+    acf <- acf / acf[1] 
+  }
+  acf
 }
 
-tr <- function(mat){
+trace <- function(mat){
   if(length(mat) == 1){
     as.numeric(mat)
   }else{

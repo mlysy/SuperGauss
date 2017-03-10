@@ -2,7 +2,7 @@
 
 // R wapper class
 
-class Toeplitz : private Toep 
+class Toeplitz_Cpp : private Toep 
 {
 private:
     int n_R;
@@ -13,10 +13,11 @@ private:
     double* x;
     double* vec;
 public:
-    Toeplitz(int);
-	~Toeplitz();
+    Toeplitz_Cpp(int);
+	~Toeplitz_Cpp();
     int dimCheck_R(); // wrapper for dimension check
 	void acfInput_R(NumericVector); // wapper for acfInput
+    Rcpp::NumericVector acfCheck_R(); 
     Rcpp::NumericMatrix mult_R(NumericMatrix); // wrapper for mult
     Rcpp::NumericMatrix mult_Vec(NumericVector);
     Rcpp::NumericMatrix solve_R(NumericMatrix); // wrapper for solve
@@ -26,7 +27,7 @@ public:
     double traceDerv_R(NumericVector, NumericVector); // traceDerv
 };
 
-Toeplitz::Toeplitz(int n_): Toep(n_)
+Toeplitz_Cpp::Toeplitz_Cpp(int n_): Toep(n_)
 {
     n_R = n_;
     acf = new double[n_R];
@@ -35,7 +36,7 @@ Toeplitz::Toeplitz(int n_): Toep(n_)
     x = new double[n_R];
 }
 
-Toeplitz::~Toeplitz()
+Toeplitz_Cpp::~Toeplitz_Cpp()
 {
     delete[] acf;
     delete[] acf2;
@@ -43,11 +44,12 @@ Toeplitz::~Toeplitz()
     delete[] x;
 }
 
-int Toeplitz::dimCheck_R(){
+
+int Toeplitz_Cpp::dimCheck_R(){
     return n_R;
 }
 
-void Toeplitz::acfInput_R(NumericVector acf_R){
+void Toeplitz_Cpp::acfInput_R(NumericVector acf_R){
     if(acf_R.size() != n_R){
         cout << "non-conformable arguments" << endl;
         return;
@@ -57,7 +59,13 @@ void Toeplitz::acfInput_R(NumericVector acf_R){
     return;
 }
 
-NumericMatrix Toeplitz::mult_R(NumericMatrix x_R){
+NumericVector Toeplitz_Cpp::acfCheck_R(){
+    NumericVector acf_R(n_R);
+    std::copy(acf, acf + n_R, acf_R.begin());
+    return acf_R;
+}
+
+NumericMatrix Toeplitz_Cpp::mult_R(NumericMatrix x_R){
     if(x_R.nrow() != n_R) {
         cout << "non-conformable arguments" << endl;
         return NumericMatrix();
@@ -73,7 +81,7 @@ NumericMatrix Toeplitz::mult_R(NumericMatrix x_R){
     return Mult_R;
 }
 
-NumericMatrix Toeplitz::mult_Vec(NumericVector x_R){
+NumericMatrix Toeplitz_Cpp::mult_Vec(NumericVector x_R){
     if(x_R.size() != n_R) {
         cout << "non-conformable arguments" << endl;
         return NumericMatrix();
@@ -86,7 +94,7 @@ NumericMatrix Toeplitz::mult_Vec(NumericVector x_R){
     return Mult_R;
 }
 
-NumericMatrix Toeplitz::solve_R(NumericMatrix x_R){
+NumericMatrix Toeplitz_Cpp::solve_R(NumericMatrix x_R){
     if(x_R.nrow() != n_R) {
         cout << "non-conformable arguments" << endl;
         return NumericMatrix();
@@ -101,7 +109,7 @@ NumericMatrix Toeplitz::solve_R(NumericMatrix x_R){
     return Mult_R;
 }
 
-NumericMatrix Toeplitz::solve_Vec(NumericVector x_R){
+NumericMatrix Toeplitz_Cpp::solve_Vec(NumericVector x_R){
     if(x_R.size() != n_R) {
         cout << "non-conformable arguments" << endl;
         return NumericMatrix();
@@ -114,7 +122,7 @@ NumericMatrix Toeplitz::solve_Vec(NumericVector x_R){
 }
 
 // return the determinant
-double Toeplitz::det_R() {
+double Toeplitz_Cpp::det_R() {
     double Det_R;
     detCheck();
     Det_R = det;
@@ -122,7 +130,7 @@ double Toeplitz::det_R() {
 }
 
 // return the TraceProd result
-double Toeplitz::traceProd_R(NumericVector acf2_R)
+double Toeplitz_Cpp::traceProd_R(NumericVector acf2_R)
 {
     if(acf2_R.size() != n_R)
     {
@@ -136,7 +144,7 @@ double Toeplitz::traceProd_R(NumericVector acf2_R)
     return Trace_R;
 }
 
-double Toeplitz::traceDerv_R(NumericVector acf2_R, NumericVector acf3_R){
+double Toeplitz_Cpp::traceDerv_R(NumericVector acf2_R, NumericVector acf3_R){
     if(!(acf2_R.size() == n_R & acf3_R.size() == n_R))
     {
         cout << "non-conformable acf2" << endl;
@@ -152,19 +160,20 @@ double Toeplitz::traceDerv_R(NumericVector acf2_R, NumericVector acf3_R){
 }
 
 // wrapper
-RCPP_MODULE(Toeplitz)
+RCPP_MODULE(Class_Toeplitz)
 {
-    class_<Toeplitz>("Toeplitz")
+    class_<Toeplitz_Cpp>("Toeplitz_Cpp")
     .constructor<int>()
-    .method("DimCheck", &Toeplitz::dimCheck_R)
-    .method("AcfInput", &Toeplitz::acfInput_R)
-    .method("Det", &Toeplitz::det_R)
-    .method("Solve", &Toeplitz::solve_R)
-    .method("SolveVec", &Toeplitz::solve_Vec)
-    .method("Mult", &Toeplitz::mult_R)
-    .method("MultVec", &Toeplitz::mult_Vec)
-    .method("TraceProd", &Toeplitz::traceProd_R)
-    .method("TraceDeriv", &Toeplitz::traceDerv_R)
+    .method("DimCheck", &Toeplitz_Cpp::dimCheck_R)
+    .method("AcfInput", &Toeplitz_Cpp::acfInput_R)
+    .method("AcfCheck", &Toeplitz_Cpp::acfCheck_R)
+    .method("Det", &Toeplitz_Cpp::det_R)
+    .method("Solve", &Toeplitz_Cpp::solve_R)
+    .method("SolveVec", &Toeplitz_Cpp::solve_Vec)
+    .method("Mult", &Toeplitz_Cpp::mult_R)
+    .method("MultVec", &Toeplitz_Cpp::mult_Vec)
+    .method("TraceProd", &Toeplitz_Cpp::traceProd_R)
+    .method("TraceDeriv", &Toeplitz_Cpp::traceDerv_R)
     ;
 }
 

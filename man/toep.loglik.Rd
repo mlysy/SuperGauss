@@ -9,4 +9,3 @@ toep.loglik(Beta, Sigma, suff, Y, X, V, acf, Toep = Toep)
 \description{
 Log-likelihood function for LMN models using Superfast Algorithm
 }
-

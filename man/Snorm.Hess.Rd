@@ -32,4 +32,3 @@ package "SuperGauss" is required
 
 if d2mean and d2acf is \code{n x 1} matrix or array, it only works when p = 1
 }
-

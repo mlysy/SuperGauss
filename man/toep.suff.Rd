@@ -59,4 +59,3 @@ If \code{npred > 0}, summary statistics are produced for the prediction of \code
 \deqn{y | Y ~ MNorm(Ap + Xp * Beta, Vp, Sigma).}
 \code{Xp = 0} indicates that \code{Beta = 0} is known.
 }
-

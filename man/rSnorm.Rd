@@ -24,4 +24,3 @@ Efficient simulation of a stationary Gaussian process from a given autocorrelati
 \details{
 TODO: Explain exactly what ncut and tol do.  Basically, acf can be made longer than needed, and ncut values of the time series are cut off the end.  tol is used to avoid roundoff error on tiny eigenvalues which makes them look negative, i.e., all negative eigenvalues which are less than a \code{tol} fraction of the maximum eigenvalue \code{evMax} are set to \code{tol * evMax}.
 }
-

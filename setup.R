@@ -2,13 +2,13 @@
 
 # for recompiling package
 # quit R, then setwd() to where setup.R is found. then:
-# setwd("D:/GitHub/SuperGauss")
+setwd("D:/GitHub/SuperGauss")
 
 require(Rcpp)
 require(devtools)
 
 compileAttributes() # regenerates Rcpp interface (i.e., RcppExports)
-#document()
+document()
 install() # installs the package
 # build() # builds a tar.gz file
 
@@ -55,3 +55,11 @@ cat("PKG_CXXFLAGS=-I\"C:/fftw\" `${R_HOME}/bin/Rscript -e \"Rcpp:::CxxFlags()\"`
 # install package
 cmd <- file.path(R.home(component = "bin"), paste0("R CMD INSTALL ", pkg.name))
 compiled <- system(cmd)
+
+
+#  ------------------------------------------------------------------------
+
+setwd("D:/GitHub/SuperGauss/tests/testthat")
+require(testthat)
+require(SuperGauss)
+source("SuperGauss-test-functions.R")
