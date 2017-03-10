@@ -14,6 +14,15 @@ build(vignettes = FALSE) # builds a tar.gz file
 
 # restart R before testing changes
 
+# build windows binary
+# NOTE: this will also install the package
+build(binary = TRUE)
+
+## pkg.path <- "c:/Users/Jerome/Documents/R/SuperGauss"
+## cmd <- file.path(R.home(component = "bin"),
+##                  paste0("R CMD INSTALL --build ", pkg.path))
+
+## compiled <- system(cmd)
 
 
 
