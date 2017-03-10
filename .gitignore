@@ -1,3 +1,4 @@
 *.Rhistory
 *.o
 *.dll
+*.Rd
