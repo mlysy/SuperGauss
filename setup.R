@@ -2,13 +2,13 @@
 
 # for recompiling package
 # quit R, then setwd() to where setup.R is found. then:
-# setwd("D:/GitHub/SuperGauss")
+setwd("D:/GitHub/SuperGauss")
 
 require(Rcpp)
 require(devtools)
 
 compileAttributes() # regenerates Rcpp interface (i.e., RcppExports)
-#document()
+document()
 install() # installs the package
 # build() # builds a tar.gz file
 
