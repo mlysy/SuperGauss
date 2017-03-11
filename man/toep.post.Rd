@@ -29,4 +29,3 @@ The MNIW distribution is parametrized as
 \deqn{Sigma ~ iWish(Psi, nu), \qquad Beta ~ MNorm(Lambda, Omega^{-1}, Sigma.}
 As this is a posterior distribution, the parameter always define a proper MNIW distribution.  \code{nu = NA} and \code{Omega = NA} respectively mean that \code{Beta = 0} or \code{Sigma = diag(q)} is known.
 }
-

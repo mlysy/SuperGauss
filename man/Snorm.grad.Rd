@@ -26,4 +26,3 @@ Efficient evaluation of log-likelihood gradient for stationary Gaussian data.
 \note{
 package "SuperGauss" is required
 }
-

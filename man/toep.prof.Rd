@@ -23,4 +23,3 @@ The model is defined as
 where MNorm is the Matrix-Normal distribution, i.e.
 \deqn{vec(Y) ~ N( vec(X*Beta), Sigma \otimes V ).}
 }
-

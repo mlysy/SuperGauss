@@ -9,4 +9,3 @@ Describe it.
 \examples{
 T <- new(Toeplitz, 10, 3)
 }
-

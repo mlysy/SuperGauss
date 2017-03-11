@@ -16,4 +16,3 @@ The log-determinant \code{log(det(V))}.
 Wrapper for the log-determinant of a matrix
 }
 \keyword{internal}
-
