@@ -4,9 +4,8 @@ context("Determinant")
 
 test_that("Toeplitz determinant", {
   N <- round(abs(rnorm(n = 1, mean = 50, sd = 10)))
-  acf <- 1:N
   Toep <- Toeplitz(N)
-  case.par <- expand.grid(type = c("exp", "exp2", "matern", "fbm"),
+  case.par <- expand.grid(type = c("exp", "exp2", "fbm", "matern"),
                           dT = c(1/60, 1/30, 1/15))
   ncase <- nrow(case.par)
   for(ii in 1:ncase){
@@ -17,7 +16,7 @@ test_that("Toeplitz determinant", {
     acf.mat <- toeplitz(acf)
     Toep.acf(Toep, acf)
     if(min(eigen(acf.mat)$values) > 0){
-      expect_equal(Toep.det(Toep), log(det(acf.mat)))
+      expect_equal(determinant(Toep), log(det(acf.mat)))
     }   
   }
 })

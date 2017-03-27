@@ -6,8 +6,8 @@ setRcppClass(Class = "Toeplitz_Cpp",
              module = "Class_Toeplitz",
              saveAs = ".Toeplitz")
 
-setMethod("Toep.det", "Toeplitz_Cpp", function(Toeplitz, logarithm = TRUE) {
-  ldT <- Toeplitz$Det()
+setMethod("determinant", "Toeplitz_Cpp", function(x, logarithm, ...) {
+  ldT <- x$Det()
   if(!logarithm){
     ldT <- exp(ldT)
   }
@@ -58,32 +58,32 @@ setMethod("%*%", "Toeplitz_Cpp", function(x, y){
 })
 
 
-setMethod("Toep.solve", "Toeplitz_Cpp", function(Toeplitz, x){
-  if(!(is.matrix(x) || is.vector(x))){
+setMethod("solve", "Toeplitz_Cpp", function(a, b, ...){
+  if(!(is.matrix(b) || is.vector(b))){
     stop("argument x should be either matrix or vector")
   }
 
-  if(is.matrix(x)){
-    if(nrow(x) == Toeplitz$DimCheck()){
-      mat <- Toeplitz$Solve(x)
+  if(is.matrix(b)){
+    if(nrow(b) == a$DimCheck()){
+      mat <- a$Solve(b)
     }
     else{
-      stop("incompatible dimension of x")
+      stop("incompatible dimension of b")
     }
   }
-  if(is.vector(x)){
-    if(length(x) == Toeplitz$DimCheck()){
-      mat <- Toeplitz$SolveVec(x)
+  if(is.vector(b)){
+    if(length(b) == a$DimCheck()){
+      mat <- a$SolveVec(b)
     }
     else{
-      stop("incompatible dimension of x")
+      stop("incompatible dimension of b")
     }
   }
   mat
 })
 
 
-setMethod("Toep.trace", "Toeplitz_Cpp", function(Toeplitz, acf1){
+setMethod("traceT2", "Toeplitz_Cpp", function(Toeplitz, acf1){
   if(!(is.matrix(acf1) || is.vector(acf1))){
     stop("argument acf1 should be either matrix or vector")
   }
@@ -93,7 +93,7 @@ setMethod("Toep.trace", "Toeplitz_Cpp", function(Toeplitz, acf1){
   Toeplitz$TraceProd(acf1)
 })
 
-setMethod("Toep.deriv", "Toeplitz_Cpp", function(Toeplitz, acf1, acf2){
+setMethod("traceT4", "Toeplitz_Cpp", function(Toeplitz, acf1, acf2){
   if(!(is.matrix(acf1) || is.vector(acf1))){
     stop("argument acf1 should be either matrix or vector")
   }

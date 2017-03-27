@@ -1,3 +1,6 @@
+# setwd("D:/GitHub/SuperGauss/tests/testthat")
+# library(testthat)
+
 acf2incr.SGtest <- function(gam) {
   N <- length(gam)-1
   if(N == 1) {
@@ -75,7 +78,7 @@ acf.get.SGtest <- function(N, type, dT, incr = TRUE){
   if(type == "fbm"){
     acf <- fbm.acf.SGtest(H, dT, N, incr)
   }
-  if(type == "martern"){
+  if(type == "matern"){
     acf <- matern.acf.SGtest(lambda, nu, dT, N, incr)
   }
   if(type == "zero"){

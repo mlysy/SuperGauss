@@ -13,22 +13,10 @@ Toeplitz <- function(n, acf){
 }
 
 #' @export
-Toep.det <- function(Toeplitz, logarithm = TRUE){}
-
-#' @export
-show <- function(object){}
-
-#' @export
 Toep.acf <- function(Toeplitz, acf){}
 
 #' @export
-Toep.solve <- function(Toeplitz, x){}
+traceT2 <- function(Toeplitz, acf1){}
 
 #' @export
-dim <- function(x){}
-
-#' @export
-Toep.trace <- function(Toeplitz, acf1){}
-
-#' @export
-Toep.deriv <- function(Toeplitz, acf1, acf2){}
+traceT4 <- function(Toeplitz, acf1, acf2){}

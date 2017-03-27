@@ -26,10 +26,10 @@ test_that("trace of inversion of Toeplitz times Toeplitz", {
     Toep.acf(Toep, acf)
     if(min(eigen(acf.mat)$values) > 0){
       acf.inv <- solve.default(acf.mat)
-      expect_equal(Toep.trace(Toep, acf0), trace(acf.inv %*% acf.mat0))
-      expect_equal(Toep.trace(Toep, acf1), trace(acf.inv %*% acf.mat1))
-      expect_equal(Toep.trace(Toep, acf2), trace(acf.inv %*% acf.mat2))
-      expect_equal(Toep.trace(Toep, acf3), trace(acf.inv %*% acf.mat3))
+      expect_equal(traceT2(Toep, acf0), trace(acf.inv %*% acf.mat0))
+      expect_equal(traceT2(Toep, acf1), trace(acf.inv %*% acf.mat1))
+      expect_equal(traceT2(Toep, acf2), trace(acf.inv %*% acf.mat2))
+      expect_equal(traceT2(Toep, acf3), trace(acf.inv %*% acf.mat3))
     }
   }
 })

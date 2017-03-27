@@ -28,10 +28,10 @@ test_that("derivative of trace of inversion of Toeplitz times Toeplitz", {
     Toep.acf(Toep, acf)
     if(min(eigen(acf.mat)$values) > 0){
       acf.inv <- solve.default(acf.mat)
-      expect_equal(Toep.deriv(Toep, acf0, acf1), trace(acf.inv %*% acf.mat0 %*% acf.inv %*% acf.mat1))
-      expect_equal(Toep.deriv(Toep, acf1, acf2), trace(acf.inv %*% acf.mat1 %*% acf.inv %*% acf.mat2))
-      expect_equal(Toep.deriv(Toep, acf2, acf3), trace(acf.inv %*% acf.mat2 %*% acf.inv %*% acf.mat3))
-      expect_equal(Toep.deriv(Toep, acf3, acf4), trace(acf.inv %*% acf.mat3 %*% acf.inv %*% acf.mat4)) 
+      expect_equal(traceT4(Toep, acf0, acf1), trace(acf.inv %*% acf.mat0 %*% acf.inv %*% acf.mat1))
+      expect_equal(traceT4(Toep, acf1, acf2), trace(acf.inv %*% acf.mat1 %*% acf.inv %*% acf.mat2))
+      expect_equal(traceT4(Toep, acf2, acf3), trace(acf.inv %*% acf.mat2 %*% acf.inv %*% acf.mat3))
+      expect_equal(traceT4(Toep, acf3, acf4), trace(acf.inv %*% acf.mat3 %*% acf.inv %*% acf.mat4)) 
     }
   }
 })

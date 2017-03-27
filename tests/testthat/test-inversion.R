@@ -21,10 +21,10 @@ test_that("Toeplitz-matrix inversion", {
     acf.mat <- toeplitz(acf)
     Toep.acf(Toep, acf)
     if(min(eigen(acf.mat)$values) > 0){
-      expect_equal(acf.mat %*% Toep.solve(Toep, X), X)
-      expect_equal(acf.mat %*% Toep.solve(Toep, zero), zero)
-      expect_equal(acf.mat %*% Toep.solve(Toep, Y), Y)
-      expect_equal(acf.mat %*% Toep.solve(Toep, Z), Z)
+      expect_equal(acf.mat %*% solve(Toep, X), X)
+      expect_equal(acf.mat %*% solve(Toep, zero), zero)
+      expect_equal(acf.mat %*% solve(Toep, Y), Y)
+      expect_equal(acf.mat %*% solve(Toep, Z), Z)
     }
   }
 })
