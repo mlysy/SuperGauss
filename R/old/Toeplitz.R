@@ -17,55 +17,6 @@ setRcppClass(Class = "Toeplitz_Cpp",
              saveAs = ".Toeplitz")
 
 
-#' @rdname Toeplitz-Class
-#' @param n Dimension of Toeplitz matrix.
-#' @param acf Autocorrelation of Toeplitz matrix, i.e., first row or column.
-#' @export
-Toeplitz <- function(n, acf){
-  if(missing(n)){
-    n <- length(acf)
-  }
-  T <- .Toeplitz$new(n)
-  if(!missing(acf)) {
-    T$AcfInput(acf)
-  }
-  ## if(missing(acf)){
-  ##   message("please use Toeplitz$setAcf to input the acf of Toeplitz variance")
-  ## } else{
-  ##   T$AcfInput(acf)
-  ## }
-  T
-}
-
-# display method
-setMethod("show", "Toeplitz_Cpp", function(object){
-  if(object$flag_acf()){
-    obj.acf <- c(round(object$acf[1:6], digits = 3), "...")
-  }else{
-    obj.acf <- "NULL"
-  }
-  cat("Toeplitz_Matrix object of size", object$DimCheck(), "\n",
-      "First row of Toeplitz matrix: ", obj.acf)
-})
-
-
-#' @rdname Toeplitz-Class
-#' @usage ncol(x)
-setMethod("ncol", "Toeplitz_Cpp", function(x){
-  x$DimCheck()
-})
-
-#' @rdname Toeplitz-Class
-#' @usage nrow(x)
-setMethod("nrow", "Toeplitz_Cpp", function(x){
-  x$DimCheck()
-})
-
-#' @rdname Toeplitz-Class
-#' @usage dim(x)
-setMethod("dim", "Toeplitz_Cpp", function(x){
-  rep(x$DimCheck(), 2)
-})
 
 
 #' @rdname Toeplitz-Class
@@ -94,8 +45,21 @@ setMethod("%*%", "Toeplitz_Cpp", function(x, y){
   mat
 })
 
+# display method
+setMethod("show", "Toeplitz_Cpp", function(object){
+  if(object$flag_acf()){
+    obj.acf <- c(round(object$acf[1:6], digits = 3), "...")
+  }else{
+    obj.acf <- "NULL"
+  }
+  cat("Toeplitz object of size", object$DimCheck(), "\n",
+      "First row of Toeplitz matrix: ", obj.acf)
+})
+
+
+
 #' @rdname Toeplitz-Class
-#' @usage determinant(x, logarithm = TRUE, ...)
+#' @usage determinant(T, logarithm = TRUE, ...)
 #' @param x A \code{Toeplitz_Matrix} object.
 #' @param logarithm Logical; whether the determinant should be calculated on the log scale.
 setMethod("determinant", "Toeplitz_Cpp",
@@ -135,3 +99,34 @@ setMethod("solve", "Toeplitz_Cpp", function(a, b){
   mat
 })
 
+# number of col of Toeplitz matrix
+setMethod("ncol", "Toeplitz_Cpp", function(x){
+  x$DimCheck()
+})
+
+# number of row of Toeplitz matrix
+setMethod("nrow", "Toeplitz_Cpp", function(x){
+  x$DimCheck()
+})
+
+# dimension of Toeplitz matrix
+setMethod("dim", "Toeplitz_Cpp", function(x){
+  rep(x$DimCheck(), 2)
+})
+
+#' @rdname Toeplitz-Class
+#' @param n Dimension of Toeplitz matrix.
+#' @param acf Autocorrelation of Toeplitz matrix, i.e., first row or column.
+#' @export
+Toeplitz <- function(n, acf){
+  if(missing(n)){
+    n <- length(acf)
+  }
+  T <- .Toeplitz$new(n)
+  if(missing(acf)){
+    message("please use Toeplitz$setAcf to input the acf of Toeplitz variance")
+  } else{
+    T$AcfInput(acf)
+  }
+  T
+}
