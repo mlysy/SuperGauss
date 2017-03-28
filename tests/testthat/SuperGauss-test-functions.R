@@ -77,23 +77,13 @@ acf.get.SGtest <- function(N, type, dT, incr = TRUE){
   }
   if(type == "fbm"){
     acf <- fbm.acf.SGtest(H, dT, N, incr)
-  }
-  if(type == "matern"){
+  }else{
     acf <- matern.acf.SGtest(lambda, nu, dT, N, incr)
-  }
-  if(type == "zero"){
-    acf <- rep(0, N)
-  }
-  if(type == "rnd"){
-    acf <- rnorm(N)
-  }
-  if(!acf[1]){
-    acf <- acf / acf[1] 
   }
   acf
 }
 
-trace <- function(mat){
+trace.SGtest <- function(mat){
   if(length(mat) == 1){
     as.numeric(mat)
   }else{

@@ -39,24 +39,24 @@ dSnorm <- function(X, mean, acf, Toep, log = FALSE){
   }
   
   if(missing(Toep)){
-    Toep <- new(Toeplitz, n)
+    Toep <- Toeplitz(n)
   } else{
-    if(class(Toep) != "Rcpp_Toeplitz"){
+    if(class(Toep) != "Toeplitz_Cpp"){
       stop("Toep should be of class \"Toeplitz\"")
     } else{
-      if(Toep$DimCheck() != n){
+      if(dim(Toep) != n){
         stop("Toep has incompatible dimension with X")
       }
     }
   } 
   
-  Toep$AcfInput(acf)
+  Toep$setAcf(acf)
   X <- X - mean
   density <- rep(NA, d)
   for(ii in 1:d){
-    density[ii] <- crossprod(X[, ii], Toep$SolveVec(X[, ii]))
+    density[ii] <- crossprod(X[, ii], solve(Toep, X[, ii]))
   }
-  density <- density + n * log(2*pi) + Toep$Det()
+  density <- density + n * log(2*pi) + determinant(Toep)
   density <- density / -2
   if(log){
     density

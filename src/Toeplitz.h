@@ -41,7 +41,6 @@ class Toep {
 
 	// Flag controling the inner loop
 	bool hasMult;
-	bool hasAcf;
 	bool hasInv;
 	bool acf_is_0;
 	
@@ -57,6 +56,9 @@ public:
 
 	// input the acf
 	void acfInput(double*);
+
+	// flag for acf_input
+	bool hasAcf;
 
 	// Toeplitz * vector
 	void computeMult(); // controled by hasMult, if hasMult = F, run this ,otherwise skip

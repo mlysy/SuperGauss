@@ -10,21 +10,13 @@ test_that("Toeplitz-matrix inversion", {
                           dT = c(1/60, 1/30, 1/15))
   ncase <- nrow(case.par)
   X <- matrix(rnorm(N * d), N, d)
-  zero <- matrix(0, N, d)
-  Y <- matrix(rnorm(N * d), N, d) * 1e4
-  Z <- matrix(rnorm(N * d), N, d) * 1e-4
   for(ii in 1:ncase){
     cp <- case.par[ii, ]
     type <- as.character(cp$type)
     dT <- cp$dT
     acf <- acf.get.SGtest(N, type, dT)
     acf.mat <- toeplitz(acf)
-    Toep.acf(Toep, acf)
-    if(min(eigen(acf.mat)$values) > 0){
-      expect_equal(acf.mat %*% solve(Toep, X), X)
-      expect_equal(acf.mat %*% solve(Toep, zero), zero)
-      expect_equal(acf.mat %*% solve(Toep, Y), Y)
-      expect_equal(acf.mat %*% solve(Toep, Z), Z)
-    }
+    Toep$setAcf(acf)
+    expect_equal(acf.mat %*% solve(Toep, X), X, tolerance = 1e-6)
   }
 })

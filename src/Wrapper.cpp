@@ -15,9 +15,10 @@ private:
 public:
     Toeplitz_Cpp(int);
 	~Toeplitz_Cpp();
+    Rcpp::NumericVector acf_Num;
     int dimCheck_R(); // wrapper for dimension check
+    bool has_acf_R(); // flag for whether acf is input
 	void acfInput_R(NumericVector); // wapper for acfInput
-    Rcpp::NumericVector acfCheck_R(); 
     Rcpp::NumericMatrix mult_R(NumericMatrix); // wrapper for mult
     Rcpp::NumericMatrix mult_Vec(NumericVector);
     Rcpp::NumericMatrix solve_R(NumericMatrix); // wrapper for solve
@@ -34,6 +35,7 @@ Toeplitz_Cpp::Toeplitz_Cpp(int n_): Toep(n_)
     acf2 = new double[n_R];
     acf3 = new double[n_R];
     x = new double[n_R];
+    acf_Num = NumericVector (n_R);
 }
 
 Toeplitz_Cpp::~Toeplitz_Cpp()
@@ -49,20 +51,19 @@ int Toeplitz_Cpp::dimCheck_R(){
     return n_R;
 }
 
+bool Toeplitz_Cpp::has_acf_R(){
+    return hasAcf;
+}
+
 void Toeplitz_Cpp::acfInput_R(NumericVector acf_R){
     if(acf_R.size() != n_R){
         cout << "non-conformable arguments" << endl;
         return;
     }
     std::copy(acf_R.begin(), acf_R.end(), acf);
+    std::copy(acf_R.begin(), acf_R.end(), acf_Num.begin());
     acfInput(acf);
     return;
-}
-
-NumericVector Toeplitz_Cpp::acfCheck_R(){
-    NumericVector acf_R(n_R);
-    std::copy(acf, acf + n_R, acf_R.begin());
-    return acf_R;
 }
 
 NumericMatrix Toeplitz_Cpp::mult_R(NumericMatrix x_R){
@@ -164,16 +165,17 @@ RCPP_MODULE(Class_Toeplitz)
 {
     class_<Toeplitz_Cpp>("Toeplitz_Cpp")
     .constructor<int>()
+    .field("acf", &Toeplitz_Cpp::acf_Num)
     .method("DimCheck", &Toeplitz_Cpp::dimCheck_R)
-    .method("AcfInput", &Toeplitz_Cpp::acfInput_R)
-    .method("AcfCheck", &Toeplitz_Cpp::acfCheck_R)
+    .method("flag_acf", &Toeplitz_Cpp::has_acf_R)
+    .method("setAcf", &Toeplitz_Cpp::acfInput_R)
     .method("Det", &Toeplitz_Cpp::det_R)
     .method("Solve", &Toeplitz_Cpp::solve_R)
     .method("SolveVec", &Toeplitz_Cpp::solve_Vec)
     .method("Mult", &Toeplitz_Cpp::mult_R)
     .method("MultVec", &Toeplitz_Cpp::mult_Vec)
-    .method("TraceProd", &Toeplitz_Cpp::traceProd_R)
-    .method("TraceDeriv", &Toeplitz_Cpp::traceDerv_R)
+    .method("traceT2", &Toeplitz_Cpp::traceProd_R)
+    .method("traceT4", &Toeplitz_Cpp::traceDerv_R)
     ;
 }
 

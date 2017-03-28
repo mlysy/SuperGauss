@@ -14,9 +14,7 @@ test_that("Toeplitz determinant", {
     dT <- cp$dT
     acf <- acf.get.SGtest(N, type, dT)
     acf.mat <- toeplitz(acf)
-    Toep.acf(Toep, acf)
-    if(min(eigen(acf.mat)$values) > 0){
-      expect_equal(determinant(Toep), log(det(acf.mat)))
-    }   
+    Toep$setAcf(acf)
+    expect_equal(determinant(Toep, logarithm = FALSE), det(acf.mat), tolerance = 1e-6)
   }
 })
