@@ -13,19 +13,20 @@ private:
     double* x;
     double* vec;
 public:
-    Toeplitz_Cpp(int);
-	~Toeplitz_Cpp();
-    Rcpp::NumericVector acf_Num;
-    int dimCheck_R(); // wrapper for dimension check
-    bool has_acf_R(); // flag for whether acf is input
-	void acfInput_R(NumericVector); // wapper for acfInput
-    Rcpp::NumericMatrix mult_R(NumericMatrix); // wrapper for mult
-    Rcpp::NumericMatrix mult_Vec(NumericVector);
-    Rcpp::NumericMatrix solve_R(NumericMatrix); // wrapper for solve
-    Rcpp::NumericMatrix solve_Vec(NumericVector);
-    double det_R(); // wrapper returns the determinant of Toeplitz matrix
-	double traceProd_R(NumericVector); // traceProd
-    double traceDerv_R(NumericVector, NumericVector); // traceDerv
+  Toeplitz_Cpp(int);
+  ~Toeplitz_Cpp();
+  //Rcpp::NumericVector acf_Num;
+  int dimCheck_R(); // wrapper for dimension check
+  bool has_acf_R(); // flag for whether acf is input
+  void acfInput_R(NumericVector); // wapper for acfInput
+  Rcpp::NumericVector acfOutput_R(); // wrapper for acfOutput
+  Rcpp::NumericMatrix mult_R(NumericMatrix); // wrapper for mult
+  Rcpp::NumericMatrix mult_Vec(NumericVector);
+  Rcpp::NumericMatrix solve_R(NumericMatrix); // wrapper for solve
+  Rcpp::NumericMatrix solve_Vec(NumericVector);
+  double det_R(); // wrapper returns the determinant of Toeplitz matrix
+  double traceProd_R(NumericVector); // traceProd
+  double traceDerv_R(NumericVector, NumericVector); // traceDerv
 };
 
 Toeplitz_Cpp::Toeplitz_Cpp(int n_): Toep(n_)
@@ -35,7 +36,7 @@ Toeplitz_Cpp::Toeplitz_Cpp(int n_): Toep(n_)
     acf2 = new double[n_R];
     acf3 = new double[n_R];
     x = new double[n_R];
-    acf_Num = NumericVector (n_R);
+    //acf_Num = NumericVector (n_R);
 }
 
 Toeplitz_Cpp::~Toeplitz_Cpp()
@@ -61,9 +62,18 @@ void Toeplitz_Cpp::acfInput_R(NumericVector acf_R){
         return;
     }
     std::copy(acf_R.begin(), acf_R.end(), acf);
-    std::copy(acf_R.begin(), acf_R.end(), acf_Num.begin());
+    //std::copy(acf_R.begin(), acf_R.end(), acf_Num.begin());
     acfInput(acf);
     return;
+}
+
+NumericVector Toeplitz_Cpp::acfOutput_R(){
+  if(!hasAcf) {
+    return R_NilValue;
+  }
+  NumericVector acf_R(n_R);
+  std::copy(acf, acf+n_R, acf_R.begin());
+  return acf_R;
 }
 
 NumericMatrix Toeplitz_Cpp::mult_R(NumericMatrix x_R){
@@ -165,10 +175,11 @@ RCPP_MODULE(Toeplitz_Class)
 {
     class_<Toeplitz_Cpp>("Toeplitz_Cpp")
     .constructor<int>()
-    .field("acf", &Toeplitz_Cpp::acf_Num)
+      //.field("acf", &Toeplitz_Cpp::acf_Num)
     .method("DimCheck", &Toeplitz_Cpp::dimCheck_R)
     .method("flag_acf", &Toeplitz_Cpp::has_acf_R)
     .method("setAcf", &Toeplitz_Cpp::acfInput_R)
+    .method("getAcf", &Toeplitz_Cpp::acfOutput_R)
     .method("Det", &Toeplitz_Cpp::det_R)
     .method("Solve", &Toeplitz_Cpp::solve_R)
     .method("SolveVec", &Toeplitz_Cpp::solve_Vec)

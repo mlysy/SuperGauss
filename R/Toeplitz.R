@@ -33,29 +33,24 @@ Toeplitz <- function(n, acf){
   if(missing(n)){
     n <- length(acf)
   }
-  T <- .Toeplitz$new(n)
+  Tz <- .Toeplitz$new(n)
   if(!missing(acf)) {
-    T$setAcf(acf)
+    Tz$setAcf(acf)
   }
-  ## if(missing(acf)){
-  ##   message("please use Toeplitz$setAcf to input the acf of Toeplitz variance")
-  ## } else{
-  ##   T$AcfInput(acf)
-  ## }
-  T
+  Tz
 }
 
 # show method
 setMethod("show", "Toeplitz_Matrix", function(object){
   if(object$flag_acf()){
-    obj.acf <- object$acf[1:min(6, object$DimCheck())]
+    obj.acf <- object$getAcf()[1:min(6, object$DimCheck())]
     obj.acf <- round(obj.acf, digits = 3)
     if(length(obj.acf) > 6) obj.acf <- c(obj.acf, "...")
   }else{
     obj.acf <- "NULL"
   }
-  cat("Toeplitz_Matrix object of size", object$DimCheck(), "\n",
-      "First row of matrix (ACF): ", obj.acf, "\n")
+  cat("Toeplitz_Matrix of size", object$DimCheck(), "\n",
+      "ACF: ", obj.acf, "\n")
 })
 
 
