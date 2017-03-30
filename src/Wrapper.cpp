@@ -2,7 +2,7 @@
 
 // R wapper class
 
-class Toeplitz_Cpp : private Toep 
+class Toeplitz_Cpp : private Toep
 {
 private:
     int n_R;
@@ -99,7 +99,7 @@ NumericMatrix Toeplitz_Cpp::solve_R(NumericMatrix x_R){
     if(x_R.nrow() != n_R) {
         cout << "non-conformable arguments" << endl;
         return NumericMatrix();
-    } 
+    }
     int d_R = x_R.ncol();
     NumericMatrix Mult_R(n_R, d_R);
     for(int ii = 0; ii < d_R; ii++){
@@ -114,7 +114,7 @@ NumericMatrix Toeplitz_Cpp::solve_Vec(NumericVector x_R){
     if(x_R.size() != n_R) {
         cout << "non-conformable arguments" << endl;
         return NumericMatrix();
-    } 
+    }
     NumericMatrix Mult_R(n_R, 1);
     std::copy(x_R.begin(), x_R.end(), x);
     solve(x);
@@ -161,7 +161,7 @@ double Toeplitz_Cpp::traceDerv_R(NumericVector acf2_R, NumericVector acf3_R){
 }
 
 // wrapper
-RCPP_MODULE(Class_Toeplitz)
+RCPP_MODULE(Toeplitz_Class)
 {
     class_<Toeplitz_Cpp>("Toeplitz_Cpp")
     .constructor<int>()

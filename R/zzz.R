@@ -1,1 +1,1 @@
-loadModule("Class_Toeplitz", TRUE)
+loadModule("Toeplitz_Class", TRUE)
