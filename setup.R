@@ -12,7 +12,7 @@ require(devtools)
 compileAttributes(pkgdir = pkg.path)
 document(pkg = pkg.path)
 install(pkg = pkg.path) # installs the package
-# build() # builds a tar.gz file
+build(pkg = pkg.path) # builds a tar.gz file
 
 # restart R before testing changes
 testthat::test_package("SuperGauss")
