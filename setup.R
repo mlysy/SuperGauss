@@ -1,18 +1,30 @@
 #--- setup for Toeplitz package --------------------------------------------
 
 # for recompiling package
+<<<<<<< HEAD
 # first quit R, then setwd() to where setup.R is found. then:
 # pkg.path <- "D:/GitHub/SuperGauss"
 pkg.path <- "c:/Users/Jerome/Documents/R/SuperGauss"
+=======
+# quit R, then setwd() to where setup.R is found. then:
+setwd("D:/GitHub/SuperGauss")
+>>>>>>> origin/master
 
 require(Rcpp)
 require(devtools)
 
+<<<<<<< HEAD
 # regenerates Rcpp interface (i.e., RcppExports)
 compileAttributes(pkgdir = pkg.path)
 document(pkg = pkg.path)
 install(pkg = pkg.path) # installs the package
 build(pkg = pkg.path) # builds a tar.gz file
+=======
+compileAttributes() # regenerates Rcpp interface (i.e., RcppExports)
+document()
+install() # installs the package
+# build() # builds a tar.gz file
+>>>>>>> origin/master
 
 # restart R before testing changes
 testthat::test_package("SuperGauss")
