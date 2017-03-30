@@ -1,21 +1,36 @@
-#--- setup for Toeplitz package -------------------------------------------------
+#--- setup for Toeplitz package --------------------------------------------
 
 # for recompiling package
-# quit R, then setwd() to where setup.R is found. then:
-# setwd("D:/GitHub/SuperGauss")
+# first quit R, then setwd() to where setup.R is found. then:
+# pkg.path <- "D:/GitHub/SuperGauss"
+pkg.path <- "c:/Users/Jerome/Documents/R/SuperGauss"
 
 require(Rcpp)
 require(devtools)
 
-compileAttributes() # regenerates Rcpp interface (i.e., RcppExports)
-document()
-install() # installs the package
-# build() # builds a tar.gz file
+# regenerates Rcpp interface (i.e., RcppExports)
+compileAttributes(pkgdir = pkg.path)
+document(pkg = pkg.path)
+install(pkg = pkg.path) # installs the package
+build(pkg = pkg.path) # builds a tar.gz file
 
 # restart R before testing changes
+testthat::test_package("SuperGauss")
+
+build(pkg = pkg.path)
+
+# build windows binary
+# NOTE: this will also install the package
+build(binary = TRUE)
+
+pkg.path <- "c:/Users/Jerome/Documents/R/test/fftw"
+cmd <- file.path(R.home(component = "bin"),
+                 paste0("R CMD INSTALL ", pkg.path))
+compiled <- system(cmd)
 
 
 # First Time Installation -------------------------------------------------
+
 # setwd("D:/GitHub/SuperGauss")
 require(Rcpp)
 require(RcppEigen)
@@ -53,3 +68,11 @@ cat("PKG_CXXFLAGS=-I\"C:/fftw\" `${R_HOME}/bin/Rscript -e \"Rcpp:::CxxFlags()\"`
 # install package
 cmd <- file.path(R.home(component = "bin"), paste0("R CMD INSTALL ", pkg.name))
 compiled <- system(cmd)
+
+
+#---------------------------------------------------------------------------
+
+setwd("D:/GitHub/SuperGauss/tests/testthat")
+require(testthat)
+require(SuperGauss)
+source("SuperGauss-test-functions.R")

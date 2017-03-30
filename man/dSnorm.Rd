@@ -25,4 +25,3 @@ package "SuperGauss" is required
 
 When input {X, mean, acf} data type can be either vector or matrix, if vector, convert it into \code{n x 1} matrix
 }
-

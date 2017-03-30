@@ -47,12 +47,12 @@ Snorm.Hess <- function(X, mean, acf, dmean, dacf, d2mean, d2acf, Toep, debug = F
   }
   
   if(missing(Toep)){
-    Toep <- new(Toeplitz, n)
+    Toep <- Toeplitz(n)
   } else{
-    if(class(Toep) != "Rcpp_Toeplitz"){
+    if(class(Toep) != "Toeplitz_Cpp"){
       stop("Toep should be of class \"Toeplitz\"")
     } else{
-      if(Toep$DimCheck() != n){
+      if(dim(Toep) != n){
         stop("Toep has incompatible dimension with X")
       }
     }
@@ -112,33 +112,33 @@ Snorm.Hess <- function(X, mean, acf, dmean, dacf, d2mean, d2acf, Toep, debug = F
     }
   }
   
-  Toep$AcfInput(acf)
+  Toep$setAcf(acf)
   X <- X - mean
-  SigX <- Toep$Solve(X)     # stores Sigma^-1 * X
+  SigX <- solve(Toep, X)     # stores Sigma^-1 * X
   hess <- matrix(NA, p, p)
   SigMu <- matrix(NA, n, p) # stores Sigma^-1 * Mean_i
   for(ii in 1:p){
-    SigMu[,ii] <- Toep$SolveVec(dmean[, ii])
+    SigMu[,ii] <- solve(Toep, dmean[, ii])
   }
   Sig2X <- matrix(NA, n, p) # stores Sigma_i * SigX
   for(ii in 1:p){
-    Toep$AcfInput(dacf[, ii])
-    Sig2X[, ii] <- Toep$Mult(SigX)
+    Toep$setAcf(dacf[, ii])
+    Sig2X[, ii] <- Toep %*% SigX
   }
   Sigd2X <- matrix(NA, p, p) # stores SigX' * Sigma_ij * SigX
   for(ii in 1:p){
     for(jj in ii:p){ # symmetric hessian matrix
-      Toep$AcfInput(d2acf[, ii, jj])
-      Sigd2X[ii, jj] <- crossprod(SigX, Toep$Mult(SigX))
+      Toep$setAcf(d2acf[, ii, jj])
+      Sigd2X[ii, jj] <- crossprod(SigX, Toep %*% SigX)
     }
   }
-  Toep$AcfInput(acf)
+  Toep$setAcf(acf)
   for(ii in 1:p){
     for(jj in ii:p){ # symmetric hessian matrix
       hess[ii, jj] <- crossprod(d2mean[, ii, jj], SigX) - crossprod(SigMu[,ii], Sig2X[, jj]) -
-        crossprod(SigMu[,jj], Sig2X[, ii]) - crossprod(dmean[, ii], Toep$SolveVec(dmean[, jj])) -
-        crossprod(Sig2X[, jj], Toep$SolveVec(Sig2X[, ii])) - Toep$TraceProd(d2acf[, ii, jj]) / 2 +
-        Toep$TraceDeriv(dacf[, jj], dacf[, ii]) / 2
+        crossprod(SigMu[,jj], Sig2X[, ii]) - crossprod(dmean[, ii], solve(Toep, dmean[, jj])) -
+        crossprod(Sig2X[, jj], solve(Toep, Sig2X[, ii])) - Toep$traceT2(d2acf[, ii, jj]) / 2 +
+        Toep$traceT4(dacf[, jj], dacf[, ii]) / 2
     }
   }
   hess <- hess + Sigd2X / 2

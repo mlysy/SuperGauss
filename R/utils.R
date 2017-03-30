@@ -1,7 +1,7 @@
-#' Wrapper for the log-determinant of a matrix
-#' @param V A square matrix.
-#' @return The log-determinant \code{log(det(V))}.
-#' @keywords internal
+# Wrapper for the log-determinant of a matrix
+# @param V A square matrix.
+# @return The log-determinant \code{log(det(V))}.
+# @keywords internal
 ldet <- function(V) {
   determinant(V, log = TRUE)$mod[1]
 }

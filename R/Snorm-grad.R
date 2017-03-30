@@ -43,12 +43,12 @@ Snorm.grad <- function(X, mean, acf, dmean, dacf, Toep, debug = FALSE){
   }
   
   if(missing(Toep)){
-    Toep <- new(Toeplitz, n)
+    Toep <- Toeplitz(n)
   } else{
-    if(class(Toep) != "Rcpp_Toeplitz"){
+    if(class(Toep) != "Toeplitz_Cpp"){
       stop("Toep should be of class \"Toeplitz\"")
     } else{
-      if(Toep$DimCheck() != n){
+      if(dim(Toep) != n){
         stop("Toep has incompatible dimension with X")
       }
     }
@@ -76,17 +76,17 @@ Snorm.grad <- function(X, mean, acf, dmean, dacf, Toep, debug = FALSE){
     }
   }
   
-  Toep$AcfInput(acf)
+  Toep$setAcf(acf)
   X <- X - mean
-  SigX <- Toep$Solve(X)
+  SigX <- solve(Toep, X)
   trace <- rep(NA, p)
   for(ii in 1:p){
-    trace[ii] <- Toep$TraceProd(dacf[, ii])
+    trace[ii] <- Toep$traceT2(dacf[, ii])
   }
   grad <- matrix(NA, p, 1)
   for(ii in 1:p){
-    Toep$AcfInput(dacf[, ii])
-    grad[ii] <- crossprod(dmean[, ii], SigX) + crossprod(SigX, Toep$Mult(SigX)) / 2
+    Toep$setAcf(dacf[, ii])
+    grad[ii] <- crossprod(dmean[, ii], SigX) + crossprod(SigX, Toep %*% SigX) / 2
   }
   grad <- grad - trace / 2
   grad
