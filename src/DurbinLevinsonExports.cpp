@@ -18,7 +18,7 @@ using namespace Rcpp;
 
 // different functions for X->Z and Z->X
 
-//[[Rcpp::export("toeplitzXZ")]]
+//[[Rcpp::export(".DurbinLevinsonXZ")]]
 Eigen::MatrixXd DurbinLevinson_XZ(Eigen::MatrixXd X, Eigen::VectorXd acf) {
   int n, k;
   n = acf.size();
@@ -38,7 +38,7 @@ Eigen::MatrixXd DurbinLevinson_XZ(Eigen::MatrixXd X, Eigen::VectorXd acf) {
   return(Z);
 }
 
-//[[Rcpp::export("toeplitzZX")]]
+//[[Rcpp::export(".DurbinLevinsonZX")]]
 Eigen::MatrixXd DurbinLevinson_ZX(Eigen::MatrixXd Z, Eigen::VectorXd acf) {
   int n, k;
   n = acf.size();
@@ -64,7 +64,7 @@ Eigen::MatrixXd DurbinLevinson_ZX(Eigen::MatrixXd Z, Eigen::VectorXd acf) {
 
 // Two versions: Eigen and Base.  Former is almost always faster.
 
-//[[Rcpp::export("DurbinLevinsonEigen")]]
+//[[Rcpp::export(".DurbinLevinsonEigen")]]
 Rcpp::List DurbinLevinson_Eigen(Eigen::MatrixXd X, Eigen::MatrixXd Y,
 				     Eigen::VectorXd acf,
 				     int calcMode = 1) {
@@ -87,11 +87,11 @@ Rcpp::List DurbinLevinson_Eigen(Eigen::MatrixXd X, Eigen::MatrixXd Y,
   if(calcMode != 1) {
     Yt = Y.transpose();
   }
-  DurbinLevisonEigen(M, ldV, Xt, Yt, acf, phi, phi2, rx, ry, calcMode);
+  DurbinLevinsonEigen(M, ldV, Xt, Yt, acf, phi, phi2, rx, ry, calcMode);
   return List::create(_["IP"] = wrap(M), _["ldV"] = wrap(ldV));
 }
 
-//[[Rcpp::export("DurbinLevinsonBase")]]
+//[[Rcpp::export(".DurbinLevinsonBase")]]
 Rcpp::List DurbinLevinson_Base(NumericMatrix X, NumericMatrix Y,
 			       NumericVector acf, int calcMode = 1) {
   int n, d, k;

@@ -16,7 +16,7 @@ using namespace Eigen;
 // Eigen version
 // NOTE: X and Y are passed as d x n and k x n matrices
 template <typename T1>
-void DurbinLevisonEigen(const Eigen::MatrixBase<T1>& M, double &ldV,
+void DurbinLevinsonEigen(const Eigen::MatrixBase<T1>& M, double &ldV,
         const Ref <const MatrixXd>& X, const Ref <const MatrixXd>& Y,
         const Ref <const VectorXd>& acf,
         Ref <VectorXd> phi, Ref <VectorXd> phi2,
