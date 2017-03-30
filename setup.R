@@ -17,6 +17,16 @@ install(pkg = pkg.path) # installs the package
 # restart R before testing changes
 testthat::test_package("SuperGauss")
 
+# build windows binary
+# NOTE: this will also install the package
+build(binary = TRUE)
+
+## pkg.path <- "c:/Users/Jerome/Documents/R/SuperGauss"
+## cmd <- file.path(R.home(component = "bin"),
+##                  paste0("R CMD INSTALL --build ", pkg.path))
+
+## compiled <- system(cmd)
+
 # First Time Installation -------------------------------------------------
 # setwd("D:/GitHub/SuperGauss")
 require(Rcpp)

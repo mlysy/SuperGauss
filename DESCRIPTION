@@ -1,10 +1,9 @@
 Package: SuperGauss
 Type: Package
 Title: Linear Algebra with Toeplitz Matrices
-Version: 0.0.1.9001
+Version: 0.0.1.9002
 Date: 2017-01-14
-Author: Yun Ling, Martin Lysy
-Maintainer: Yun Ling <y22ling@uwaterloo.ca>
+Authors@R: c(person("Yun", "Ling", email = "y22ling@uwaterloo.ca", role = c("aut", "cre")), person("Martin", "Lysy", email = "mlysy@uwaterloo.ca"))
 Description: R wrapper to a C++ library for linear algebra with positive-
     definite Toeplitz matrices. In particular, a "superfast" O(n log^2 n) solver
     for Toeplitz systems is provided, whereas the more common Levinson algorithm for
@@ -21,5 +20,5 @@ LinkingTo: Rcpp, RcppEigen
 Suggests: knitr, rmarkdown,
     testthat
 VignetteBuilder: knitr
-SystemRequirements: fftw library
 RoxygenNote: 6.0.1
+SystemRequirements: fftw3 (>= 3.1.2)
