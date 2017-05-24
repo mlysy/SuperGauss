@@ -2,7 +2,7 @@
 
 // R wapper class
 
-class Toeplitz_Cpp : private Toep
+class Toeplitz_Cpp : private Toeplitz
 {
 private:
     int n_R;
@@ -17,7 +17,6 @@ public:
   ~Toeplitz_Cpp();
   //Rcpp::NumericVector acf_Num;
   int dimCheck_R(); // wrapper for dimension check
-  bool has_acf_R(); // flag for whether acf is input
   void acfInput_R(NumericVector); // wapper for acfInput
   Rcpp::NumericVector acfOutput_R(); // wrapper for acfOutput
   Rcpp::NumericMatrix mult_R(NumericMatrix); // wrapper for mult
@@ -29,7 +28,7 @@ public:
   double traceDerv_R(NumericVector, NumericVector); // traceDerv
 };
 
-Toeplitz_Cpp::Toeplitz_Cpp(int n_): Toep(n_)
+Toeplitz_Cpp::Toeplitz_Cpp(int n_): Toeplitz(n_)
 {
     n_R = n_;
     acf = new double[n_R];
@@ -50,10 +49,6 @@ Toeplitz_Cpp::~Toeplitz_Cpp()
 
 int Toeplitz_Cpp::dimCheck_R(){
     return n_R;
-}
-
-bool Toeplitz_Cpp::has_acf_R(){
-    return hasAcf;
 }
 
 void Toeplitz_Cpp::acfInput_R(NumericVector acf_R){
@@ -177,7 +172,6 @@ RCPP_MODULE(Toeplitz_Class)
     .constructor<int>()
       //.field("acf", &Toeplitz_Cpp::acf_Num)
     .method("DimCheck", &Toeplitz_Cpp::dimCheck_R)
-    .method("flag_acf", &Toeplitz_Cpp::has_acf_R)
     .method("setAcf", &Toeplitz_Cpp::acfInput_R)
     .method("getAcf", &Toeplitz_Cpp::acfOutput_R)
     .method("Det", &Toeplitz_Cpp::det_R)
@@ -189,3 +183,5 @@ RCPP_MODULE(Toeplitz_Class)
     .method("traceT4", &Toeplitz_Cpp::traceDerv_R)
     ;
 }
+
+

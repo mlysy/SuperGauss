@@ -17,7 +17,7 @@ using namespace Eigen;
 // NOTE: inputs are transposed versions of algebra X and Z.  That is,
 // X and Z are m x n matrices, where n = length(acf).
 template <typename T1, typename T2>
-void DurbinLevinsonXZ(const Eigen::MatrixBase<T1>& X,
+inline void DurbinLevinsonXZ(const Eigen::MatrixBase<T1>& X,
         const Eigen::MatrixBase<T2>& Z,
         const Ref <const VectorXd>& acf,
         Ref <VectorXd> phi, Ref <VectorXd> phi2, Ref <VectorXd> res,
