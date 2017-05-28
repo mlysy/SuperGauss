@@ -9,12 +9,30 @@
 
 #include "VectorFFT.h"
 
+// convert integer to binary
+inline vector<int> int2Bin(int x, int base = 1){
+	vector<int> s;
+	int x1 = x / base;
+	int dif = x - x1 * base;
+	int M = base;
+	do{
+		if (x1 & 1){
+			s.push_back(M);
+		}
+		M <<= 1;
+	} while ((x1 >>= 1)>0);
+	reverse(s.begin(), s.end());
+	if (dif){
+		s.push_back(dif);
+	}
+	return s;
+}
+
 // defining classes
 //------------------------------------------------------
 
 // 3, generalized schur algorithm
-class GSchur
-{
+class GSchur2K{
 public:
 	   VectorFFT* alpha_FFT;
 	   VectorFFT* beta_FFT;
@@ -29,92 +47,14 @@ public:
 	   double* gamma;
 	   fftw_complex* eta_t;
 	   fftw_complex* xi_t;
-	   GSchur(int);
-	   ~GSchur();
+
+	   GSchur2K(int);
+	   ~GSchur2K();
 };
-
-//------------------------------------------------------
-
-// 4, InverseToeplitz
-class InverseToeplitz
-{
-	int n; // indicating the size of input
-	int base; // ideal base is 64
-    double* alpha;
-	double* beta;
-	vector<int> s;
-	GSchur** gs;
-	GSchur** gsM;
-	void Pschur(double*, double*, int);
-	void Gschur(double*, double*, int, int);
-	void GschurMerge();
-public:
-	InverseToeplitz(int, int);
-	~InverseToeplitz();
-	double* Phi;
-	double ldV;
-	void Inverse(double*);
-};
-
-//defining fundamential functions
-
-inline void CompMult(fftw_complex* y, fftw_complex* alpha, fftw_complex* beta, int n)
-{
-	for (int ii = 0; ii < n; ++ii)
-	{
-		y[ii][0] = alpha[ii][0] * beta[ii][0] - alpha[ii][1] * beta[ii][1];
-		y[ii][1] = alpha[ii][1] * beta[ii][0] + alpha[ii][0] * beta[ii][1];
-	}
-	return;
-}
-
-inline void CompMult_Minus(fftw_complex* y, fftw_complex* alpha, fftw_complex* beta, int n)
-{
-	for (int ii = 0; ii < n; ++ii)
-	{
-		y[ii][0] -= alpha[ii][0] * beta[ii][0] - alpha[ii][1] * beta[ii][1];
-		y[ii][1] -= alpha[ii][1] * beta[ii][0] + alpha[ii][0] * beta[ii][1];
-	}
-	return;
-}
-
-inline void CompMult_Plus(fftw_complex* y, fftw_complex* alpha, fftw_complex* beta, int n)
-{
-	for (int ii = 0; ii < n; ++ii)
-	{
-		y[ii][0] += alpha[ii][0] * beta[ii][0] - alpha[ii][1] * beta[ii][1];
-		y[ii][1] += alpha[ii][1] * beta[ii][0] + alpha[ii][0] * beta[ii][1];
-	}
-	return;
-}
-
-inline vector<int> intoBit(int x, int base = 1)
-{
-	vector<int> s;
-	int x1 = x / base;
-	int dif = x - x1 * base;
-	int M = base;
-	do
-	{
-		if (x1 & 1)
-		{
-			s.push_back(M);
-		}
-		M <<= 1;
-	} while ((x1 >>= 1)>0);
-	reverse(s.begin(), s.end());
-	if (dif) 
-	{
-		s.push_back(dif);
-	}
-	return s;
-}
-
 
 //--------------------------------------------------------------------------------------------------
-// constructor and destructor of class GSchur
-inline GSchur::GSchur(int M)
-{
+// constructor and destructor of class GSchur2K
+inline GSchur2K::GSchur2K(int M){
 	alpha_FFT = new VectorFFT(M);
 	beta_FFT = new VectorFFT(M);
 	eta_FFT = new VectorFFT(M);
@@ -131,8 +71,7 @@ inline GSchur::GSchur(int M)
 }
 
 
-inline GSchur::~GSchur()
-{
+inline GSchur2K::~GSchur2K(){
 	delete alpha_FFT;
 	delete beta_FFT;
 	delete eta_FFT;
@@ -147,64 +86,80 @@ inline GSchur::~GSchur()
 	fftw_free(eta_t);
 	fftw_free(xi_t);
 }
+//------------------------------------------------------
+
+// 4, GSchurN
+class GSchurN{
+	int n; // indicating the size of input
+	int base; // ideal base is 64
+    double* alpha;
+	double* beta;
+	vector<int> s;
+	GSchur2K** gs;
+	GSchur2K** gsM;
+
+	void alpha2Beta(GSchur2K*, int);
+	void GSchur_Merge(GSchur2K*, int);
+
+	void ProgStep(double*, double*, int);
+	void GenStep(double*, double*, int, int);
+	void GenStep_Merge();
+public:
+	GSchurN(int, int);
+	~GSchurN();
+	double* Phi;
+	double ldV;
+	void Compute(double*);
+};
 
 //---------------------------------------------------------------------------------------
-inline InverseToeplitz::InverseToeplitz(int n_, int base_)
-{
+inline GSchurN::GSchurN(int n_, int base_){
 	n = n_;
 	base = base_;
 	alpha = new double[n - 1];
 	beta = new double[n - 1];
-	s = intoBit(n - 1, base);
+	s = int2Bin(n - 1, base);
 	Phi = new double[n];
 	int jj = base;
-	gs = new GSchur*[(int)log2(ceil((double)s[0]/base)) + 1];
-	gs[0] = new GSchur(jj<<1);
-	for (int ii = 0; ii < (int)log2(ceil((double)s[0]/base)); ++ii)
-	{
-		gs[ii + 1] = new GSchur(jj<<1);
+	gs = new GSchur2K*[(int)log2(ceil((double)s[0]/base)) + 1];
+	gs[0] = new GSchur2K(jj<<1);
+	for (int ii = 0; ii < (int)log2(ceil((double)s[0]/base)); ++ii){
+		gs[ii + 1] = new GSchur2K(jj<<1);
 		jj <<= 1;
 	}
-	gsM = new GSchur*[s.size()];
-	for(int ii = 0; ii < (int)s.size(); ++ii)
-	{
-		gsM[ii] = new GSchur(s[ii]<<1);
+	gsM = new GSchur2K*[s.size()];
+	for(int ii = 0; ii < (int)s.size(); ++ii){
+		gsM[ii] = new GSchur2K(s[ii]<<1);
 	}
 }
 
-inline InverseToeplitz::~InverseToeplitz()
-{
+inline GSchurN::~GSchurN(){
     delete[] alpha;
 	delete[] beta;
 	delete[] Phi;
 
-	for (int ii = 0; ii < (int)s.size(); ++ii)
-	{
+	for (int ii = 0; ii < (int)s.size(); ++ii){
 		delete gsM[ii];
 	}
 	delete[] gsM;
 
-	for (int ii = 0; ii <= (int)log2(ceil((double)s[0]/base)); ++ii)
-	{
+	for (int ii = 0; ii <= (int)log2(ceil((double)s[0]/base)); ++ii){
 		delete gs[ii];
 	}
 	delete[] gs;	
 }
 
 //---------------------------------------------------------------------------------------
-// helper functions applied in GSchur and GSchurMerge
-
-// generate the alpham_IFFT and betam_IFFT used next, the size is M
+// helper functions applied in GSchur2K and GSchurMerge
+// generate the alpham_IFFT and betam_IFFT, the size is M
 // input of this function is gsr->alpha/beta/eta/xi_FFT->in
-inline void alpha_beta(GSchur* gsr, int M)
-{
+inline void GSchurN::alpha2Beta(GSchur2K* gsr, int M){
 	gsr->alpha_FFT->fft();
 	gsr->beta_FFT->fft();
 	gsr->eta_FFT->fft();
 	gsr->xi_FFT->fft();
 
-	for (int ii = 0; ii < M; ++ii)
-	{
+	for (int ii = 0; ii < M; ++ii){
 		gsr->eta_t[2 * ii][0] = gsr->eta_FFT->out[2 * ii][0];
 		gsr->eta_t[2 * ii][1] = -gsr->eta_FFT->out[2 * ii][1];
 		gsr->eta_t[2 * ii + 1][0] = -gsr->eta_FFT->out[2 * ii + 1][0];
@@ -217,26 +172,25 @@ inline void alpha_beta(GSchur* gsr, int M)
 	}
 	// ifft
 
-	CompMult(gsr->alpham_IFFT->in, gsr->alpha_FFT->out, gsr->eta_FFT->out, 2 * (M / 2 + 1));
-	CompMult_Minus(gsr->alpham_IFFT->in, gsr->xi_FFT->out, gsr->beta_FFT->out, 2 * (M / 2 + 1));
+	vecConv(gsr->alpham_IFFT->in, gsr->alpha_FFT->out, gsr->eta_FFT->out, 2 * (M / 2 + 1));
+	vecConv_Sub(gsr->alpham_IFFT->in, gsr->xi_FFT->out, gsr->beta_FFT->out, 2 * (M / 2 + 1));
 
-	CompMult(gsr->betam_IFFT->in, gsr->beta_FFT->out, gsr->eta_t, 2 * (M / 2 + 1));
-	CompMult_Minus(gsr->betam_IFFT->in, gsr->xi_t, gsr->alpha_FFT->out, 2 * (M / 2 + 1));
+	vecConv(gsr->betam_IFFT->in, gsr->beta_FFT->out, gsr->eta_t, 2 * (M / 2 + 1));
+	vecConv_Sub(gsr->betam_IFFT->in, gsr->xi_t, gsr->alpha_FFT->out, 2 * (M / 2 + 1));
 	gsr->alpham_IFFT->Ifft();
 	gsr->betam_IFFT->Ifft();
 }
 
 // merging the pervious xi/eta and current xi/eta
 // input is gsr->eta/xi_t, gsr->xi/eta_FFT->out, gsr->xi/eta_m_FFT->in, output is gsr->xi/eta_IFFT->out
-inline void Merge(GSchur* gsr, int M)
-{
+inline void GSchurN::GSchur_Merge(GSchur2K* gsr, int M){
 	gsr->xi_m_FFT->fft();
 	gsr->eta_m_FFT->fft();
-	CompMult(gsr->xi_IFFT->in, gsr->eta_t, gsr->xi_m_FFT->out, 2 * (M / 2 + 1));
-	CompMult_Plus(gsr->xi_IFFT->in, gsr->xi_FFT->out, gsr->eta_m_FFT->out, 2 * (M / 2 + 1));
+	vecConv(gsr->xi_IFFT->in, gsr->eta_t, gsr->xi_m_FFT->out, 2 * (M / 2 + 1));
+	vecConv_Add(gsr->xi_IFFT->in, gsr->xi_FFT->out, gsr->eta_m_FFT->out, 2 * (M / 2 + 1));
 		
-	CompMult(gsr->eta_IFFT->in, gsr->xi_t, gsr->xi_m_FFT->out, 2 * (M / 2 + 1));
-	CompMult_Plus(gsr->eta_IFFT->in, gsr->eta_FFT->out, gsr->eta_m_FFT->out, 2 * (M / 2 + 1));
+	vecConv(gsr->eta_IFFT->in, gsr->xi_t, gsr->xi_m_FFT->out, 2 * (M / 2 + 1));
+	vecConv_Add(gsr->eta_IFFT->in, gsr->eta_FFT->out, gsr->eta_m_FFT->out, 2 * (M / 2 + 1));
 
 	gsr->xi_IFFT->Ifft();
 	gsr->eta_IFFT->Ifft();
@@ -245,8 +199,7 @@ inline void Merge(GSchur* gsr, int M)
 //--------------------------------------------------------------------------------------------------
 // pschur function
 // the final result is stored in gs->gamma, ->eta_IFFT->out, ->xi_IFFT->out.
-inline void InverseToeplitz::Pschur(double* alpha0, double* beta0, int size)
-{
+inline void GSchurN::ProgStep(double* alpha0, double* beta0, int size){
 	// alpha_FFT->in, beta_FFT->in, xi_m_FFTPS->in, eta_m_FFT->in, xi_IFFT->out, eta_IFFT->out, gamma are n
 	std::fill(gs[0]->xi_m_FFT->in,  gs[0]->xi_m_FFT->in + 2*size, 0);
 	std::fill(gs[0]->eta_m_FFT->in, gs[0]->eta_m_FFT->in + 2*size, 0);
@@ -260,12 +213,10 @@ inline void InverseToeplitz::Pschur(double* alpha0, double* beta0, int size)
 	gs[0]->gamma[0] = xi1[0];
 	gs[0]->beta_FFT->in[0] = beta0[0] * (1 - xi1[0] * xi1[0]);
 
-	for (int kk = 1; kk < size; ++kk)
-	{
+	for (int kk = 1; kk < size; ++kk){
 		alpha_1 = alpha0[kk];
 		gs[0]->beta_FFT->in[kk] = beta0[kk];
-		for (int jj = 1; jj <= kk; ++jj)
-		{
+		for (int jj = 1; jj <= kk; ++jj){
 			alpha_0 = alpha_1 - gs[0]->gamma[jj - 1] * gs[0]->beta_FFT->in[kk - jj + 1];
 			gs[0]->beta_FFT->in[kk - jj + 1] -= gs[0]->gamma[jj - 1] * alpha_1;
 			alpha_1 = alpha_0;
@@ -275,8 +226,7 @@ inline void InverseToeplitz::Pschur(double* alpha0, double* beta0, int size)
 		
 		eta2[0] = 1.0;
         xi2[0] = alpha0[0]/beta0[0];		
-		for (int jj = 1; jj <= kk; ++jj)
-		{
+		for (int jj = 1; jj <= kk; ++jj){
 			xi2[jj] = xi1[jj] + gs[0]->gamma[kk] * eta1[kk - jj];
 			eta2[jj] = eta1[jj] + gs[0]->gamma[kk] *xi1[kk - jj];
 		}
@@ -297,19 +247,16 @@ inline void InverseToeplitz::Pschur(double* alpha0, double* beta0, int size)
 
 //gschur function
 // "size" is the size of input
-inline void InverseToeplitz::Gschur(double* alpha0, double* beta0, int size, int layer)
-{
-	if(size <= base)
-	{
-		Pschur(alpha0, beta0, size);
+inline void GSchurN::GenStep(double* alpha0, double* beta0, int size, int layer){
+	if(size <= base){
+		ProgStep(alpha0, beta0, size);
 		return;
 	}
 	
-    Pschur(alpha0, beta0, base);
+    ProgStep(alpha0, beta0, base);
 	
     int M = base;
-	for (int m = 0; m < layer; ++m)
-	{
+	for (int m = 0; m < layer; ++m){
 		//copying information from layer[m] to [m+1]
 		std::copy(alpha0, alpha0 + 2 * M, gs[m + 1]->alpha_FFT->in);
 		std::copy(beta0, beta0 + 2 * M, gs[m + 1]->beta_FFT->in);
@@ -318,10 +265,10 @@ inline void InverseToeplitz::Gschur(double* alpha0, double* beta0, int size, int
 		std::copy(gs[m]->xi_IFFT->out, gs[m]->xi_IFFT->out + M, gs[m + 1]->xi_FFT->in);
 
 		//generating alpham and betam
-		alpha_beta(gs[m + 1], M);
+		alpha2Beta(gs[m + 1], M);
 		//-----------------------------------------------------------------------------------------------
 		// returns in layer[m]
-		Gschur(gs[m + 1]->alpham_IFFT->out + M, gs[m + 1]->betam_IFFT->out + M, M, m);
+		GenStep(gs[m + 1]->alpham_IFFT->out + M, gs[m + 1]->betam_IFFT->out + M, M, m);
 		//-----------------------------------------------------------------------------------------------
 		//copying information from layer[m] to [m+1]
 		std::copy(gs[m]->gamma, gs[m]->gamma + M, gs[m + 1]->gamma + M);
@@ -329,7 +276,7 @@ inline void InverseToeplitz::Gschur(double* alpha0, double* beta0, int size, int
 		std::copy(gs[m]->eta_IFFT->out, gs[m]->eta_IFFT->out + M, gs[m + 1]->eta_m_FFT->in);
 
 		//merging xi and eta		
-		Merge(gs[m + 1], M);
+		GSchur_Merge(gs[m + 1], M);
 
 		M <<= 1;
 	}
@@ -339,12 +286,10 @@ inline void InverseToeplitz::Gschur(double* alpha0, double* beta0, int size, int
 //------------------------------------------------------------------------------------------------------------
 
 //gschur.merge function
-inline void InverseToeplitz::GschurMerge()
-{
+inline void GSchurN::GenStep_Merge(){
 	int layer = (int)log2(ceil((double)s[0]/base));
-	Gschur(alpha, beta, s[0], layer);
-	if(s.size() == 1)
-	{
+	GenStep(alpha, beta, s[0], layer);
+	if(s.size() == 1){
 		std::copy(gs[layer]->eta_IFFT->out, gs[layer]->eta_IFFT->out + s[0], gsM[0]->eta_IFFT->out);
 		std::copy(gs[layer]->xi_IFFT->out, gs[layer]->xi_IFFT->out + s[0], gsM[0]->xi_IFFT->out);
 		std::copy(gs[layer]->gamma, gs[layer]->gamma + s[0], gsM[0]->gamma);
@@ -354,22 +299,19 @@ inline void InverseToeplitz::GschurMerge()
 	std::copy(gs[layer]->xi_IFFT->out, gs[layer]->xi_IFFT->out + s[0], gsM[0]->xi_FFT->in);
 	std::copy(gs[layer]->gamma, gs[layer]->gamma + s[0], gsM[0]->gamma);
 	int M = s[0];
-	for(int m = 0; m < (int)s.size()-1; ++m)
-	{
-		if(m == 0)
-		{
+	for(int m = 0; m < (int)s.size()-1; ++m){
+		if(m == 0){
 			std::copy(alpha, alpha + n - 1, gsM[m]->alpha_FFT->in);
 			std::copy(beta, beta + n - 1, gsM[m]->beta_FFT->in);
 		}
-		else
-		{
+		else{
 			std::copy(gsM[m - 1]->alpham_IFFT->out + s[m - 1], gsM[m - 1]->alpham_IFFT->out + s[m - 1] + 2 * s[m], gsM[m]->alpha_FFT->in);
 			std::copy(gsM[m - 1]->betam_IFFT->out + s[m - 1], gsM[m - 1]->betam_IFFT->out + s[m - 1] + 2 * s[m], gsM[m]->beta_FFT->in);
 		}
-		alpha_beta(gsM[m], s[m]);
+		alpha2Beta(gsM[m], s[m]);
 		
 		layer = (int)log2(ceil((double)s[m + 1]/base));
-		Gschur(gsM[m]->alpham_IFFT->out + s[m], gsM[m]->betam_IFFT->out + s[m], s[m + 1], layer);
+		GenStep(gsM[m]->alpham_IFFT->out + s[m], gsM[m]->betam_IFFT->out + s[m], s[m + 1], layer);
 		
 		std::copy(gs[layer]->eta_IFFT->out, gs[layer]->eta_IFFT->out + s[m + 1], gsM[m + 1]->eta_FFT->in);
 		std::copy(gs[layer]->xi_IFFT->out, gs[layer]->xi_IFFT->out + s[m + 1], gsM[m + 1]->xi_FFT->in);
@@ -379,38 +321,32 @@ inline void InverseToeplitz::GschurMerge()
 		
 	}
 	M = s[(int)s.size() - 1];
-	for(int m = (int)s.size()-2; m >= 0; --m)
-	{
-		if(m == (int)s.size()-2)
-		{
+	for(int m = (int)s.size()-2; m >= 0; --m){
+		if(m == (int)s.size()-2){
 			std::copy(gsM[m + 1]->xi_FFT->in, gsM[m + 1]->xi_FFT->in + M, gsM[m]->xi_m_FFT->in);
 			std::copy(gsM[m + 1]->eta_FFT->in, gsM[m + 1]->eta_FFT->in + M, gsM[m]->eta_m_FFT->in);
 		}
-		else
-		{
+		else{
 			std::copy(gsM[m + 1]->xi_IFFT->out, gsM[m + 1]->xi_IFFT->out + M, gsM[m]->xi_m_FFT->in);
 			std::copy(gsM[m + 1]->eta_IFFT->out, gsM[m + 1]->eta_IFFT->out + M, gsM[m]->eta_m_FFT->in);
 		}
-		Merge(gsM[m], s[m]);
+		GSchur_Merge(gsM[m], s[m]);
 		
 		M += s[m];
 	}
 }
 
 //output function
-inline void InverseToeplitz::Inverse(double* acf)
-{
-	for(int ii = 0; ii < n - 1; ++ii)
-	{
+inline void GSchurN::Compute(double* acf){
+	for(int ii = 0; ii < n - 1; ++ii){
 		alpha[ii] = -1 * acf[ii + 1];
         beta[ii] = acf[ii];
 	}
-	GschurMerge();
+	GenStep_Merge();
 
 	double sigma2 = log(acf[0]);
 	ldV = sigma2;
-	for (int ii = 0; ii < n - 1; ++ii)
-	{
+	for (int ii = 0; ii < n - 1; ++ii){
 		if(gsM[0]->gamma[ii] < 1){
 			sigma2 += log(1 - gsM[0]->gamma[ii] * gsM[0]->gamma[ii]);
 			ldV += sigma2;
@@ -421,8 +357,7 @@ inline void InverseToeplitz::Inverse(double* acf)
 	std::copy(gsM[0]->eta_IFFT->out, gsM[0]->eta_IFFT->out + n - 1, Phi);
 	Phi[n-1] = 0;
 	Phi[0] /= sigma2;
-	for(int ii = 1; ii < n; ++ii)
-	{
+	for(int ii = 1; ii < n; ++ii){
 		Phi[ii] += gsM[0]->xi_IFFT->out[ii-1];
 		Phi[ii] /= sigma2;
 

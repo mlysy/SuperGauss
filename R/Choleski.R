@@ -13,7 +13,7 @@ cholZX <- function(Z, acf) {
   n <- length(acf)
   Z <- as.matrix(Z)
   if(nrow(Z) != n) stop("Z and acf have incompatible dimensions.")
-  .DurbinLevinsonZX(Z = Z, acf = acf)
+  toeplitzZX(Z = Z, acf = acf)
 }
 
 #' @rdname Choleski
@@ -22,6 +22,6 @@ cholXZ <- function(X, acf) {
   n <- length(acf)
   X <- as.matrix(X)
   if(nrow(X) != n) stop("X and acf have incompatible dimensions.")
-  .DurbinLevinsonXZ(X = X, acf = acf)
+  toeplitzXZ(X = X, acf = acf)
 }
 
