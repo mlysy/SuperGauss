@@ -29,7 +29,7 @@ rSnorm <- function(n, acf, Z, fft = TRUE, fft.plan,
         stop("Z has incompatible dimensions with n and acf.")
       }
     }
-    X <- .DurbinLevinsonZX(Z = Z, acf = acf)
+    X <- DurbinLevinson_ZX(Z = Z, acf = acf)
     if(n == 1) X <- c(X)
   } else {
     N <- length(acf)-1

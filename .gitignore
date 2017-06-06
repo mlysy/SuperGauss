@@ -1,4 +1,9 @@
+*.DS_Store
+*.Rapp.history
 *.Rhistory
 *.o
 *.dll
-*.Rd
+*.so
+*.html
+*.pdf
+src/.vscode

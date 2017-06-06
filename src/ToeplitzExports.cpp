@@ -1,3 +1,5 @@
+#include <Rcpp.h>
+using namespace Rcpp;
 #include "Toeplitz.h"
 
 // R wapper class
