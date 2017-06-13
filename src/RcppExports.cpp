@@ -58,16 +58,3 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-
-static const R_CallMethodDef CallEntries[] = {
-    {"SuperGauss_DurbinLevinson_XZ", (DL_FUNC) &SuperGauss_DurbinLevinson_XZ, 2},
-    {"SuperGauss_DurbinLevinson_ZX", (DL_FUNC) &SuperGauss_DurbinLevinson_ZX, 2},
-    {"SuperGauss_DurbinLevinson_Eigen", (DL_FUNC) &SuperGauss_DurbinLevinson_Eigen, 4},
-    {"SuperGauss_DurbinLevinson_Base", (DL_FUNC) &SuperGauss_DurbinLevinson_Base, 4},
-    {NULL, NULL, 0}
-};
-
-RcppExport void R_init_SuperGauss(DllInfo *dll) {
-    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
-    R_useDynamicSymbols(dll, FALSE);
-}

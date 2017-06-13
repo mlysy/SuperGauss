@@ -10,10 +10,10 @@ pkg.path <- getwd()
 #require(devtools)
 
 # regenerates Rcpp interface (i.e., RcppExports)
-compileAttributes(pkgdir = pkg.path)
+Rcpp::compileAttributes(pkgdir = pkg.path)
 devtools::document(pkg = pkg.path)
-install(pkg = pkg.path) # installs the package
-build(pkg = pkg.path) # builds a tar.gz file
+devtools::install(pkg = pkg.path) # installs the package
+devtools::build(pkg = pkg.path) # builds a tar.gz file
 
 # restart R before testing changes
 testthat::test_package("SuperGauss")

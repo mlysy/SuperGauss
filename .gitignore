@@ -6,4 +6,5 @@
 *.so
 *.html
 *.pdf
+config.*
 src/.vscode
