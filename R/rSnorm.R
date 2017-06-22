@@ -15,6 +15,9 @@
 #' }
 #' @return A \code{nkeep x n} matrix with time series as columns.
 #' @importFrom fftw FFT IFFT planFFT
+#' @examples 
+#' acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = 200)
+#' rSnorm(n = 3, acf = acf)
 #' @export
 rSnorm <- function(n, acf, Z, fft = TRUE, fft.plan,
                    ncut = 0, tol = 1e-6,

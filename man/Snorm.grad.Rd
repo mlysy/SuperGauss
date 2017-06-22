@@ -4,18 +4,18 @@
 \alias{Snorm.grad}
 \title{Gradient of a Stationary Gaussian Log-Likelihood}
 \usage{
-Snorm.grad(X, mean, acf, dmean, dacf, Toep, debug = FALSE)
+Snorm.grad(X, mean, acf, dmean, dacf)
 }
 \arguments{
-\item{X}{\code{n x d} matrix, d i.i.d. vector follows N(mean, Variance).}
+\item{X}{\eqn{n \times 1} matrix, follows N(mean, Variance).}
 
-\item{mean}{\code{n} vector or matrix.}
+\item{mean}{\eqn{n} vector or matrix.}
 
-\item{acf}{\code{n} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
+\item{acf}{\eqn{n} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
 
-\item{dmean}{\code{n x p} matrix, where \code{p} is the number of parameters, each column is the partial derivative of mean.}
+\item{dmean}{\eqn{n \times p} matrix, where \eqn{p} is the number of parameters, each column is the partial derivative of mean.}
 
-\item{dacf}{\code{n x p} matrix, each column is the partial deruvative of acf.}
+\item{dacf}{\eqn{n \times p} matrix, each column is the partial derivative of acf.}
 }
 \value{
 The gradient of the log-likelihood.
@@ -25,4 +25,15 @@ Efficient evaluation of log-likelihood gradient for stationary Gaussian data.
 }
 \note{
 package "SuperGauss" is required
+}
+\examples{
+N <- 30
+p <- 4
+X <- as.matrix(rnorm(N))
+mean <- rnorm(N)
+acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
+dmean <- matrix(rnorm(N), N, p)
+dacf <- matrix(rnorm(N), N, p)
+acf <- Toeplitz(acf)
+Snorm.grad(X, mean, acf, dmean, dacf)
 }

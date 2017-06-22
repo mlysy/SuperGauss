@@ -7,9 +7,9 @@
 \alias{ncol,Toeplitz_Matrix-method}
 \alias{nrow,Toeplitz_Matrix-method}
 \alias{dim,Toeplitz_Matrix-method}
-\alias{\%*\%,Toeplitz_Matrix-method}
-\alias{determinant,Toeplitz_Matrix-method}
-\alias{solve,Toeplitz_Matrix-method}
+\alias{\%*\%,Toeplitz_Matrix,ANY-method}
+\alias{determinant,Toeplitz_Matrix,ANY-method}
+\alias{solve,Toeplitz_Matrix,ANY-method}
 \title{Toeplitz Matrix Class}
 \usage{
 .self$setAcf(acf)
@@ -48,8 +48,24 @@ Contains methods for efficient linear algebra involving Toeplitz variance matric
 \code{Toeplitz_Matrix} objects are created with the R constructor \code{Toeplitz}, which accepts an autocorrelation vector \code{acf}, or an integer \code{n} which can be used to preallocate memory.  The \code{acf} of the \code{Toeplitz_Matrix} is accessed with \code{setAcf} and \code{getAcf}.
 The \code{Toeplitz_Matrix} class efficiently implements some generic methods Toeplitz variance matrix calculations, e.g., %*% (multiplication), \code{solve}, \code{determinant}.  Non-generic methods implemented for Toeplitz matrices are:
 \itemize{
+  \item \code{setAcf(acf1)}: input the acf of Toeplitz variance
+  \item \code{getAcf()}: obtain the inputed acf
   \item \code{traceT2(acf2)}: matrix trace of \code{solve(.self, toeplitz(acf2))}.
   \item \code{traceT4(acf2, acf3)}: matrix trace of \code{solve(.self, toeplitz(acf2))} %*% \code{solve(.self, toeplitz(acf3))}.
 }
 These are used for calculating the gradient and Hessian of multivariate normal loglikelihoods having Toeplitz variance matrix.
+}
+\examples{
+N <- 20
+Toep <- Toeplitz(N)
+acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
+Toep <- Toeplitz(acf)
+ncol(Toep)
+nrow(Toep)
+dim(Toep)
+Y <- matrix(rnorm(N*2), N, 2)
+Toep \%*\% Y
+determinant(Toep, logarithm = TRUE)
+Y <- matrix(rnorm(N*2), N, 2)
+solve(Toep, Y)
 }

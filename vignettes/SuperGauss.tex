@@ -1,0 +1,830 @@
+\documentclass[12pt,letterpaper]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{fouriernc}
+\usepackage{amsmath,amsthm}
+\usepackage{mathrsfs}
+\usepackage{natbib} % bibliography
+\usepackage{bm}
+
+\usepackage{graphicx}
+\graphicspath{{./subdiff/}}
+\usepackage{epstopdf}
+
+% spacing
+\usepackage[headheight=14pt, top=.75in, bottom=.75in, left=.75in, right=.75in]{geometry}
+\usepackage{setspace}
+\setstretch{1.2}
+\usepackage{parskip}
+
+% itemize/enumerate
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=*}
+
+% links
+\usepackage{xcolor}
+\definecolor{darkblue}{rgb}{0,0,0.3}
+\definecolor{darkred}{rgb}{0.3,0,0}
+\usepackage[unicode=true,pdfstartview={FitH},bookmarks=false,colorlinks=true,citecolor=darkblue,linkcolor=darkred,urlcolor=darkblue]{hyperref}
+
+
+\usepackage{stats-v3}
+\theoremstyle{definition}\newtheorem*{conject}{Conjecture}
+
+
+% headers and footers
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\fancypagestyle{firstpage} {
+\fancyhf{}
+\setlength{\headheight}{15pt}
+\lhead{Yun Ling, Martin Lysy}
+\rhead{\today}
+\rfoot{{\small \textsl{\thepage/\pageref{LastPage}}}}
+}
+\fancyhf{}
+\lhead{\textsl{Detailed R Report}}
+\rfoot{{\small \textsl{\thepage/\pageref{LastPage}}}}
+
+\pagestyle{fancy}
+
+% title & abstract
+\usepackage{titling}
+\pretitle{\begin{center}\scshape\Large}
+\posttitle{\par\end{center}}
+\setlength{\droptitle}{-2em}
+\usepackage[runin]{abstract}
+\abslabeldelim{.}
+\setlength{\abstitleskip}{-\absparindent}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\dft}{\text{drift}}
+\newcommand{\fbm}{\text{fBM}}
+\newcommand{\toep}{\text{Toeplitz}}
+\newcommand{\msd}{\text{MSD}}
+\newcommand{\acf}{\text{Acf}}
+\newcommand{\dt}{\Delta t}
+\newcommand{\hd}{\widehat{D}}	
+\newcommand{\ha}{\widehat{H}}
+\newcommand{\dx}{\Delta X}
+\newcommand{\dy}{\Delta Y}
+\newcommand{\p}{\mathcal{P}}
+\newcommand{\eps}{\varepsilon}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+
+\title{Detailed R Report}
+\date{}
+
+\maketitle
+\thispagestyle{firstpage}
+\vspace{-4em}
+
+\section{Model Description}
+Our model consists of trajectory model and camera error model. Trajectory model describes the movement of the mucus, while the camera error models recover the actual movement of mucus from the observation by interpreting the behavior of camera.
+
+\subsection{Trajectory Model}
+In our theory, trajectories $Z_t$ follow generalized Brownian Motion with linear drift.
+\begin{align*}
+	Z(t) = \mu t + \Sigma^{1/2} B_\alpha(t)
+\end{align*}
+where $\mu =  \left[\mu_1, \mu_2\right]$ is coordinate-wise linear drift, $\Sigma = \begin{bmatrix}
+\Sigma_{1,1} & \Sigma_{1,2} \\
+\Sigma_{1,2} & \Sigma_{2,2}
+\end{bmatrix}$ is variance matrix in 2-d plane. $Z(t) = \left[ Z_1(t), Z_2(t) \right]$ is the 2-d particle trajectory, $B_\alpha(t) = \left[B_1(t), B_2(t)\right]$ is a 2-d fBM pocess with parameter $\alpha$, which determines the degree of autocorrelation of the whole process.\\
+In real application, observation are recorded evenly, which makes our observed trajectories discrete process:
+\begin{align*}
+	& Z_n = n \mu  \dt + \Sigma^{1/2} B_n, \quad n = 1,2,\cdots, N \\
+	& Z_n = Z(n\dt) \quad B_n = B_\alpha(n\dt)
+\end{align*}
+In this report, we are looking into the observation of some water molecule at frequency of $\dt = \dfrac{1}{60}$. If the observation is the true position of molecule, fitted $\widehat{\alpha}$ should be around 1, since water molecule follows standard Brownian motion, which is a special case of fBM process ($\alpha = 1$ ). However, our observation shows sigfinicant positive autocorrelation and our estimation is far above 1. Thus we develops three camera error model in order to explain this phenomenon.
+
+\subsection{Camera Error Model: Lag-1 Autoregression Model}
+This model says that while camera interprets the particle position it uses the information of previous observation. Knowing that particles cannot travel too far away from previous spot, camera puts more weight on the observation that are closer to previous location like this:
+Observed position is a weighted average between the last-time observation and real position. 
+\begin{align*}
+	Y_n &= \rho Y_{n-1} + (1-\rho)Z_n 
+\end{align*}
+where $\rho$ is the weight parameter, $0 \leq \rho \leq 1$. $Z_t$ is the real position of molecule, $Y_t$ is the 2-d observation.
+
+\subsection{Camera Error Model: Lag-1 Moving Average Model}
+Motivation of this model is very similar to AR(1) model. This model uses real postion at time n-1 $Z_{n-1}$ instead of observation at time n-1 $Y_{n-1}$. This model is less persuasive than AR(1) model, since it is hard to believe that camera keeps the record of the density cloud of $Z_{n-1}$.\\
+Observed position is a weighted average between the last-time position and real position in this model:
+\begin{align*}
+	Y_n &= \rho Z_{n-1} + (1-\rho) Z_n 
+\end{align*}
+where $\rho$ is the weight parameter, $0 \leq \rho \leq 1$. $Z_t$ is the real position of molecule, $Y_t$ is the 2-d observation.
+
+\subsection{Camera Error Model: Dynamic Error Model}
+Instead of trying to understand how camera inteprets the data, this model focuses on how camera captures data. In phtotgraphy in order to obtain a picture, camera shutter will open for a certain amount time so that electronic sensor can capture the light. This means that camera actually records a average displacement of particle over the time period $\tau$ that the camera shutter is open. Based on this idea we develop such dynamic camera error model.
+\begin{align*}
+	Y_n&= \int_{0}^{\tau}Z(n\dt-s) ds
+\end{align*}
+where $\tau$ is the length of exposure, $0 < \tau < \dt$. When $\tau$ approachs 0, $Y_n$ converges to $Z(n\dt)$. When $\tau$ increases, $Y_n$ becomes an average of longer path of $Z(t)$ and will show more ``positive autocorrelation''.
+
+\section{Inference With Profile Likelihood}
+Our package ``SuperGauss'' and ``lmn'' returns the profile likelihood of linear matrix models in a single function \textit{lmn.prof}. \\
+For matrix normal distribution $Y \sim MN_{n\times d}(X \beta, V, \Sigma)$, its log-likelihood is
+\begin{align*}
+	\ell(\beta, V, \Sigma | X, Y) = -\dfrac{d}{2} \log|V| - \dfrac{n}{2} \log|\Sigma| - \dfrac{1}{2} \text{tr} \left[ \Sigma^{-1} (Y - X \beta)^T V^{-1} (Y - X \beta) \right]
+\end{align*}
+When we treat $V$ as given
+\begin{align*}
+	& \dfrac{\partial \ell(\beta, \Sigma | X, Y, V)}{\partial \beta} = 0 \rightarrow \widehat{\beta} = \left(X^T V^{-1} X\right)^{-1}X^T V^{-1} Y \\
+	& \dfrac{\partial \ell(\beta, \Sigma | X, Y, V)}{\partial \Sigma} = 0 \rightarrow \widehat{\Sigma} = \left(Y - X\widehat{\beta} \right)^T V^{-1} \left(Y - X\widehat{\beta} \right)
+\end{align*}
+we can find that both $\widehat{\beta}$ and $\widehat{\Sigma}$ are functions of $V$. By applying $\widehat{\beta}$ and $\widehat{\Sigma}$ in log-likelihood
+\begin{align*}
+	\ell(V | X, Y) = -\dfrac{d}{2} \log|V| - \dfrac{n}{2} \log|\left(Y - X\widehat{\beta} \right)^T V^{-1} \left(Y - X\widehat{\beta} \right)|
+\end{align*}
+which is the return value of \textit{lmn.prof} with argument $\{V, X, Y\}$ only. Then optimization of  log-likelihood becomes 1-d optimization. With estimated $\widehat{V}$ we can then compute $\widehat{\beta}$ and $\widehat{\Sigma}$ using function \textit{lmn.suff}. Here are some demonstration.
+
+\subsection{Basic Trajectory Model}
+In order to obtain stationary Gaussian process, our inference is applied on the increment of $Z_t$
+\begin{align*}
+& \Delta Z_n = \mu \dt + \Sigma^{1/2}  \Delta B_n \\
+& 
+\end{align*}
+where $\Delta Z_t = Z_1$. By doing this, $\Delta Z_t$ is a Continuous Stationary Gaussian that follows matrix normal distribution $MN(\mu \dt, \Sigma, V_\alpha)$, where $V_\alpha$, determined by $\alpha$, is the variance matrix of $\Delta B_t$. Since mean parameter $\mu$ and variance parameter $\Sigma$ are ``free parameters'' in profile likelihood estimation, our optimization is a 1-d optimization over $\alpha$.\\
+Optimization consists of three steps: \\
+Write down the profile likelihood function, where acf of $V_\alpha$ is given by function \textit{fbm.acf}.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{fbm.loglik} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{alpha}\hlstd{,} \hlkwc{dX}\hlstd{,} \hlkwc{dT}\hlstd{,} \hlkwc{toep}\hlstd{)\{}
+  \hlstd{N} \hlkwb{<-} \hlkwd{nrow}\hlstd{(dX)}
+  \hlstd{acf} \hlkwb{<-} \hlkwd{fbm.acf}\hlstd{(alpha, dT, N)}
+  \hlstd{toep}\hlopt{$}\hlkwd{setAcf}\hlstd{(acf)}
+  \hlkwd{lmn.prof}\hlstd{(}\hlkwc{Y} \hlstd{= dX,} \hlkwc{X} \hlstd{= dT,} \hlkwc{acf} \hlstd{= toep,} \hlkwc{noSigma} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+Use R function ``optim'' to find the $\widehat{\alpha}$ that maximize the likelihood.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{fbm.mle} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{dX}\hlstd{,} \hlkwc{dT}\hlstd{,} \hlkwc{toep}\hlstd{)\{}
+  \hlstd{ans} \hlkwb{<-} \hlkwd{optimize}\hlstd{(}\hlkwc{f} \hlstd{= fbm.loglik,} \hlkwc{dX} \hlstd{= dX,} \hlkwc{dT} \hlstd{= dT,} \hlkwc{toep} \hlstd{= toep,}
+                  \hlkwc{interval} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{2}\hlstd{),} \hlkwc{maximum} \hlstd{=} \hlnum{TRUE}\hlstd{)}\hlopt{$}\hlstd{maximum}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+Compute $\mu$ and $\Sigma$ with $\widehat{\alpha}$.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{prof.get.fbm} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{dX}\hlstd{,} \hlkwc{dT}\hlstd{,} \hlkwc{alpha}\hlstd{,} \hlkwc{toep}\hlstd{)\{}
+  \hlstd{N} \hlkwb{<-} \hlkwd{nrow}\hlstd{(dX)}
+  \hlstd{d} \hlkwb{<-} \hlkwd{ncol}\hlstd{(dX)}
+  \hlstd{acf1} \hlkwb{<-} \hlkwd{fbm.acf}\hlstd{(}\hlkwc{alpha} \hlstd{= alpha,} \hlkwc{dT} \hlstd{= dT,} \hlkwc{N} \hlstd{= N)}
+  \hlstd{toep}\hlopt{$}\hlkwd{setAcf}\hlstd{(acf1)}
+  \hlstd{suff} \hlkwb{<-} \hlkwd{lmn.suff}\hlstd{(}\hlkwc{Y} \hlstd{= dX,} \hlkwc{X} \hlstd{= dT,} \hlkwc{acf} \hlstd{= toep)}
+  \hlstd{Sigma} \hlkwb{<-} \hlstd{suff}\hlopt{$}\hlstd{S} \hlopt{/} \hlstd{suff}\hlopt{$}\hlstd{n}
+  \hlstd{mu} \hlkwb{<-} \hlstd{suff}\hlopt{$}\hlstd{Beta.hat}
+  \hlkwd{list}\hlstd{(}\hlkwc{Sigma} \hlstd{= Sigma,} \hlkwc{mu} \hlstd{= mu)}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+Here is the estimation for all paths:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## assign the storage}
+\hlstd{alpha} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{, npath)}
+\hlstd{tau} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{, npath)}
+\hlstd{rho} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{, npath)}
+\hlstd{SigmaMat} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{NA}\hlstd{,} \hlnum{2}\hlopt{*}\hlstd{npath,} \hlnum{2}\hlstd{)}
+\hlstd{Mu} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{NA}\hlstd{, npath,} \hlnum{2}\hlstd{)}
+\hlcom{## computation}
+\hlkwd{system.time}\hlstd{(\{}
+  \hlkwa{for}\hlstd{(ii} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{npath)\{}
+    \hlstd{Xt} \hlkwb{<-} \hlkwd{as.matrix}\hlstd{(paths[paths}\hlopt{$}\hlstd{ID} \hlopt{==} \hlstd{ii,}\hlopt{-}\hlnum{1}\hlstd{])}
+    \hlstd{dX} \hlkwb{<-} \hlkwd{as.matrix}\hlstd{(}\hlkwd{apply}\hlstd{(Xt,} \hlnum{2}\hlstd{, diff))}
+    \hlstd{toep} \hlkwb{<-} \hlkwd{Toeplitz}\hlstd{(}\hlkwd{nrow}\hlstd{(dX))}
+    \hlstd{fbm.ans} \hlkwb{<-} \hlkwd{fbm.mle}\hlstd{(dX, dT, toep)}
+    \hlstd{alpha[ii]} \hlkwb{<-} \hlstd{fbm.ans}
+    \hlstd{suff} \hlkwb{<-} \hlkwd{prof.get.fbm}\hlstd{(dX, dT, fbm.ans, toep)}
+    \hlstd{SigmaMat[(}\hlopt{-}\hlnum{1}\hlopt{:}\hlnum{0}\hlstd{)}\hlopt{+}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{ii), ]} \hlkwb{<-} \hlstd{suff}\hlopt{$}\hlstd{Sigma}
+    \hlstd{Mu[ii, ]} \hlkwb{<-} \hlstd{suff}\hlopt{$}\hlstd{mu}
+  \hlstd{\}}
+\hlstd{\})}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+\subsection{AR(1) Model}
+Our inference of AR(1) model is also based on the increment form:
+\begin{align*}
+	\Delta Y_n = \rho \Delta Y_{n-1} + \Delta Z_n
+\end{align*}
+In AR(1) model, we can recover $\Delta Z_n$ with given $\rho$ by 
+\begin{align*}
+	\Delta Z_n = \Delta Y_n - \rho \Delta Y_{n-1}
+\end{align*}
+Thus we can compute the profile likelihood of AR(1) model by
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{ar.loglik} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{theta}\hlstd{,} \hlkwc{dX}\hlstd{,} \hlkwc{dT}\hlstd{,} \hlkwc{toep}\hlstd{)\{}
+  \hlstd{N} \hlkwb{<-} \hlkwd{nrow}\hlstd{(dX)}
+  \hlstd{d} \hlkwb{<-} \hlkwd{ncol}\hlstd{(dX)}
+  \hlstd{alpha} \hlkwb{<-} \hlstd{theta[}\hlnum{1}\hlstd{]}
+  \hlstd{rho} \hlkwb{<-} \hlstd{theta[}\hlnum{2}\hlstd{]}
+  \hlstd{dX} \hlkwb{<-} \hlstd{dX} \hlopt{-} \hlstd{rho} \hlopt{*} \hlkwd{rbind}\hlstd{(dX[}\hlopt{-}\hlnum{1}\hlstd{, ],} \hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{, d))}
+  \hlstd{acf} \hlkwb{<-} \hlkwd{fbm.acf}\hlstd{(alpha, dT, N)}
+  \hlstd{toep}\hlopt{$}\hlkwd{setAcf}\hlstd{(acf)}
+  \hlkwd{lmn.prof}\hlstd{(}\hlkwc{Y} \hlstd{= dX,} \hlkwc{X} \hlstd{= dT,} \hlkwc{acf} \hlstd{= toep,} \hlkwc{noSigma} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+Following steps are quite similar to fBM case
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{ar.mle} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{dX}\hlstd{,} \hlkwc{dT}\hlstd{,} \hlkwc{toep}\hlstd{)\{}
+  \hlstd{ans} \hlkwb{<-} \hlkwd{optim}\hlstd{(}\hlkwc{par} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{1}\hlstd{),} \hlkwc{fn} \hlstd{= ar.loglik,} \hlkwc{dX} \hlstd{= dX,} \hlkwc{dT} \hlstd{= dT,} \hlkwc{toep} \hlstd{= toep,} \hlkwc{control} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{fnscale} \hlstd{=} \hlopt{-}\hlnum{1}\hlstd{))}\hlopt{$}\hlstd{par}
+\hlstd{\}}
+\hlstd{prof.get.ar} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{dX}\hlstd{,} \hlkwc{dT}\hlstd{,} \hlkwc{alpha}\hlstd{,} \hlkwc{rho}\hlstd{,} \hlkwc{toep}\hlstd{)\{}
+  \hlstd{N} \hlkwb{<-} \hlkwd{nrow}\hlstd{(dX)}
+  \hlstd{d} \hlkwb{<-} \hlkwd{ncol}\hlstd{(dX)}
+  \hlstd{dX} \hlkwb{<-} \hlstd{dX} \hlopt{-} \hlstd{rho} \hlopt{*} \hlkwd{rbind}\hlstd{(dX[}\hlopt{-}\hlnum{1}\hlstd{, ],} \hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{, d))}
+  \hlstd{acf} \hlkwb{<-} \hlkwd{fbm.acf}\hlstd{(alpha, dT, N)}
+  \hlstd{toep}\hlopt{$}\hlkwd{setAcf}\hlstd{(acf)}
+  \hlstd{suff} \hlkwb{<-} \hlkwd{lmn.suff}\hlstd{(}\hlkwc{Y} \hlstd{= dX,} \hlkwc{X} \hlstd{= dT,} \hlkwc{acf} \hlstd{= toep)}
+  \hlstd{Sigma} \hlkwb{<-} \hlstd{suff}\hlopt{$}\hlstd{S} \hlopt{/} \hlstd{suff}\hlopt{$}\hlstd{n}
+  \hlstd{mu} \hlkwb{<-} \hlstd{suff}\hlopt{$}\hlstd{Beta.hat}
+  \hlkwd{list}\hlstd{(}\hlkwc{Sigma} \hlstd{= Sigma,} \hlkwc{mu} \hlstd{= mu)}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+And here are the estimation for all paths
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## assign the storage}
+\hlstd{alpha} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{, npath)}
+\hlstd{rho} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{, npath)}
+\hlstd{SigmaMat} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{NA}\hlstd{,} \hlnum{2}\hlopt{*}\hlstd{npath,} \hlnum{2}\hlstd{)}
+\hlstd{Mu} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{NA}\hlstd{, npath,} \hlnum{2}\hlstd{)}
+\hlcom{## computation}
+\hlkwd{system.time}\hlstd{(\{}
+  \hlkwa{for}\hlstd{(ii} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{npath)\{}
+    \hlkwa{if}\hlstd{(}\hlopt{!}\hlstd{(ii} \hlopt{%%} \hlnum{100}\hlstd{))\{}
+      \hlkwd{print}\hlstd{(ii)}
+    \hlstd{\}}
+    \hlstd{Xt} \hlkwb{<-} \hlkwd{as.matrix}\hlstd{(paths[paths}\hlopt{$}\hlstd{ID} \hlopt{==} \hlstd{ii,}\hlopt{-}\hlnum{1}\hlstd{])}
+    \hlstd{dX} \hlkwb{<-} \hlkwd{as.matrix}\hlstd{(}\hlkwd{apply}\hlstd{(Xt,} \hlnum{2}\hlstd{, diff))}
+    \hlstd{toep} \hlkwb{<-} \hlkwd{Toeplitz}\hlstd{(}\hlkwd{nrow}\hlstd{(dX))}
+    \hlstd{ar.ans} \hlkwb{<-} \hlkwd{ar.mle}\hlstd{(dX, dT, toep)}
+    \hlstd{alpha[ii]} \hlkwb{<-} \hlstd{ar.ans[}\hlnum{1}\hlstd{]}
+    \hlstd{rho[ii]} \hlkwb{<-} \hlstd{ar.ans[}\hlnum{2}\hlstd{]}
+    \hlstd{suff} \hlkwb{<-} \hlkwd{prof.get.ar}\hlstd{(dX, dT, dyn.ans[}\hlnum{1}\hlstd{], dyn.ans[}\hlnum{2}\hlstd{], toep)}
+    \hlstd{SigmaMat[(}\hlopt{-}\hlnum{1}\hlopt{:}\hlnum{0}\hlstd{)}\hlopt{+}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{ii), ]} \hlkwb{<-} \hlstd{suff}\hlopt{$}\hlstd{Sigma}
+    \hlstd{Mu[ii, ]} \hlkwb{<-} \hlstd{suff}\hlopt{$}\hlstd{mu}
+  \hlstd{\}}
+\hlstd{\})}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+\subsection{MA(1) Model}
+Inference of MA(1) model is similar to that of AR(1) model. 
+\begin{align*}
+	\Delta Y_n = \rho \Delta Z_n + \Delta Z_{n-1}
+\end{align*}
+We can also recover $\Delta Z_n$ with given $\rho$ by
+\begin{align*}
+	\Delta Z_1 &= \Delta Y_1 \\
+	\Delta Z_n &= \Delta Y_n - (1-\rho)\Delta Z_{n-1}, n = 2, \cdots
+\end{align*}
+Thus we can compute the profile likelihood of AR(1) model by
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{ma.loglik} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{theta}\hlstd{,} \hlkwc{dX}\hlstd{,} \hlkwc{dT}\hlstd{,} \hlkwc{toep}\hlstd{)\{}
+  \hlstd{N} \hlkwb{<-} \hlkwd{nrow}\hlstd{(dX)}
+  \hlstd{d} \hlkwb{<-} \hlkwd{ncol}\hlstd{(dX)}
+  \hlstd{alpha} \hlkwb{<-} \hlstd{theta[}\hlnum{1}\hlstd{]}
+  \hlstd{rho} \hlkwb{<-} \hlstd{theta[}\hlnum{2}\hlstd{]}
+  \hlkwa{for}\hlstd{(ii} \hlkwa{in} \hlnum{2}\hlopt{:}\hlstd{N)\{}
+    \hlstd{dX[ii,]} \hlkwb{<-} \hlstd{dX[ii,]} \hlopt{-} \hlstd{rho} \hlopt{*} \hlstd{dX[ii} \hlopt{-} \hlnum{1}\hlstd{,]}
+  \hlstd{\}}
+  \hlstd{acf1} \hlkwb{<-} \hlkwd{fbm.acf}\hlstd{(alpha, dT, N)}
+  \hlstd{toep}\hlopt{$}\hlkwd{setAcf}\hlstd{(acf1)}
+  \hlkwd{lmn.prof}\hlstd{(}\hlkwc{Y} \hlstd{= dX,} \hlkwc{X} \hlstd{= dT,} \hlkwc{acf} \hlstd{= toep,} \hlkwc{noSigma} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+And followed by
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{ma.mle} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{dX}\hlstd{,} \hlkwc{dT}\hlstd{,} \hlkwc{toep}\hlstd{)\{}
+  \hlstd{ans} \hlkwb{<-} \hlkwd{optim}\hlstd{(}\hlkwc{par} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{1}\hlstd{),} \hlkwc{fn} \hlstd{= ma.loglik,} \hlkwc{dX} \hlstd{= dX,} \hlkwc{dT} \hlstd{= dT,} \hlkwc{toep} \hlstd{= toep,} \hlkwc{control} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{fnscale} \hlstd{=} \hlopt{-}\hlnum{1}\hlstd{))}\hlopt{$}\hlstd{par}
+\hlstd{\}}
+
+\hlstd{prof.get.ma} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{dX}\hlstd{,} \hlkwc{dT}\hlstd{,} \hlkwc{alpha}\hlstd{,} \hlkwc{rho}\hlstd{,} \hlkwc{toep}\hlstd{)\{}
+  \hlstd{N} \hlkwb{<-} \hlkwd{nrow}\hlstd{(dX)}
+  \hlstd{d} \hlkwb{<-} \hlkwd{ncol}\hlstd{(dX)}
+  \hlkwa{for}\hlstd{(ii} \hlkwa{in} \hlnum{2}\hlopt{:}\hlstd{N)\{}
+    \hlstd{dX[ii,]} \hlkwb{<-} \hlstd{dX[ii,]} \hlopt{-} \hlstd{rho} \hlopt{*} \hlstd{dX[ii} \hlopt{-} \hlnum{1}\hlstd{,]}
+  \hlstd{\}}
+  \hlstd{acf1} \hlkwb{<-} \hlkwd{fbm.acf}\hlstd{(}\hlkwc{alpha} \hlstd{= alpha,} \hlkwc{dT} \hlstd{= dT,} \hlkwc{N} \hlstd{= N)}
+  \hlstd{toep}\hlopt{$}\hlkwd{setAcf}\hlstd{(acf1)}
+  \hlstd{suff} \hlkwb{<-} \hlkwd{lmn.suff}\hlstd{(}\hlkwc{Y} \hlstd{= dX,} \hlkwc{X} \hlstd{= dT,} \hlkwc{acf} \hlstd{= toep)}
+  \hlstd{Sigma} \hlkwb{<-} \hlstd{suff}\hlopt{$}\hlstd{S} \hlopt{/} \hlstd{suff}\hlopt{$}\hlstd{n}
+  \hlstd{mu} \hlkwb{<-} \hlstd{suff}\hlopt{$}\hlstd{Beta.hat}
+  \hlkwd{list}\hlstd{(}\hlkwc{Sigma} \hlstd{= Sigma,} \hlkwc{mu} \hlstd{= mu)}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+And here are the estimation for all paths
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## assign the storage}
+\hlstd{alpha} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{, npath)}
+\hlstd{rho} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{, npath)}
+\hlstd{SigmaMat} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{NA}\hlstd{,} \hlnum{2}\hlopt{*}\hlstd{npath,} \hlnum{2}\hlstd{)}
+\hlstd{Mu} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{NA}\hlstd{, npath,} \hlnum{2}\hlstd{)}
+\hlcom{## computation}
+\hlkwd{system.time}\hlstd{(\{}
+  \hlkwa{for}\hlstd{(ii} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{npath)\{}
+    \hlkwa{if}\hlstd{(}\hlopt{!}\hlstd{(ii} \hlopt{%%} \hlnum{100}\hlstd{))\{}
+      \hlkwd{print}\hlstd{(ii)}
+    \hlstd{\}}
+    \hlstd{Xt} \hlkwb{<-} \hlkwd{as.matrix}\hlstd{(paths[paths}\hlopt{$}\hlstd{ID} \hlopt{==} \hlstd{ii,}\hlopt{-}\hlnum{1}\hlstd{])}
+    \hlstd{dX} \hlkwb{<-} \hlkwd{as.matrix}\hlstd{(}\hlkwd{apply}\hlstd{(Xt,} \hlnum{2}\hlstd{, diff))}
+    \hlstd{toep} \hlkwb{<-} \hlkwd{Toeplitz}\hlstd{(}\hlkwd{nrow}\hlstd{(dX))}
+    \hlstd{ma.ans} \hlkwb{<-} \hlkwd{ma.mle}\hlstd{(dX, dT, toep)}
+    \hlstd{alpha[ii]} \hlkwb{<-} \hlstd{ma.ans[}\hlnum{1}\hlstd{]}
+    \hlstd{rho[ii]} \hlkwb{<-} \hlstd{ma.ans[}\hlnum{2}\hlstd{]}
+    \hlstd{suff} \hlkwb{<-} \hlkwd{prof.get.ma}\hlstd{(dX, dT, dyn.ans[}\hlnum{1}\hlstd{], dyn.ans[}\hlnum{2}\hlstd{], toep)}
+    \hlstd{SigmaMat[(}\hlopt{-}\hlnum{1}\hlopt{:}\hlnum{0}\hlstd{)}\hlopt{+}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{ii), ]} \hlkwb{<-} \hlstd{suff}\hlopt{$}\hlstd{Sigma}
+    \hlstd{Mu[ii, ]} \hlkwb{<-} \hlstd{suff}\hlopt{$}\hlstd{mu}
+  \hlstd{\}}
+\hlstd{\})}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\subsection{Dynamic Error Model}
+For the increment form of dynamic error model
+\begin{align*}
+	\Delta Y_n = \int_{0}^{\tau} \left(Z_{n\dt - s} - Z_{(n-1)\dt - s}\right)ds
+\end{align*}
+and $\Delta Y_n$ is also a Continuous Stationary Gaussian process following $MN(\mu\dt\tau, \Sigma, T_{\alpha, \tau})$, acf of $T_{\alpha, \tau}$ is given by function \textit{fdyn.acf}. It is a 2-d optimization over parameter $\{\alpha, \tau\}$ with such profile likelihood:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{dyn.loglike} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{theta}\hlstd{,} \hlkwc{dX}\hlstd{,} \hlkwc{dT}\hlstd{,} \hlkwc{toep}\hlstd{)\{}
+  \hlstd{N} \hlkwb{<-} \hlkwd{nrow}\hlstd{(dX)}
+  \hlstd{alpha} \hlkwb{<-} \hlstd{theta[}\hlnum{1}\hlstd{]}
+  \hlstd{tau} \hlkwb{<-} \hlstd{theta[}\hlnum{2}\hlstd{]} \hlopt{*} \hlstd{dT}
+  \hlstd{acf1} \hlkwb{<-} \hlkwd{fdyn.acf}\hlstd{(alpha, tau, dT, N)}
+  \hlstd{toep}\hlopt{$}\hlkwd{setAcf}\hlstd{(acf1)}
+  \hlkwd{lmn.prof}\hlstd{(}\hlkwc{Y} \hlstd{= dX,} \hlkwc{X} \hlstd{= dT,} \hlkwc{acf} \hlstd{= toep,} \hlkwc{noSigma} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+\hlstd{\}}
+\hlstd{dyn.mle} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{dX}\hlstd{,} \hlkwc{dT}\hlstd{,} \hlkwc{toep}\hlstd{)\{}
+  \hlstd{ans} \hlkwb{<-} \hlkwd{optim}\hlstd{(}\hlkwc{par} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{.5}\hlstd{),} \hlkwc{fn} \hlstd{= dyn.loglike,} \hlkwc{dX} \hlstd{= dX,} \hlkwc{dT} \hlstd{= dT,} \hlkwc{toep} \hlstd{= toep,} \hlkwc{control} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{fnscale} \hlstd{=} \hlopt{-}\hlnum{1}\hlstd{))}\hlopt{$}\hlstd{par}
+  \hlstd{ans}
+\hlstd{\}}
+\hlstd{prof.get.dyn} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{dX}\hlstd{,} \hlkwc{dT}\hlstd{,} \hlkwc{alpha}\hlstd{,} \hlkwc{tau}\hlstd{,} \hlkwc{toep}\hlstd{)\{}
+  \hlstd{N} \hlkwb{<-} \hlkwd{nrow}\hlstd{(dX)}
+  \hlstd{d} \hlkwb{<-} \hlkwd{ncol}\hlstd{(dX)}
+  \hlstd{acf1} \hlkwb{<-} \hlkwd{fdyn.acf}\hlstd{(}\hlkwc{alpha} \hlstd{= alpha,} \hlkwc{sigma} \hlstd{= tau}\hlopt{*}\hlstd{dT,} \hlkwc{dT} \hlstd{= dT,} \hlkwc{N} \hlstd{= N)}
+  \hlstd{toep}\hlopt{$}\hlkwd{setAcf}\hlstd{(acf1)}
+  \hlstd{suff} \hlkwb{<-} \hlkwd{lmn.suff}\hlstd{(}\hlkwc{Y} \hlstd{= dX,} \hlkwc{X} \hlstd{= dT,} \hlkwc{acf} \hlstd{= toep)}
+  \hlstd{Sigma} \hlkwb{<-} \hlstd{suff}\hlopt{$}\hlstd{S} \hlopt{/} \hlstd{suff}\hlopt{$}\hlstd{n}
+  \hlstd{mu} \hlkwb{<-} \hlstd{suff}\hlopt{$}\hlstd{Beta.hat}
+  \hlkwd{list}\hlstd{(}\hlkwc{Sigma} \hlstd{= Sigma,} \hlkwc{mu} \hlstd{= mu)}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+And here are the estimation for all paths
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## assign the storage}
+\hlstd{alpha} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{, npath)}
+\hlstd{tau} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{, npath)}
+\hlstd{SigmaMat} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{NA}\hlstd{,} \hlnum{2}\hlopt{*}\hlstd{npath,} \hlnum{2}\hlstd{)}
+\hlstd{Mu} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{NA}\hlstd{, npath,} \hlnum{2}\hlstd{)}
+\hlcom{## computation}
+\hlkwd{system.time}\hlstd{(\{}
+  \hlkwa{for}\hlstd{(ii} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{npath)\{}
+    \hlkwa{if}\hlstd{(}\hlopt{!}\hlstd{(ii} \hlopt{%%} \hlnum{100}\hlstd{))\{}
+      \hlkwd{print}\hlstd{(ii)}
+    \hlstd{\}}
+    \hlstd{Xt} \hlkwb{<-} \hlkwd{as.matrix}\hlstd{(paths[paths}\hlopt{$}\hlstd{ID} \hlopt{==} \hlstd{ii,}\hlopt{-}\hlnum{1}\hlstd{])}
+    \hlstd{dX} \hlkwb{<-} \hlkwd{as.matrix}\hlstd{(}\hlkwd{apply}\hlstd{(Xt,} \hlnum{2}\hlstd{, diff))}
+    \hlstd{toep} \hlkwb{<-} \hlkwd{Toeplitz}\hlstd{(}\hlkwd{nrow}\hlstd{(dX))}
+    \hlstd{dyn.ans} \hlkwb{<-} \hlkwd{dyn.mle}\hlstd{(dX, dT, toep)}
+    \hlstd{alpha[ii]} \hlkwb{<-} \hlstd{dyn.ans[}\hlnum{1}\hlstd{]}
+    \hlstd{tau[ii]} \hlkwb{<-} \hlstd{dyn.ans[}\hlnum{2}\hlstd{]}
+    \hlstd{suff} \hlkwb{<-} \hlkwd{prof.get.dyn}\hlstd{(dX, dT, dyn.ans[}\hlnum{1}\hlstd{], dyn.ans[}\hlnum{2}\hlstd{], toep)}
+    \hlstd{SigmaMat[(}\hlopt{-}\hlnum{1}\hlopt{:}\hlnum{0}\hlstd{)}\hlopt{+}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{ii), ]} \hlkwb{<-} \hlstd{suff}\hlopt{$}\hlstd{Sigma}
+    \hlstd{Mu[ii, ]} \hlkwb{<-} \hlstd{suff}\hlopt{$}\hlstd{mu}
+  \hlstd{\}}
+\hlstd{\})}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+Here is the comparison of estimated $\alpha$ in four different model:
+
+\section{Simulation}
+One way to validate our models is to simulate paticle movement using path-wise estimated parameters. Conclusions can be draw by comparing the original data and simulated data.
+
+\subsection{Simulation of fBM}
+Easiest way of simulating fBM process is to first simulate a series of fractional Gaussian noise and then take cumulative sums. Here is the simulation process:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{fbmSim} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{alpha}\hlstd{,} \hlkwc{Sigma}\hlstd{,} \hlkwc{mu}\hlstd{,} \hlkwc{dT}\hlstd{,} \hlkwc{N}\hlstd{)\{}
+  \hlstd{acf} \hlkwb{<-} \hlkwd{fbm.acf}\hlstd{(alpha, dT, N)}
+  \hlstd{Xt} \hlkwb{<-} \hlkwd{rSnorm}\hlstd{(}\hlkwc{n} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{acf} \hlstd{= acf)}
+  \hlstd{Xt} \hlkwb{<-} \hlkwd{apply}\hlstd{(Xt,} \hlnum{2}\hlstd{, cumsum)}
+  \hlstd{Xt} \hlkwb{<-} \hlstd{Xt} \hlopt{%*%} \hlkwd{chol}\hlstd{(Sigma)} \hlopt{+} \hlkwd{t}\hlstd{(}\hlkwd{matrix}\hlstd{(dT,} \hlnum{2}\hlstd{, N)} \hlopt{*} \hlstd{mu)}
+  \hlstd{Xt}
+\hlstd{\}}
+\hlcom{## assign the storage}
+\hlstd{fbm.sim} \hlkwb{<-} \hlstd{paths}
+\hlstd{alphaMat} \hlkwb{<-} \hlstd{alpha.data}\hlopt{$}\hlstd{fbm}
+\hlstd{SigmaMat} \hlkwb{<-} \hlstd{Sigma.data}\hlopt{$}\hlstd{fbm}
+\hlstd{Mu} \hlkwb{<-} \hlstd{mu.data}\hlopt{$}\hlstd{fbm}
+\hlcom{## simulation}
+\hlkwd{system.time}\hlstd{(\{}
+  \hlkwa{for}\hlstd{(ii} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{npath)\{}
+    \hlkwa{if}\hlstd{(}\hlopt{!}\hlstd{(ii} \hlopt{%%} \hlnum{100}\hlstd{))\{}
+      \hlkwd{print}\hlstd{(ii)}
+    \hlstd{\}}
+    \hlstd{alpha} \hlkwb{<-} \hlstd{alphaMat[ii]}
+    \hlstd{Sigma} \hlkwb{<-} \hlkwd{sigma.read}\hlstd{(SigmaMat, ii)}
+    \hlstd{mu} \hlkwb{<-} \hlstd{Mu[ii, ]}
+    \hlstd{Xt} \hlkwb{<-} \hlkwd{as.matrix}\hlstd{(fbm.sim[fbm.sim}\hlopt{$}\hlstd{ID} \hlopt{==} \hlstd{ii,}\hlopt{-}\hlnum{1}\hlstd{])}
+    \hlstd{N} \hlkwb{<-} \hlkwd{nrow}\hlstd{(Xt)}
+    \hlstd{Xt} \hlkwb{<-} \hlkwd{fbmSim}\hlstd{(alpha, Sigma, mu, dT, N)}
+    \hlstd{fbm.sim[fbm.sim}\hlopt{$}\hlstd{ID} \hlopt{==} \hlstd{ii,}\hlopt{-}\hlnum{1}\hlstd{]} \hlkwb{<-} \hlstd{Xt}
+  \hlstd{\}}
+\hlstd{\})}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\subsection{Simulation of AR(1) model}
+Easiest way of simulating fBM process is to first simulate a series of fractional Gaussian noise and then take cumulative sums. Here is the simulation process:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{arSim} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{alpha}\hlstd{,} \hlkwc{rho}\hlstd{,} \hlkwc{Sigma}\hlstd{,} \hlkwc{mu}\hlstd{,} \hlkwc{dT}\hlstd{,} \hlkwc{N}\hlstd{)\{}
+  \hlstd{acf} \hlkwb{<-} \hlkwd{fbm.acf}\hlstd{(alpha, dT, N)}
+  \hlstd{Xt} \hlkwb{<-} \hlkwd{rSnorm}\hlstd{(}\hlkwc{n} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{acf} \hlstd{= acf)}
+  \hlstd{Xt} \hlkwb{<-} \hlkwd{apply}\hlstd{(Xt,} \hlnum{2}\hlstd{, cumsum)}
+  \hlstd{Yt} \hlkwb{<-} \hlstd{Xt}
+  \hlkwa{for}\hlstd{(ii} \hlkwa{in} \hlnum{2}\hlopt{:}\hlstd{N)\{}
+    \hlstd{Yt[ii, ]} \hlkwb{<-} \hlstd{rho} \hlopt{*} \hlstd{Yt[ii}\hlopt{-}\hlnum{1}\hlstd{, ]} \hlopt{+} \hlstd{Xt[ii, ]}
+  \hlstd{\}}
+  \hlstd{Yt} \hlkwb{<-} \hlstd{Yt} \hlopt{%*%} \hlkwd{chol}\hlstd{(Sigma)} \hlopt{+} \hlkwd{t}\hlstd{(}\hlkwd{matrix}\hlstd{(dT,} \hlnum{2}\hlstd{, N)} \hlopt{*} \hlstd{mu)}
+  \hlstd{Yt}
+\hlstd{\}}
+\hlcom{## assign the storage}
+\hlstd{ar.sim} \hlkwb{<-} \hlstd{paths}
+\hlstd{alphaMat} \hlkwb{<-} \hlstd{alpha.data}\hlopt{$}\hlstd{ar}
+\hlstd{tauMat} \hlkwb{<-} \hlstd{tau.data}\hlopt{$}\hlstd{ar}
+\hlstd{SigmaMat} \hlkwb{<-} \hlstd{Sigma.data}\hlopt{$}\hlstd{ar}
+\hlstd{Mu} \hlkwb{<-} \hlstd{mu.data}\hlopt{$}\hlstd{ar}
+\hlcom{## computation}
+\hlkwd{system.time}\hlstd{(\{}
+  \hlkwa{for}\hlstd{(ii} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{npath)\{}
+    \hlkwa{if}\hlstd{(}\hlopt{!}\hlstd{(ii} \hlopt{%%} \hlnum{100}\hlstd{))\{}
+      \hlkwd{print}\hlstd{(ii)}
+    \hlstd{\}}
+    \hlstd{alpha} \hlkwb{<-} \hlstd{alphaMat[ii]}
+    \hlstd{rho} \hlkwb{<-} \hlstd{tauMat[ii]}
+    \hlstd{Sigma} \hlkwb{<-} \hlkwd{sigma.read}\hlstd{(SigmaMat, ii)}
+    \hlstd{mu} \hlkwb{<-} \hlstd{Mu[ii, ]}
+    \hlstd{Xt} \hlkwb{<-} \hlkwd{as.matrix}\hlstd{(ar.sim[ar.sim}\hlopt{$}\hlstd{ID} \hlopt{==} \hlstd{ii,}\hlopt{-}\hlnum{1}\hlstd{])}
+    \hlstd{N} \hlkwb{<-} \hlkwd{nrow}\hlstd{(Xt)}
+    \hlstd{Xt} \hlkwb{<-} \hlkwd{arSim}\hlstd{(alpha, rho, Sigma, mu, dT, N)}
+    \hlstd{ar.sim[ar.sim}\hlopt{$}\hlstd{ID} \hlopt{==} \hlstd{ii,}\hlopt{-}\hlnum{1}\hlstd{]} \hlkwb{<-} \hlstd{Xt}
+  \hlstd{\}}
+\hlstd{\})}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\subsection{Simulation of MA(1) model}
+Easiest way of simulating fBM process is to first simulate a series of fractional Gaussian noise and then take cumulative sums. Here is the simulation process:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{maSim} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{alpha}\hlstd{,} \hlkwc{rho}\hlstd{,} \hlkwc{Sigma}\hlstd{,} \hlkwc{mu}\hlstd{,} \hlkwc{dT}\hlstd{,} \hlkwc{N}\hlstd{)\{}
+  \hlstd{acf} \hlkwb{<-} \hlkwd{fbm.acf}\hlstd{(alpha, dT, N)}
+  \hlstd{Xt} \hlkwb{<-} \hlkwd{rSnorm}\hlstd{(}\hlkwc{n} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{acf} \hlstd{= acf)}
+  \hlstd{Xt} \hlkwb{<-} \hlkwd{apply}\hlstd{(Xt,} \hlnum{2}\hlstd{, cumsum)}
+  \hlstd{Yt} \hlkwb{<-} \hlstd{rho} \hlopt{*} \hlstd{Xt}
+  \hlkwa{for}\hlstd{(ii} \hlkwa{in} \hlnum{2}\hlopt{:}\hlstd{N)\{}
+    \hlstd{Yt[ii, ]} \hlkwb{<-} \hlstd{Yt[ii, ]} \hlopt{+} \hlstd{Xt[ii}\hlopt{-}\hlnum{1}\hlstd{, ]}
+  \hlstd{\}}
+  \hlstd{Yt} \hlkwb{<-} \hlstd{Yt} \hlopt{%*%} \hlkwd{chol}\hlstd{(Sigma)} \hlopt{+} \hlkwd{t}\hlstd{(}\hlkwd{matrix}\hlstd{(dT,} \hlnum{2}\hlstd{, N)} \hlopt{*} \hlstd{mu)}
+  \hlstd{Yt}
+\hlstd{\}}
+\hlcom{## assign the storage}
+\hlstd{ma.sim} \hlkwb{<-} \hlstd{paths}
+\hlstd{alphaMat} \hlkwb{<-} \hlstd{alpha.data}\hlopt{$}\hlstd{ma}
+\hlstd{tauMat} \hlkwb{<-} \hlstd{tau.data}\hlopt{$}\hlstd{ma}
+\hlstd{SigmaMat} \hlkwb{<-} \hlstd{Sigma.data}\hlopt{$}\hlstd{ma}
+\hlstd{Mu} \hlkwb{<-} \hlstd{mu.data}\hlopt{$}\hlstd{ma}
+\hlcom{## computation}
+\hlkwd{system.time}\hlstd{(\{}
+  \hlkwa{for}\hlstd{(ii} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{npath)\{}
+    \hlkwa{if}\hlstd{(}\hlopt{!}\hlstd{(ii} \hlopt{%%} \hlnum{100}\hlstd{))\{}
+      \hlkwd{print}\hlstd{(ii)}
+    \hlstd{\}}
+    \hlstd{alpha} \hlkwb{<-} \hlstd{alphaMat[ii]}
+    \hlstd{rho} \hlkwb{<-} \hlstd{tauMat[ii]}
+    \hlstd{Sigma} \hlkwb{<-} \hlkwd{sigma.read}\hlstd{(SigmaMat, ii)}
+    \hlstd{mu} \hlkwb{<-} \hlstd{Mu[ii, ]}
+    \hlstd{Xt} \hlkwb{<-} \hlkwd{as.matrix}\hlstd{(ma.sim[ma.sim}\hlopt{$}\hlstd{ID} \hlopt{==} \hlstd{ii,}\hlopt{-}\hlnum{1}\hlstd{])}
+    \hlstd{N} \hlkwb{<-} \hlkwd{nrow}\hlstd{(Xt)}
+    \hlstd{Xt} \hlkwb{<-} \hlkwd{maSim}\hlstd{(alpha, rho, Sigma, mu, dT, N)}
+    \hlstd{ma.sim[ma.sim}\hlopt{$}\hlstd{ID} \hlopt{==} \hlstd{ii,}\hlopt{-}\hlnum{1}\hlstd{]} \hlkwb{<-} \hlstd{Xt}
+  \hlstd{\}}
+\hlstd{\})}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\subsection{Simulation of Dynamic Error Model}
+Easiest way of simulating fBM process is to first simulate a series of fractional Gaussian noise and then take cumulative sums. Here is the simulation process:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{dynSim} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{alpha}\hlstd{,} \hlkwc{tau}\hlstd{,} \hlkwc{Sigma}\hlstd{,} \hlkwc{mu}\hlstd{,} \hlkwc{dT}\hlstd{,} \hlkwc{N}\hlstd{)\{}
+  \hlstd{acf} \hlkwb{<-} \hlkwd{fdyn.acf}\hlstd{(alpha, tau} \hlopt{*} \hlstd{dT, dT, N)}
+  \hlstd{Xt} \hlkwb{<-} \hlkwd{rSnorm}\hlstd{(}\hlkwc{n} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{acf} \hlstd{= acf)}
+  \hlstd{Xt} \hlkwb{<-} \hlkwd{apply}\hlstd{(Xt,} \hlnum{2}\hlstd{, cumsum)}
+  \hlstd{Xt} \hlkwb{<-} \hlstd{Xt} \hlopt{%*%} \hlkwd{chol}\hlstd{(Sigma)} \hlopt{+} \hlkwd{t}\hlstd{(}\hlkwd{matrix}\hlstd{(dT,} \hlnum{2}\hlstd{, N)} \hlopt{*} \hlstd{mu)}
+  \hlstd{Xt}
+\hlstd{\}}
+\hlcom{## assign the storage}
+\hlstd{dyn.sim} \hlkwb{<-} \hlstd{paths}
+\hlstd{alphaMat} \hlkwb{<-} \hlstd{alpha.data}\hlopt{$}\hlstd{dyn}
+\hlstd{tauMat} \hlkwb{<-} \hlstd{tau.data}\hlopt{$}\hlstd{dyn}
+\hlstd{SigmaMat} \hlkwb{<-} \hlstd{Sigma.data}\hlopt{$}\hlstd{dyn}
+\hlstd{Mu} \hlkwb{<-} \hlstd{mu.data}\hlopt{$}\hlstd{dyn}
+\hlcom{## computation}
+\hlkwd{system.time}\hlstd{(\{}
+  \hlkwa{for}\hlstd{(ii} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{npath)\{}
+    \hlkwa{if}\hlstd{(}\hlopt{!}\hlstd{(ii} \hlopt{%%} \hlnum{100}\hlstd{))\{}
+      \hlkwd{print}\hlstd{(ii)}
+    \hlstd{\}}
+    \hlstd{alpha} \hlkwb{<-} \hlstd{alphaMat[ii]}
+    \hlstd{tau} \hlkwb{<-} \hlstd{tauMat[ii]}
+    \hlstd{Sigma} \hlkwb{<-} \hlkwd{sigma.read}\hlstd{(SigmaMat, ii)}
+    \hlstd{mu} \hlkwb{<-} \hlstd{Mu[ii, ]}
+    \hlkwa{if}\hlstd{(tau} \hlopt{<} \hlnum{0.1}\hlstd{)\{}
+      \hlstd{dyn.sim[dyn.sim}\hlopt{$}\hlstd{ID} \hlopt{==} \hlstd{ii,}\hlopt{-}\hlnum{1}\hlstd{]} \hlkwb{<-} \hlnum{0}
+    \hlstd{\}}\hlkwa{else}\hlstd{\{}
+      \hlstd{Xt} \hlkwb{<-} \hlkwd{as.matrix}\hlstd{(dyn.sim[dyn.sim}\hlopt{$}\hlstd{ID} \hlopt{==} \hlstd{ii,}\hlopt{-}\hlnum{1}\hlstd{])}
+      \hlstd{N} \hlkwb{<-} \hlkwd{nrow}\hlstd{(Xt)}
+      \hlstd{Xt} \hlkwb{<-} \hlkwd{dynSim}\hlstd{(alpha, tau, Sigma, mu, dT, N)}
+      \hlstd{dyn.sim[dyn.sim}\hlopt{$}\hlstd{ID} \hlopt{==} \hlstd{ii,}\hlopt{-}\hlnum{1}\hlstd{]} \hlkwb{<-} \hlstd{Xt}
+    \hlstd{\}}
+  \hlstd{\}}
+\hlstd{\})}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\section{Model Validation}
+
+\subsection{Empirical MSD Estimate}
+In this part we are goint to estimate $\alpha$ parameter from the empirical MSD.\\
+For a 2-d movement $X(t) = \{X_1(t), X_2(t)\}$, its MSD is defined as
+\begin{align*}
+	\text{MSD}(t) = E[X(t) - X(0)]^2 = E[X_1(t) - X_1(0)]^2 + E[X_2(t) - X_2(0)]^2
+\end{align*}
+And for fBM processes, its MSD is defined by $D$ and $\alpha$:
+\[
+\text{MSD}(t) = D t^\alpha
+\]
+Thus we can estimate $\alpha$ in a model-free way by fitting
+\[
+\log \text{MSD}_t = \log D + \widehat{\alpha} \log t
+\]
+Here is the function \textit{msd} that returns the MSD of a time series and function \textit{msd2alpha} that returns the estimated $\alpha$ from MSD
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## compute the MSD of time series Xt}
+\hlstd{msd} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{Xt}\hlstd{,} \hlkwc{length} \hlstd{=} \hlnum{30}\hlstd{)\{}
+  \hlstd{d} \hlkwb{<-} \hlkwd{ncol}\hlstd{(Xt)}
+  \hlstd{eta} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{, length)}
+  \hlkwa{for}\hlstd{(ii} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{length)\{}
+    \hlkwa{for}\hlstd{(jj} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{d)\{}
+      \hlstd{eta[ii]} \hlkwb{<-} \hlstd{eta[ii]} \hlopt{+} \hlkwd{mean}\hlstd{(}\hlkwd{diff}\hlstd{(Xt[, jj],} \hlkwc{lag} \hlstd{= ii)}\hlopt{^}\hlnum{2}\hlstd{)}
+    \hlstd{\}}
+  \hlstd{\}}
+  \hlstd{eta}
+\hlstd{\}}
+\hlcom{## convert MSD into the alpha estimation}
+\hlstd{msd2alpha} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{eta}\hlstd{)\{}
+  \hlstd{N} \hlkwb{<-} \hlkwd{length}\hlstd{(eta)}
+  \hlstd{tSeq} \hlkwb{<-} \hlnum{1}\hlopt{:}\hlstd{N}
+  \hlstd{alpha} \hlkwb{<-} \hlkwd{lm}\hlstd{(}\hlkwd{log}\hlstd{(eta)}\hlopt{~}\hlkwd{log}\hlstd{(tSeq))}\hlopt{$}\hlstd{coef[}\hlnum{2}\hlstd{]}
+  \hlkwd{as.numeric}\hlstd{(alpha)}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+Here are procedures that computes the estimated $\alpha$ from MSD of simulation and its downsampling data.\\
+For original data:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## assign the storage}
+\hlstd{alphaMSD} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{, npath)}
+\hlstd{alphaMSD2} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{, npath)}
+\hlstd{alphaMSD3} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{, npath)}
+\hlstd{alphaMSD4} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{, npath)}
+\hlcom{## computation}
+\hlkwd{system.time}\hlstd{(\{}
+  \hlkwa{for}\hlstd{(ii} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{npath)\{}
+    \hlstd{Xt} \hlkwb{<-} \hlkwd{as.matrix}\hlstd{(paths[paths}\hlopt{$}\hlstd{ID} \hlopt{==} \hlstd{ii,}\hlopt{-}\hlnum{1}\hlstd{])}
+    \hlstd{dX2} \hlkwb{<-} \hlkwd{downSample}\hlstd{(Xt,} \hlkwc{step} \hlstd{=} \hlnum{2}\hlstd{)}
+    \hlstd{dX3} \hlkwb{<-} \hlkwd{downSample}\hlstd{(Xt,} \hlkwc{step} \hlstd{=} \hlnum{3}\hlstd{)}
+    \hlstd{dX4} \hlkwb{<-} \hlkwd{downSample}\hlstd{(Xt,} \hlkwc{step} \hlstd{=} \hlnum{4}\hlstd{)}
+    \hlstd{alphaMSD[ii]} \hlkwb{<-} \hlkwd{msd2alpha}\hlstd{(}\hlkwd{msd}\hlstd{(Xt, length))}
+    \hlstd{alphaMSD2[ii]} \hlkwb{<-} \hlkwd{msd2alpha}\hlstd{(}\hlkwd{msd}\hlstd{(dX2, length))}
+    \hlstd{alphaMSD3[ii]} \hlkwb{<-} \hlkwd{msd2alpha}\hlstd{(}\hlkwd{msd}\hlstd{(dX3, length))}
+    \hlstd{alphaMSD4[ii]} \hlkwb{<-} \hlkwd{msd2alpha}\hlstd{(}\hlkwd{msd}\hlstd{(dX4, length))}
+  \hlstd{\}}
+\hlstd{\})}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+Here are the model-free estimation of $\alpha$ for simulated data:\\
+Well, the results look really strange...
+\subsection{identifiability of $\rho$ and $\tau$}
+
+By comparing the estimation of $\tau$ with and without the knowledge that $\alpha = 1$ in dynamic error model, we can have some idea of the identifiability of $\rho$ in dynamic error model. Here is the estimation of $\tau$ given that $\alpha$
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## profile likelihood of dynamic model, alpha = 1}
+\hlstd{dyn.loglik.test} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{tau}\hlstd{,} \hlkwc{dX}\hlstd{,} \hlkwc{dT}\hlstd{,} \hlkwc{toep}\hlstd{)\{}
+  \hlstd{N} \hlkwb{<-} \hlkwd{nrow}\hlstd{(dX)}
+  \hlstd{acf1} \hlkwb{<-} \hlkwd{fdyn.acf}\hlstd{(}\hlnum{1}\hlstd{, tau} \hlopt{*} \hlstd{dT, dT, N)}
+  \hlstd{toep}\hlopt{$}\hlkwd{setAcf}\hlstd{(acf1)}
+  \hlkwd{lmn.prof}\hlstd{(}\hlkwc{Y} \hlstd{= dX,} \hlkwc{X} \hlstd{= dT,} \hlkwc{acf} \hlstd{= toep,} \hlkwc{noSigma} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+\hlstd{\}}
+\hlcom{## optimization over tau}
+\hlstd{dyn.mle.test} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{dX}\hlstd{,} \hlkwc{dT}\hlstd{,} \hlkwc{toep}\hlstd{)\{}
+  \hlstd{ans} \hlkwb{<-} \hlkwd{optimize}\hlstd{(}\hlkwc{f} \hlstd{= dyn.loglik.test,} \hlkwc{dX} \hlstd{= dX,} \hlkwc{dT} \hlstd{= dT,} \hlkwc{toep} \hlstd{= toep,} \hlkwc{interval} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{1}\hlstd{),}
+                  \hlkwc{maximum} \hlstd{=} \hlnum{TRUE}\hlstd{)}\hlopt{$}\hlstd{maximum}
+  \hlstd{ans}
+\hlstd{\}}
+\hlcom{## assign the storage}
+\hlstd{tau} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{, npath)}
+\hlcom{## computation}
+\hlkwd{system.time}\hlstd{(\{}
+  \hlkwa{for}\hlstd{(ii} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{npath)\{}
+    \hlkwa{if}\hlstd{(}\hlopt{!}\hlstd{(ii} \hlopt{%%} \hlnum{100}\hlstd{))\{}
+      \hlkwd{print}\hlstd{(ii)}
+    \hlstd{\}}
+    \hlstd{Xt} \hlkwb{<-} \hlkwd{as.matrix}\hlstd{(paths[paths}\hlopt{$}\hlstd{ID} \hlopt{==} \hlstd{ii,}\hlopt{-}\hlnum{1}\hlstd{])}
+    \hlstd{dX} \hlkwb{<-} \hlkwd{as.matrix}\hlstd{(}\hlkwd{apply}\hlstd{(Xt,} \hlnum{2}\hlstd{, diff))}
+    \hlstd{toep} \hlkwb{<-} \hlkwd{Toeplitz}\hlstd{(}\hlkwd{nrow}\hlstd{(dX))}
+    \hlstd{tau[ii]} \hlkwb{<-} \hlkwd{dyn.mle.test}\hlstd{(dX, dT, toep)}
+  \hlstd{\}}
+\hlstd{\})}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+Here is the estimation results:\\
+We also use this method to check the identifiability of $\rho$ parameter in AR(1) and MA(1) model, and here is the result:\\
+\subsection{Model Residules}
+One way to check whether $X_t$ follows estimated distribution
+\begin{align*}
+	X_t \sim MN(\mu, \Sigma, V)
+\end{align*}
+is to transform $X_t$ into the combination of some i.i.d. multivariate normal process. We have that
+\begin{align*}
+	 & A^{-1} \left(X_t - \mu\right) B^{-1} \sim MN(0, I_{d \times d}, I_{N \times N}) \\
+	 & AA^T = V, \quad B^TB = \Sigma
+\end{align*}
+Considering that $X_t$ is a linear time series, we use Choleski decomposition to obtain $A$, so that  $A$ is in the form of a lower-triangular matrix. By doing this $A X_t$ can be viewed as the time-ordered linear combination of time series $X_t$. On the other size, $\Sigma$ as a variance matrix that works as an permutation parameter in matrix Gaussian process, its square root should come from orthogonal decimposition, so that $A^{-1} \left(X_t - \mu\right) B^{-1}$ can be still interpreted as the convolution of two time series.\\
+Here is the function that ``normalize'' $X_t$:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{ToepNormal} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{dX}\hlstd{,} \hlkwc{acf}\hlstd{,} \hlkwc{Sigma}\hlstd{,} \hlkwc{mu}\hlstd{,} \hlkwc{dT}\hlstd{)\{}
+  \hlstd{N} \hlkwb{<-} \hlkwd{nrow}\hlstd{(dX)}
+  \hlstd{d} \hlkwb{<-} \hlkwd{ncol}\hlstd{(dX)}
+  \hlstd{dX} \hlkwb{<-} \hlstd{dX} \hlopt{-} \hlkwd{t}\hlstd{(}\hlkwd{matrix}\hlstd{(dT, d, N)} \hlopt{*} \hlstd{mu)}
+  \hlstd{dX} \hlkwb{<-} \hlkwd{cholXZ}\hlstd{(dX, acf)}
+  \hlstd{a1} \hlkwb{<-} \hlkwd{svd}\hlstd{(Sigma)}
+  \hlstd{InvSig} \hlkwb{<-} \hlstd{a1}\hlopt{$}\hlstd{u} \hlopt{%*%} \hlkwd{diag}\hlstd{(}\hlkwd{sqrt}\hlstd{(}\hlnum{1}\hlopt{/}\hlstd{a1}\hlopt{$}\hlstd{d))}
+  \hlstd{dX} \hlkwb{<-} \hlstd{dX} \hlopt{%*%} \hlstd{InvSig}
+  \hlkwd{ad.test}\hlstd{(dX[,}\hlnum{1}\hlstd{])}\hlopt{$}\hlstd{p.value}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+In order to check whether $A^{-1} \left(X_t - \mu\right) B^{-1}$ follows standard matrix Gaussian distribution, we need to test whether its first column follows standard Gaussian process using Anderson-Darling test. Here is the code for computing the p-value of the fBM simulation data:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## assign the storage}
+\hlstd{pvalue.fbm} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{, npath)}
+\hlstd{alphaMat} \hlkwb{<-} \hlstd{alpha.data}\hlopt{$}\hlstd{fbm}
+\hlstd{SigmaMat} \hlkwb{<-} \hlstd{Sigma.data}\hlopt{$}\hlstd{fbm}
+\hlstd{Mu} \hlkwb{<-} \hlstd{mu.data}\hlopt{$}\hlstd{fbm}
+\hlcom{## computation}
+\hlkwd{system.time}\hlstd{(\{}
+  \hlkwa{for}\hlstd{(ii} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{npath)\{}
+    \hlkwa{if}\hlstd{(}\hlopt{!}\hlstd{(ii} \hlopt{%%} \hlnum{100}\hlstd{))\{}
+      \hlkwd{print}\hlstd{(ii)}
+    \hlstd{\}}
+    \hlstd{alpha} \hlkwb{<-} \hlstd{alphaMat[ii]}
+    \hlstd{Sigma} \hlkwb{<-} \hlkwd{sigma.read}\hlstd{(SigmaMat, ii)}
+    \hlstd{mu} \hlkwb{<-} \hlstd{Mu[ii, ]}
+    \hlstd{Xt} \hlkwb{<-} \hlkwd{as.matrix}\hlstd{(paths[paths}\hlopt{$}\hlstd{ID} \hlopt{==} \hlstd{ii,}\hlopt{-}\hlnum{1}\hlstd{])}
+    \hlstd{dX} \hlkwb{<-} \hlkwd{as.matrix}\hlstd{(}\hlkwd{apply}\hlstd{(Xt,} \hlnum{2}\hlstd{, diff))}
+    \hlstd{acf1} \hlkwb{<-} \hlkwd{fbm.acf}\hlstd{(alpha, dT,} \hlkwd{nrow}\hlstd{(dX))}
+    \hlstd{pvalue.fbm[ii]} \hlkwb{<-} \hlkwd{ToepNormal}\hlstd{(dX, acf1, Sigma, mu, dT)}
+  \hlstd{\}}
+\hlstd{\})}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+Process for computing the p-value for remaining models are very similar. \\
+Here is the summary of p-value of four different models:\\
+And following is the proportion of paths that p-value is greater than 5\%:
+\begin{center}
+\begin{tabular}{ |c|c|c|c|c| } 
+ \hline
+  & fBM & dynamic & AR(1) & MA(1) \\
+  \hline
+ p-value & 0.723 & 0.722 & 0.729 & 0.882 \\ 
+ \hline
+\end{tabular}
+\end{center}
+\end{document}

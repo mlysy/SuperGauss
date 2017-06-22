@@ -12,18 +12,27 @@ cholZX(Z, acf)
 cholXZ(X, acf)
 }
 \arguments{
-\item{Z}{\code{n x p} matrix of residuals.}
+\item{Z}{\eqn{N \times P} matrix of residuals.}
 
-\item{acf}{vector of length \code{n}, autocorrelation of Toeplitz matrix.}
+\item{acf}{vector of length \eqn{N}, autocorrelation of Toeplitz matrix.}
 
-\item{X}{\code{n x p} matrix of observations.}
+\item{X}{\eqn{N \times P} matrix of observations.}
 }
 \value{
-An \code{n x p} matrix.
+An \eqn{N \times P} matrix.
 }
 \description{
 Compute Choleski decomposition and multiply by another matrix, or solve Choleski system of equations.
 }
 \details{
-\code{cholZX} computes \code{X = chol(toeplitz(acf))' Z}, and \code{cholXZ} computes \code{Z = solve(chol(toeplitz(acf))', X)}.  Both are done with Durbin-Levinson algorithm.
+\code{cholZX} computes \code{X = chol(toeplitz(acf))' Z}, and \code{cholXZ} computes 
+\code{Z = solve(chol(toeplitz(acf))', X)}.  Both are done with Durbin-Levinson algorithm.
+}
+\examples{
+N <- 30
+P <- 4 
+Mat <- matrix(rnorm(N*P), N, P)
+acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
+cholZX(Z = Mat, acf = acf)
+cholXZ(X = Mat, acf = acf)
 }
