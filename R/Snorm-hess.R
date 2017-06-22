@@ -2,21 +2,29 @@
 #'
 #' Efficient calculation of the Hessian matrix of the log-likelihood of stationary Gaussian data.
 #' @note package "SuperGauss" is required
-#' @param X \code{n x d} matrix, d i.i.d. vector follows N(mean, Variance).
-#' @param mean \code{n} vector or matrix.
-#' @param acf \code{n} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf
-#' @param dmean \code{n x p} matrix, where p is the number of parameters, each column is the partial derivative of mean
-#' @param dacf \code{n x p} matrix, each column is the partial deruvative of acf
-#' @param d2mean \code{n x p x p} array
-#' @param d2acf \code{n x p x p} array
-#' @note if d2mean and d2acf is \code{n x 1} matrix or array, it only works when p = 1
+#' @param X \eqn{n \times d} matrix, d i.i.d. vector follows N(mean, Variance).
+#' @param mean \eqn{n} vector or matrix.
+#' @param acf \eqn{n} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf
+#' @param dmean \eqn{n \times p} matrix, where p is the number of parameters, each column is the partial derivative of mean
+#' @param dacf \eqn{n \times p} matrix, each column is the partial deruvative of acf
+#' @param d2mean \eqn{n \times p \times p} array
+#' @param d2acf \eqn{n \times p \times p} array
+#' @note if d2mean and d2acf is \eqn{n \times 1} matrix or array, it only works when p = 1
 #' @return The Hessian matrix of the log-likelihood.
+#' @examples 
+#' N <- 30
+#' p <- 4
+#' X <- as.matrix(rnorm(N))
+#' mean <- as.matrix(rnorm(N))
+#' acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
+#' acf <- Toeplitz(acf)
+#' dmean <- matrix(rnorm(N*p), N, p)
+#' dacf <- matrix(rnorm(N*p), N, p)
+#' d2mean <- array(rnorm(N*p*p), dim = c(N, p, p))
+#' d2acf <- array(rnorm(N*p*p), dim = c(N, p, p))
+#' Snorm.Hess(X, mean, acf, dmean, dacf, d2mean, d2acf)
 #' @export
-Snorm.Hess <- function(X, mean, acf, dmean, dacf, d2mean, d2acf, Toep, debug = FALSE){
-  if(debug){
-    browser()
-  }
-  
+Snorm.Hess <- function(X, mean, acf, dmean, dacf, d2mean, d2acf){
   if(is.vector(X)){
     n <- length(X)
     X <- matrix(X, n, 1)
@@ -42,25 +50,26 @@ Snorm.Hess <- function(X, mean, acf, dmean, dacf, d2mean, d2acf, Toep, debug = F
     }
   }
   
-  if(length(acf) != n){
-    stop("acf has incompatible dimension with X")
-  }
-  
-  if(missing(Toep)){
-    Toep <- Toeplitz(n)
-  } else{
-    if(class(Toep) != "Toeplitz_Cpp"){
-      stop("Toep should be of class \"Toeplitz\"")
-    } else{
-      if(dim(Toep) != n){
-        stop("Toep has incompatible dimension with X")
-      }
+  if(class(acf) == "Toeplitz_Matrix"){
+    # is Toeplitz
+    if(ncol(acf) != n){
+      stop("acf has incompatible dimension with X")
     }
-  } 
+  }else{
+    if(is.vector(acf)){
+      if(length(acf) != n){
+        stop("acf has incompatible dimension with X")
+      }else{
+        acf <- Toeplitz(acf)
+      }
+    }else{
+      stop("acf should be either vector or Toeplitz class")
+    }
+  }
   
   if(is.vector(dacf)){
     p <- 1
-    dacf <- matrix(dacf, ncol = 1)
+    dacf <- as.matrix(dacf)
   } else{
     p <- ncol(dacf)
   }
@@ -111,34 +120,33 @@ Snorm.Hess <- function(X, mean, acf, dmean, dacf, d2mean, d2acf, Toep, debug = F
       stop("dimension of d2acf is incompatible with dacf")
     }
   }
-  
-  Toep$setAcf(acf)
+  acf.vec <- acf$getAcf()
   X <- X - mean
-  SigX <- solve(Toep, X)     # stores Sigma^-1 * X
+  SigX <- solve(acf, X)     # stores Sigma^-1 * X
   hess <- matrix(NA, p, p)
   SigMu <- matrix(NA, n, p) # stores Sigma^-1 * Mean_i
   for(ii in 1:p){
-    SigMu[,ii] <- solve(Toep, dmean[, ii])
+    SigMu[,ii] <- solve(acf, dmean[, ii])
   }
   Sig2X <- matrix(NA, n, p) # stores Sigma_i * SigX
   for(ii in 1:p){
-    Toep$setAcf(dacf[, ii])
-    Sig2X[, ii] <- Toep %*% SigX
+    acf$setAcf(dacf[, ii])
+    Sig2X[, ii] <- acf %*% SigX
   }
   Sigd2X <- matrix(NA, p, p) # stores SigX' * Sigma_ij * SigX
   for(ii in 1:p){
     for(jj in ii:p){ # symmetric hessian matrix
-      Toep$setAcf(d2acf[, ii, jj])
-      Sigd2X[ii, jj] <- crossprod(SigX, Toep %*% SigX)
+      acf$setAcf(d2acf[, ii, jj])
+      Sigd2X[ii, jj] <- crossprod(SigX, acf %*% SigX)
     }
   }
-  Toep$setAcf(acf)
+  acf$setAcf(acf.vec)
   for(ii in 1:p){
     for(jj in ii:p){ # symmetric hessian matrix
       hess[ii, jj] <- crossprod(d2mean[, ii, jj], SigX) - crossprod(SigMu[,ii], Sig2X[, jj]) -
-        crossprod(SigMu[,jj], Sig2X[, ii]) - crossprod(dmean[, ii], solve(Toep, dmean[, jj])) -
-        crossprod(Sig2X[, jj], solve(Toep, Sig2X[, ii])) - Toep$traceT2(d2acf[, ii, jj]) / 2 +
-        Toep$traceT4(dacf[, jj], dacf[, ii]) / 2
+        crossprod(SigMu[,jj], Sig2X[, ii]) - crossprod(dmean[, ii], solve(acf, dmean[, jj])) -
+        crossprod(Sig2X[, jj], solve(acf, Sig2X[, ii])) - acf$traceT2(d2acf[, ii, jj]) / 2 +
+        acf$traceT4(dacf[, jj], dacf[, ii]) / 2
     }
   }
   hess <- hess + Sigd2X / 2

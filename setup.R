@@ -3,13 +3,14 @@
 # for recompiling package
 # first quit R, then setwd() to where setup.R is found. then:
 # pkg.path <- "D:/GitHub/SuperGauss"
-#pkg.path <- "c:/Users/Jerome/Documents/R/SuperGauss"
+# pkg.path <- "c:/Users/Jerome/Documents/R/SuperGauss"
 pkg.path <- getwd()
 
 #require(Rcpp)
 #require(devtools)
 
 # regenerates Rcpp interface (i.e., RcppExports)
+pkg.path <- "D:/GitHub/SuperGauss"
 Rcpp::compileAttributes(pkgdir = pkg.path)
 devtools::document(pkg = pkg.path)
 devtools::install(pkg = pkg.path) # installs the package
@@ -17,6 +18,12 @@ devtools::build(pkg = pkg.path) # builds a tar.gz file
 
 # restart R before testing changes
 testthat::test_package("SuperGauss")
+
+# generating the pdf manual using rd file
+pack <- "SuperGauss"
+path <- find.package(pack)
+system(paste(shQuote(file.path(R.home("bin"), "R")),
+             "CMD", "Rd2pdf", shQuote(path)))
 
 build(pkg = pkg.path)
 
@@ -28,7 +35,6 @@ pkg.path <- "c:/Users/Jerome/Documents/R/test/fftw"
 cmd <- file.path(R.home(component = "bin"),
                  paste0("R CMD INSTALL ", pkg.path))
 compiled <- system(cmd)
-
 
 # First Time Installation -------------------------------------------------
 

@@ -1,13 +1,26 @@
 #' @name Choleski
 #' @aliases cholXZ cholZX
 #' @title Toeplitz variance matrix Choleski decomposition
-#' @description Compute Choleski decomposition and multiply by another matrix, or solve Choleski system of equations.
-#' @param X \code{n x p} matrix of observations.
-#' @param Z \code{n x p} matrix of residuals.
-#' @param acf vector of length \code{n}, autocorrelation of Toeplitz matrix.
-#' @details \code{cholZX} computes \code{X = chol(toeplitz(acf))' Z}, and \code{cholXZ} computes \code{Z = solve(chol(toeplitz(acf))', X)}.  Both are done with Durbin-Levinson algorithm.
-#' @return An \code{n x p} matrix.
+#' @description 
+#' Compute Choleski decomposition and multiply by another matrix, or solve Choleski system of equations.
+#' @param X \eqn{n \times p} matrix of observations.
+#' @param Z \eqn{n \times p} matrix of residuals.
+#' @param acf vector of length \eqn{n}, autocorrelation of Toeplitz matrix.
+#' @details 
+#' \itemize{
+#'   \item{1}{\code{cholZX} computes \code{X = chol(toeplitz(acf))' Z}}
+#'   \item{2}{\code{cholXZ} computes\code{Z = solve(chol(toeplitz(acf))', X)}}
+#' }
+#' Both are done with Durbin-Levinson algorithm.
+#' @return An \eqn{n \times p} matrix.
 #' @rdname Choleski
+#' @examples
+#' n <- 30
+#' p <- 4 
+#' Mat <- matrix(rnorm(n * p), n, p)
+#' acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
+#' cholZX(Z = Mat, acf = acf)
+#' cholXZ(X = Mat, acf = acf)
 #' @export
 cholZX <- function(Z, acf) {
   n <- length(acf)

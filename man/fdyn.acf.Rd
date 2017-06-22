@@ -4,8 +4,24 @@
 \alias{fdyn.acf}
 \title{ACF of fBM + Dynamic Error Increments}
 \usage{
-fdyn.acf(alpha, sigma, dT, N)
+fdyn.acf(alpha, tau, dT, N)
+}
+\arguments{
+\item{alpha}{Subdiffusion exponent}
+
+\item{tau}{Width of averaging time-window.}
+
+\item{dT}{interobservation time.}
+
+\item{N}{Number of increment observations.}
 }
 \description{
 ACF of fBM + Dynamic Error Increments
+}
+\details{
+this function returns the autocorrelation of the increment of \eqn{Y_t}, the integral of 
+fBM process \eqn{X_t} with subdiffusion exponent \eqn{\alpha} \deqn{Y_t = \int_{0}^{\tau} X(t-s)ds}
+}
+\examples{
+fdyn.acf(alpha = 0.8, tau = 1/600, dT = 1/60, N = 200)
 }

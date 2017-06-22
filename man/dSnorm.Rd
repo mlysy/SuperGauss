@@ -4,14 +4,14 @@
 \alias{dSnorm}
 \title{Density of a Stationary Gaussian Process}
 \usage{
-dSnorm(X, mean, acf, Toep, log = FALSE)
+dSnorm(X, mean, acf, log = FALSE)
 }
 \arguments{
-\item{X}{\code{n x d} matrix, d i.i.d. vector follows N(mean, Variance)}
+\item{X}{\eqn{N \times d} matrix, d i.i.d. vector follows N(mean, Variance)}
 
-\item{mean}{\code{n} vector or matrix}
+\item{mean}{\eqn{N} vector or matrix}
 
-\item{acf}{\code{n} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
+\item{acf}{\eqn{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
 
 \item{log}{logical, if \code{TRUE} returns log-densities.}
 
@@ -24,4 +24,13 @@ Efficient density evaluation for the multivariate normal distribution with Toepl
 package "SuperGauss" is required
 
 When input {X, mean, acf} data type can be either vector or matrix, if vector, convert it into \code{n x 1} matrix
+}
+\examples{
+N <- 30
+d <- 4
+X <- matrix(rnorm(N*d), N, d)
+mean <- rnorm(N)
+acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
+acf <- Toeplitz(acf)
+dSnorm(X, mean = mean, acf = acf, log = TRUE)
 }

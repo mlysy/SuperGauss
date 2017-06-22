@@ -9,184 +9,179 @@
 setwd("D:/GitHub/SuperGauss/vignettes")
 require(numDeriv)
 require(SuperGauss)
-require(fftw)
-source("acf-functions.R")
+require(LMN)
+require(multiplot)
 
 # Data Simulation ---------------------------------------------------------
 
-# model: fBM + stochastic drift
+# model: 1-d fBM time series
 N <- 2000
-d <- 1
 dT <- 1/60
-H <- 0.4
-lambda <- 200 * dT
-mu <- 0.5
-theta <- c(mu, H, lambda)
+alpha <- 0.8
+acf <- fbm.acf(alpha = alpha, dT = dT, N = N)
+dX <- rSnorm(n = 1, acf = acf)
+Xt <- cumsum(dX)
+tSeq <- 1:N * dT
+plot(x = tSeq, y = Xt, col = "blue", type = "l", xlab = "", ylab = "", 
+     main = "simulation of 1-d fBM time series")
 
-d.drift <- mean.fun(mu, dT, N)
-d.fbm <- rSnorm(d, acf = fbm.acf(H, dT, N))
-d.exp2 <- rSnorm(d, acf = exp2.acf(lambda, dT, N))
 
-dX <- matrix(d.drift + d.fbm + d.exp2, N)
-drift <- cumsum(matrix(d.drift + d.fbm, N))
-vol <- cumsum(matrix(d.exp2, N))
-X <- drift + vol
-rng <- range(c(X, drift, vol))
-plot(X, col = "blue", type = "l", ylim = rng, xlab = "", ylab = "")
-par(new = TRUE)
-plot(drift, col = "red", type = "l", ylim = rng, xlab = "", ylab = "")
-par(new = TRUE)
-plot(vol, col = "green", type = "l", ylim = rng, xlab = "", ylab = "")
+# Inference, one parameter case, ------------------------------------------
+# In order to keep things simple, mu = 0 and Sigma = Identity matrix
+# fBM process with parameter alpha: Xt ~ N(0, V(alpha))
 
-# Parameter Estimation Using Newton-Raphson -------------------------------
-
-acf.fun <- function(H, lambda, dT = dT, N = N){
-  acf1 <- fbm.acf(H, dT, N)
-  acf2 <- exp2.acf(lambda, dT, N)
-  matrix(acf1 + acf2, N, 1)
+# functions for computing the gradiant and hessian of fbm.acf
+fbm.acf.grad <- function(alpha, dT, N) {
+  if(N == 1) {
+    dacf <- dT^alpha * log(alpha)
+  } else {
+    dacf <- c(0, (dT*(1:N))^alpha * log(dT*(1:N)))
+    dacf <- .5 * (dacf[1:N+1] + c(dacf[2], dacf[1:(N-1)]) - 2*dacf[1:N])
+  }
+  dacf
 }
 
-d.mu <- function(mu, dT, N){
-  2 * mu * dT * matrix(1, N, 1)
-}
-
-d.fbm <- function(H, dT = dT, N = N){
-  acf <- 2 * (dT*(0:N+1))^(2*H) * log(dT*(0:N+1))
-  acf <- -1/2 * acf2incr(acf)
-  matrix(acf, N, 1)
-}
-
-d.exp2 <- function(lambda, dT = dT, N = N){
-  acf <- 2 * (dT*(0:N))^2 * exp(-(dT*(0:N)/lambda)^2) / lambda^3
-  acf <- acf2incr(acf)
-  matrix(acf, N, 1)
-}
-
-d2.mu <- function(mu, dT, N){
-  2 * dT * matrix(1, N, 1)
-}
-
-d2.fbm <- function(H, dT = dT, N = N){
-  acf <- 4 * (dT*(0:N+1))^(2*H) * log(dT*(0:N+1))^2
-  acf <- -1/2 * acf2incr(acf)
-  matrix(acf, N, 1)
-}
-
-d2.exp2 <- function(lambda, dT = dT, N = N){
-  acf <- (4 * (dT*(0:N))^4 - 6 * (dT*(0:N))^2 * lambda^2) * exp(-(dT*(0:N)/lambda)^2) / lambda^6
-  acf <- acf2incr(acf)
-  matrix(acf, N, 1)
+fbm.acf.hess <- function(alpha, dT, N) {
+  if(N == 1) {
+    d2acf <- dT^alpha * log(alpha)^2
+  } else {
+    d2acf <- c(0, (dT*(1:N))^alpha * log(dT*(1:N))^2)
+    d2acf <- .5 * (d2acf[1:N+1] + c(d2acf[2], d2acf[1:(N-1)]) - 2*d2acf[1:N])
+  }
+  d2acf
 }
 
 # Newton-Raphson Using Function 'nlm'
 
-dSnorm.para <- function(theta, X, dT, Toep){
-  n <- nrow(X)
-  mu <- theta[1]
-  H <- theta[2]
-  lambda <- theta[3]
-  p <- length(theta)
-  mean <- mean.fun(mu, dT, n)
-  acf <- acf.fun(H, lambda, dT, n)
-  
-  dmean <- matrix(0, n, p)
-  dmean[, 1] <- d.mu(mu, dT, n)
-  
-  dacf <- matrix(0, n, p)
-  dacf[, 2] <- d.fbm(H, dT, n)
-  dacf[, 3] <- d.exp2(lambda, dT, n)
-  
-  d2mean <- array(0, c(n, 3, 3))
-  d2mean[, 1, 1] <- d2.mu(mu, dT, n)
-  
-  d2acf <- array(0, c(n, 3, 3))
-  d2acf[, 2, 2] <- d2.fbm(H, dT, n)
-  d2acf[, 3, 3] <- d2.exp2(lambda, dT, n)
-  
-  X1 <- X - mean
-  Toep$AcfInput(acf)
-  density <- crossprod(X1, Toep$Solve(X1))
-  density <- (density + Toep$Det()) / 2
-  attr(density, "gradient") <- -1 * Snorm.grad(X, mean, acf, dmean, dacf, Toep)
-  attr(density, "hessian") <- -1 * Snorm.Hess(X, mean, acf, dmean, dacf, d2mean, d2acf, Toep)
+fbm.loglik <- function(alpha, Xt, dT, acf){
+  if(alpha <= 0 || alpha >= 2){
+    density <- Inf
+  }else{
+    dX <- c(Xt[1], diff(Xt))
+    N <- length(dX)
+    
+    acf1 <- fbm.acf(alpha = alpha, dT = dT, N = N)
+    acf$setAcf(acf1)
+    dacf <- fbm.acf.grad(alpha = alpha, dT = dT, N = N)
+    d2acf <- fbm.acf.hess(alpha = alpha, dT = dT, N = N)
+
+    density <- -1 * dSnorm(X = dX, mean = 0, acf = acf, log = TRUE)
+    attr(density, "gradient") <- -1 * Snorm.grad(X = dX, mean = 0, acf = acf, dmean = 0, dacf = dacf)
+    acf$setAcf(acf1)
+    attr(density, "hessian") <- -1 * Snorm.Hess(X = dX, mean = 0, acf = acf, dmean = 0, dacf = dacf, 
+                                                d2mean = 0, d2acf = d2acf)
+  }
   density
 }
 
-Toep <- new(Toeplitz, N)
-theta.start <- c(0.1, 0.5, 3)
-theta.nlm <- nlm(f = dSnorm.para, p = theta.start, X = dX, dT = dT, Toep = Toep)
-signif(cbind(theta.nlm$estimate, theta))
+acf <- Toeplitz(N)
+theta.nlm <- nlm(f = fbm.loglik, p = 1, X = Xt, dT = dT, acf = acf)
+signif(c(alpha, theta.nlm$estimate), digits = 3)
 
+# Inference, two parameter case, ------------------------------------------
+# In order to keep things simple, mu = 0 and Sigma = Identity matrix
+# static fbm error process with parameter alpha and sigma: 
+# Xt = fBM(alpha) + sigma * eps, where eps is standard white noise 
 
-# Drift Simulation --------------------------------------------------------
-
-# Drift simulation technique with true parameter
-dT <- 1/60
+# simulating the matern process
+alpha <- 0.8
+sigma <- 0.2
+dT <- 1/30
 N <- 2000
-param <- theta
-mu.para <- param[1]
-H.para <- param[2]
-lambda.para <- param[3]
-Toep <- new(Toeplitz, N)
-mean <- mean.fun(mu.para, dT, N)
-acf1 <- fbm.acf(H.para, dT, N)
-acf2 <- exp2.acf(lambda.para, dT, N)
+acf <- fbm.acf(alpha = alpha, dT = dT, N = N)
+dX <- rSnorm(n = 1, acf = acf)
+Xt <- cumsum(dX)
+Xt <- Xt + sigma * rnorm(N)
+tSeq <- 1:N * dT
+plot(x = tSeq, y = Xt, col = "blue", type = "l", xlab = "", ylab = "", 
+     main = "simulation of 1-d matern time series")
 
-# simu
-nSim <- 100
-path.sim <- matrix(NA, N, nSim)
-e1 <- rSnorm(nSim, acf = acf1)
-e2 <- rSnorm(nSim, acf = acf2)
-Toep$AcfInput(acf1 + acf2)
-
-for(ii in 1:nSim){
-  sim <- Toep$Solve(dX - mean - e1[, ii] - e2[, ii])
-  Toep$AcfInput(acf1)
-  path.sim[, ii] <- mean + e1[, ii] + Toep$Mult(sim)
+# functions for computing the gradiant and hessian of fbm.acf
+static.acf <- function(theta, dT, N){
+  alpha <- theta[1]
+  sigma <- theta[2]
+  acf <- fbm.acf(alpha = alpha, dT = dT, N = N) + sigma^2 * c(2, -1, rep(0, N - 2))
+  acf
 }
 
-path.sim.cum <- apply(path.sim, 2, cumsum)
-
-band.sim <- conf.band(path.sim.cum)
-rng <- range(c(band.sim, drift))
-plot(drift, col = "red", type = "l", ylim = rng, xlab = "", ylab = "")
-par(new = TRUE)
-plot(band.sim[,1], col = "blue", type = "l", ylim = rng, xlab = "", ylab = "")
-par(new = TRUE)
-plot(band.sim[,2], col = "blue", type = "l", ylim = rng, xlab = "", ylab = "")
-
-
-# Drift simulation technique with estimated parameter
-dT <- 1/60
-N <- 2000
-param <- theta.nlm$estimate
-mu.para <- param[1]
-H.para <- param[2]
-lambda.para <- param[3]
-Toep <- new(Toeplitz, N)
-mean <- mean.fun(mu.para, dT, N)
-acf1 <- fbm.acf(H.para, dT, N)
-acf2 <- exp2.acf(lambda.para, dT, N)
-
-# simu
-nSim <- 100
-path.sim <- matrix(NA, N, nSim)
-e1 <- rSnorm(nSim, acf = acf1)
-e2 <- rSnorm(nSim, acf = acf2)
-Toep$AcfInput(acf1 + acf2)
-
-for(ii in 1:nSim){
-  sim <- Toep$Solve(dX - mean - e1[, ii] - e2[, ii])
-  Toep$AcfInput(acf1)
-  path.sim[, ii] <- mean + e1[, ii] + Toep$Mult(sim)
+static.acf.grad <- function(theta, dT, N) {
+  alpha <- theta[1]
+  sigma <- theta[2]
+  dacf <- matrix(NA, N, 2)
+  if(N == 1) {
+    dacf[, 1] <- dT^alpha * log(alpha)
+    dacf[, 2] <- 4 * sigma
+  } else {
+    dacf1 <- c(0, (dT*(1:N))^alpha * log(dT*(1:N)))
+    dacf[, 1] <- .5 * (dacf1[1:N+1] + c(dacf1[2], dacf1[1:(N-1)]) - 2*dacf1[1:N])
+    dacf[, 2] <- 2 * sigma * c(2, -1, rep(0, N-2))
+  }
+  dacf
 }
 
-path.sim.cum <- apply(path.sim, 2, cumsum)
+static.acf.hess <- function(theta, dT, N) {
+  alpha <- theta[1]
+  sigma <- theta[2]
+  d2acf <- array(0, c(N, 2, 2))
+  if(N == 1) {
+    d2acf[, 1, 1] <- dT^alpha * log(alpha)^2
+    d2acf[, 2, 1] <- 0
+    d2acf[, 1, 2] <- 0
+    d2acf[, 2, 2] <- 4
+  } else {
+    d2acf1 <- c(0, (dT*(1:N))^alpha * log(dT*(1:N))^2)
+    d2acf[, 1, 1] <- .5 * (d2acf1[1:N+1] + c(d2acf1[2], d2acf1[1:(N-1)]) - 2*d2acf1[1:N])
+    d2acf[, 1, 2] <- rep(0, N)
+    d2acf[, 2, 1] <- rep(0, N)
+    d2acf[, 2, 2] <- 2 * c(2, -1, rep(0, N-2))
+  }
+  d2acf
+}
 
-band.sim <- conf.band(path.sim.cum)
-rng <- range(c(band.sim, drift))
-plot(drift, col = "red", type = "l", ylim = rng, xlab = "", ylab = "")
-par(new = TRUE)
-plot(band.sim[,1], col = "blue", type = "l", ylim = rng, xlab = "", ylab = "")
-par(new = TRUE)
-plot(band.sim[,2], col = "blue", type = "l", ylim = rng, xlab = "", ylab = "")
+# Newton-Raphson Using Function 'nlm'
+
+static.loglik <- function(theta, Xt, dT, acf){
+  if(theta[1] <= 0 || theta[1] >= 2){
+    density <- Inf
+  }else{
+    dX <- c(Xt[1], diff(Xt))
+    N <- length(dX)
+    
+    acf1 <- static.acf(theta = theta, dT = dT, N = N)
+    acf$setAcf(acf1)
+    dacf <- static.acf.grad(theta = theta, dT = dT, N = N)
+    d2acf <- static.acf.hess(theta = theta, dT = dT, N = N)
+    density <- -1 * dSnorm(X = dX, mean = 0, acf = acf, log = TRUE)
+    attr(density, "gradient") <- -1 * Snorm.grad(X = dX, mean = 0, acf = acf, dmean = 0, dacf = dacf)
+    acf$setAcf(acf1)
+    attr(density, "hessian") <- -1 * Snorm.Hess(X = dX, mean = 0, acf = acf, dmean = 0, dacf = dacf, 
+                                                d2mean = 0, d2acf = d2acf)
+  }
+  density
+}
+
+static.loglik.alt <- function(theta, Xt, dT, acf){
+  if(theta[1] <= 0 || theta[1] >= 2 || theta[2] < 0){
+    density <- Inf
+  }else{
+    dX <- c(Xt[1], diff(Xt))
+    N <- length(dX)
+    
+    acf1 <- static.acf(theta = theta, dT = dT, N = N)
+    acf$setAcf(acf1)
+    density <- -1 * dSnorm(X = dX, mean = 0, acf = acf, log = TRUE)
+  }
+  density
+}
+
+acf <- Toeplitz(N)
+system.time({
+  theta.nlm <- nlm(f = static.loglik, p = c(1, 0.1), X = Xt, dT = dT, acf = acf)
+})
+# time comparison
+system.time({
+  theta.nlm.alt <- nlm(f = static.loglik.alt, p = c(1, 0.1), X = Xt, dT = dT, acf = acf)
+})
+theta.nlm$estimate
+theta.nlm.alt$estimate
+signif(c(alpha, sigma, theta.nlm$estimate), digits = 3)

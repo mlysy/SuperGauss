@@ -16,11 +16,15 @@ matern.acf(lambda, nu, dT, N, incr = TRUE)
 \item{N}{Number of increment observations.}
 }
 \value{
-An autocorrelation vector of length \code{N}.
+An autocorrelation vector of length \eqn{N}.
 }
 \description{
 Autocorrelation of Matern
 }
 \details{
-the Matern autocorrelation is
+the Matern autocorrelation is given by 
+\deqn{\frac{2^{1-\nu}}{\Gamma(\nu)} \left(\sqrt{2\nu}\frac{n\Delta t}{\lambda}\right)^\nu K_\nu\left(\sqrt{2\nu} \frac{n\Delta t}{\lambda}\right)}
+}
+\examples{
+matern.acf(lambda = 1, nu = 3/2, dT = 1/60, N = 200, incr = FALSE)
 }

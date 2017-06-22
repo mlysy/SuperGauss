@@ -35,3 +35,7 @@ The superfast method fails when the circulant matrix is not positive definite.  
 \item \code{nkeep}: The autocorrelation is decaying too slowly on the given timescale. To mitigate this it is possible to increase the time horizon, i.e. input a longer \code{acf} and keep the first \code{nkeep} time series observations. For consistency, \code{nkeep} also applies to Durbin-Levinson method.
 }
 }
+\examples{
+acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = 200)
+rSnorm(n = 3, acf = acf)
+}

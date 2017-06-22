@@ -4,22 +4,22 @@
 \alias{Snorm.Hess}
 \title{Hessian of a Stationary Gaussian Log-Likelihood}
 \usage{
-Snorm.Hess(X, mean, acf, dmean, dacf, d2mean, d2acf, Toep, debug = FALSE)
+Snorm.Hess(X, mean, acf, dmean, dacf, d2mean, d2acf)
 }
 \arguments{
-\item{X}{\code{n x d} matrix, d i.i.d. vector follows N(mean, Variance).}
+\item{X}{\eqn{n \times d} matrix, d i.i.d. vector follows N(mean, Variance).}
 
-\item{mean}{\code{n} vector or matrix.}
+\item{mean}{\eqn{n} vector or matrix.}
 
-\item{acf}{\code{n} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
+\item{acf}{\eqn{n} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
 
-\item{dmean}{\code{n x p} matrix, where p is the number of parameters, each column is the partial derivative of mean}
+\item{dmean}{\eqn{n \times p} matrix, where p is the number of parameters, each column is the partial derivative of mean}
 
-\item{dacf}{\code{n x p} matrix, each column is the partial deruvative of acf}
+\item{dacf}{\eqn{n \times p} matrix, each column is the partial deruvative of acf}
 
-\item{d2mean}{\code{n x p x p} array}
+\item{d2mean}{\eqn{n \times p \times p} array}
 
-\item{d2acf}{\code{n x p x p} array}
+\item{d2acf}{\eqn{n \times p \times p} array}
 }
 \value{
 The Hessian matrix of the log-likelihood.
@@ -30,5 +30,18 @@ Efficient calculation of the Hessian matrix of the log-likelihood of stationary 
 \note{
 package "SuperGauss" is required
 
-if d2mean and d2acf is \code{n x 1} matrix or array, it only works when p = 1
+if d2mean and d2acf is \eqn{n \times 1} matrix or array, it only works when p = 1
+}
+\examples{
+N <- 30
+p <- 4
+X <- as.matrix(rnorm(N))
+mean <- as.matrix(rnorm(N))
+acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
+acf <- Toeplitz(acf)
+dmean <- matrix(rnorm(N*p), N, p)
+dacf <- matrix(rnorm(N*p), N, p)
+d2mean <- array(rnorm(N*p*p), dim = c(N, p, p))
+d2acf <- array(rnorm(N*p*p), dim = c(N, p, p))
+Snorm.Hess(X, mean, acf, dmean, dacf, d2mean, d2acf)
 }

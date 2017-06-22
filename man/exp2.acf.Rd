@@ -16,11 +16,15 @@ exp2.acf(lambda, dT, N, incr = TRUE)
 \item{incr}{logical; whether or not to return increments.}
 }
 \value{
-An autocorrelation vector of length \code{N}.
+An autocorrelation vector of length \eqn{N}.
 }
 \description{
 Autocorrelation of Squared-Exponential
 }
 \details{
-The Squared-Exponential autocorrelation is given by
+The Squared-Exponential autocorrelation is given by:
+\deqn{\exp \{-(\frac{n\Delta t}{\lambda})^2\}}
+}
+\examples{
+exp2.acf(lambda = 1, dT = 1/60, N = 200, incr = FALSE)
 }

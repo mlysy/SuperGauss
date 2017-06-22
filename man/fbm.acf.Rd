@@ -14,11 +14,15 @@ fbm.acf(alpha, dT, N)
 \item{N}{Number of increment observations.}
 }
 \value{
-An autocorrelation vector of length \code{N}.
+An autocorrelation vector of length \eqn{N}.
 }
 \description{
 Autocorrelation of fBM Increments
 }
 \details{
-The fBM autocorrelation is given by:
+The fBM increment autocorrelation is given by: 
+\deqn{\frac{1}{2} \left[|n-1|^\alpha + |n+1|^\alpha - 2n^\alpha \right]\Delta t^\alpha}
+}
+\examples{
+fbm.acf(alpha = 0.5, dT = 1/60, N = 200)
 }

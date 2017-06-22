@@ -16,11 +16,15 @@
 \item{incr}{logical; whether or not to return increments.}
 }
 \value{
-An autocorrelation vector of length \code{N}.
+An autocorrelation vector of length \eqn{N}.
 }
 \description{
 Autocorrelation of Exponential
 }
 \details{
-The Exponential Autocorrelation is given by
+The Exponential Autocorrelation is given by:
+\deqn{\exp \{-\frac{n\Delta t}{\lambda}\}}
+}
+\examples{
+exp.acf(lambda = 1, dT = 1/60, N = 200, incr = FALSE)
 }

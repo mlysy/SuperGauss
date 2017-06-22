@@ -7,11 +7,15 @@
 acf2incr(gam)
 }
 \arguments{
-\item{gam}{An autocorrelation sequence of length \code{nObs}.}
+\item{gam}{An autocorrelation sequence of length \eqn{N}.}
 }
 \value{
-An increment autocorrelation sequence of length \code{nObs-1}.
+An increment autocorrelation sequence of length \eqn{N-1}.
 }
 \description{
-Converts the autocorrelation of a stationary sequence \code{X0, X1, ..., XN} to those of its increments \code{X1-X0, X2-X1, ..., XN - X(N-1)}.
+Converts the autocorrelation of a stationary sequence \eqn{\{X_0, X_1, ..., X_N\}} to those of 
+its increments \eqn{\{X_1-X_0, X_2-X_1, ..., X_N - X_{N-1}\} }.
+}
+\examples{
+acf2incr(runif(10))
 }

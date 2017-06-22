@@ -7,11 +7,15 @@
 msd2acf(eta)
 }
 \arguments{
-\item{eta}{the MSD at \code{nObs} regular time points, \code{dT, 2*dT, ..., nObs*dT}.}
+\item{eta}{the MSD at \eqn{N} regular time points, \eqn{ \{\Delta t, 2\Delta t, ..., N\Delta t\} }.}
 }
 \value{
-the ACF at lags \code{0, 1, ..., nObs-1}.
+the ACF at lags \eqn{ \{0, 1, ..., N-1\} }.
 }
 \description{
-Converts the MSD of a regularly sampled stationary-increments process \code{X0, X1, ..., XN} into the ACF of its increments, \code{X1-X0, X2-X1, ..., XN - X(N-1)}.
+Converts the MSD of a regularly sampled stationary-increments process \eqn{ \{X_0, X_1, ..., X_N\} } 
+into the ACF of its increments, \eqn{ \{X_1-X_0, X_2-X_1, ..., X_N - X_{N-1}\} }.
+}
+\examples{
+msd2acf(runif(10))
 }
