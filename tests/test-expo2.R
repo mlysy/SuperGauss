@@ -1,7 +1,7 @@
 require(SuperGauss)
 
 N <- 20
-Toep <- Toeplitz(N)
+Toep <- Toeplitz(n = N)
 
 lambda <- .1
 dT <- 1/60

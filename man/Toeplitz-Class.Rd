@@ -3,17 +3,15 @@
 \docType{methods}
 \name{Toeplitz-Class}
 \alias{Toeplitz-Class}
-\alias{Toeplitz}
 \alias{ncol,Toeplitz_Matrix-method}
 \alias{nrow,Toeplitz_Matrix-method}
 \alias{dim,Toeplitz_Matrix-method}
 \alias{\%*\%,Toeplitz_Matrix,ANY-method}
 \alias{determinant,Toeplitz_Matrix,ANY-method}
 \alias{solve,Toeplitz_Matrix,ANY-method}
+\alias{Toeplitz}
 \title{Toeplitz Matrix Class}
 \usage{
-.self$setAcf(acf)
-
 ncol(x)
 
 nrow(x)
@@ -25,12 +23,10 @@ x %*% y
 determinant(x, logarithm = TRUE, ...)
 
 solve(a, b)
+
+Toeplitz(n, acf)
 }
 \arguments{
-\item{n}{Integer dimension of Toeplitz variance matrix.}
-
-\item{acf}{Autocorrelation vector of Toeplitz matrix, i.e., first row or column.}
-
 \item{x}{A \code{Toeplitz_Matrix} object.}
 
 \item{y}{A regular matrix or vector.}
@@ -40,6 +36,13 @@ solve(a, b)
 \item{a}{A \code{Toeplitz_Matrix} object.}
 
 \item{b}{A regular matrix or vector.}
+
+\item{n}{size of the Toeplitz matrix.}
+
+\item{acf}{autocorrelation vector of Toeplitz matrix.}
+}
+\value{
+A \code{Toeplitz_Matrix} object.
 }
 \description{
 Contains methods for efficient linear algebra involving Toeplitz variance matrices.
@@ -56,10 +59,6 @@ The \code{Toeplitz_Matrix} class efficiently implements some generic methods Toe
 These are used for calculating the gradient and Hessian of multivariate normal loglikelihoods having Toeplitz variance matrix.
 }
 \examples{
-N <- 20
-Toep <- Toeplitz(N)
-acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
-Toep <- Toeplitz(acf)
 ncol(Toep)
 nrow(Toep)
 dim(Toep)

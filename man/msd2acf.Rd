@@ -17,5 +17,6 @@ Converts the MSD of a regularly sampled stationary-increments process \eqn{ \{X_
 into the ACF of its increments, \eqn{ \{X_1-X_0, X_2-X_1, ..., X_N - X_{N-1}\} }.
 }
 \examples{
-msd2acf(runif(10))
+msd1 <- runif(10)
+msd2acf(msd1)
 }

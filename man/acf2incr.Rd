@@ -17,5 +17,6 @@ Converts the autocorrelation of a stationary sequence \eqn{\{X_0, X_1, ..., X_N\
 its increments \eqn{\{X_1-X_0, X_2-X_1, ..., X_N - X_{N-1}\} }.
 }
 \examples{
-acf2incr(runif(10))
+acf1 <- runif(10)
+acf2incr(acf1)
 }

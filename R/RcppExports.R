@@ -17,3 +17,39 @@ DurbinLevinson_Base <- function(X, Y, acf, calcMode = 1L) {
     .Call('SuperGauss_DurbinLevinson_Base', PACKAGE = 'SuperGauss', X, Y, acf, calcMode)
 }
 
+.Toeplitz_constructor <- function(n) {
+    .Call('SuperGauss_Toeplitz_constructor', PACKAGE = 'SuperGauss', n)
+}
+
+.Toeplitz_setAcf <- function(Toep_ptr, acf) {
+    invisible(.Call('SuperGauss_Toeplitz_setAcf', PACKAGE = 'SuperGauss', Toep_ptr, acf))
+}
+
+.Toeplitz_getAcf <- function(Toep_ptr) {
+    .Call('SuperGauss_Toeplitz_getAcf', PACKAGE = 'SuperGauss', Toep_ptr)
+}
+
+.Toeplitz_Multiply <- function(Toep_ptr, X) {
+    .Call('SuperGauss_Toeplitz_Multiply', PACKAGE = 'SuperGauss', Toep_ptr, X)
+}
+
+.Toeplitz_Solve <- function(Toep_ptr, X) {
+    .Call('SuperGauss_Toeplitz_Solve', PACKAGE = 'SuperGauss', Toep_ptr, X)
+}
+
+.Toeplitz_Determinant <- function(Toep_ptr) {
+    .Call('SuperGauss_Toeplitz_Determinant', PACKAGE = 'SuperGauss', Toep_ptr)
+}
+
+.Toeplitz_traceT2 <- function(Toep_ptr, acf2) {
+    .Call('SuperGauss_Toeplitz_traceT2', PACKAGE = 'SuperGauss', Toep_ptr, acf2)
+}
+
+.Toeplitz_traceT4 <- function(Toep_ptr, acf2, acf3) {
+    .Call('SuperGauss_Toeplitz_traceT4', PACKAGE = 'SuperGauss', Toep_ptr, acf2, acf3)
+}
+
+.Toeplitz_hasAcf <- function(Toep_ptr) {
+    .Call('SuperGauss_Toeplitz_hasAcf', PACKAGE = 'SuperGauss', Toep_ptr)
+}
+
