@@ -19,7 +19,7 @@ fdyn.acf(alpha, tau, dT, N)
 ACF of fBM + Dynamic Error Increments
 }
 \details{
-this function returns the autocorrelation of the increment of \eqn{Y_t}, the integral of 
+this function returns the autocorrelation of the increment of \eqn{Y_t}, the integral of
 fBM process \eqn{X_t} with subdiffusion exponent \eqn{\alpha} \deqn{Y_t = \int_{0}^{\tau} X(t-s)ds}
 }
 \examples{

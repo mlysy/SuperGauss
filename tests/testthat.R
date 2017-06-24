@@ -1,4 +1,4 @@
 library(SuperGauss)
 library(testthat)
 
-test_that("SuperGauss")
+test_check("SuperGauss")

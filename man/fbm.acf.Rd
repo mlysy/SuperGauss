@@ -20,7 +20,7 @@ An autocorrelation vector of length \eqn{N}.
 Autocorrelation of fBM Increments
 }
 \details{
-The fBM increment autocorrelation is given by: 
+The fBM increment autocorrelation is given by:
 \deqn{\frac{1}{2} \left[|n-1|^\alpha + |n+1|^\alpha - 2n^\alpha \right]\Delta t^\alpha}
 }
 \examples{

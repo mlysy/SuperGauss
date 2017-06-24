@@ -1,12 +1,12 @@
 #' @name Choleski
 #' @aliases cholXZ cholZX
 #' @title Toeplitz variance matrix Choleski decomposition
-#' @description 
+#' @description
 #' Compute Choleski decomposition and multiply by another matrix, or solve Choleski system of equations.
 #' @param X \eqn{n \times p} matrix of observations.
 #' @param Z \eqn{n \times p} matrix of residuals.
 #' @param acf vector of length \eqn{n}, autocorrelation of Toeplitz matrix.
-#' @details 
+#' @details
 #' \itemize{
 #'   \item{1}{\code{cholZX} computes \code{X = chol(toeplitz(acf))' Z}}
 #'   \item{2}{\code{cholXZ} computes\code{Z = solve(chol(toeplitz(acf))', X)}}
@@ -16,9 +16,9 @@
 #' @rdname Choleski
 #' @examples
 #' n <- 30
-#' p <- 4 
+#' p <- 4
 #' Mat <- matrix(rnorm(n * p), n, p)
-#' acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
+#' acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = n)
 #' cholZX(Z = Mat, acf = acf)
 #' cholXZ(X = Mat, acf = acf)
 #' @export

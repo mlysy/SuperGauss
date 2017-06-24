@@ -13,7 +13,7 @@ msd2acf(eta)
 the ACF at lags \eqn{ \{0, 1, ..., N-1\} }.
 }
 \description{
-Converts the MSD of a regularly sampled stationary-increments process \eqn{ \{X_0, X_1, ..., X_N\} } 
+Converts the MSD of a regularly sampled stationary-increments process \eqn{ \{X_0, X_1, ..., X_N\} }
 into the ACF of its increments, \eqn{ \{X_1-X_0, X_2-X_1, ..., X_N - X_{N-1}\} }.
 }
 \examples{

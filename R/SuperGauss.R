@@ -5,5 +5,7 @@
 #' @docType package
 #' @name SuperGauss
 #' @import Rcpp
+#' @importFrom methods new
+#' @importFrom stats rnorm
 #' @useDynLib SuperGauss
 NULL

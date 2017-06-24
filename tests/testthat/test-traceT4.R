@@ -1,6 +1,6 @@
 library(SuperGauss)
 source("SuperGauss-test-functions.R")
-context("derivative of traceProduction")
+context("Derivative of Trace of Matrix-Product")
 
 test_that("derivative of trace of inversion of Toeplitz times Toeplitz", {
   N <- round(abs(rnorm(n = 1, mean = 100, sd = 10)))

@@ -17,7 +17,7 @@ fdyn.msd(alpha, tau, t)
 MSD of fBM + Dynamic Error
 }
 \details{
-this function returns the MSD of \eqn{Y_t}, the integral of fBM process \eqn{X_t} with subdiffusion 
+this function returns the MSD of \eqn{Y_t}, the integral of fBM process \eqn{X_t} with subdiffusion
 exponent \eqn{\alpha} \deqn{Y_t = \int_{0}^{\tau} X(t-s)ds}. The expression of the MSD is
 \deqn{\frac{(t+\tau)^\alpha + (t-\tau)^\alpha - 2t^\alpha - 2\tau^\alpha}{(\alpha+1)(\alpha+2)}}
 }

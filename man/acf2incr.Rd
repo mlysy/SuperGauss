@@ -13,7 +13,7 @@ acf2incr(gam)
 An increment autocorrelation sequence of length \eqn{N-1}.
 }
 \description{
-Converts the autocorrelation of a stationary sequence \eqn{\{X_0, X_1, ..., X_N\}} to those of 
+Converts the autocorrelation of a stationary sequence \eqn{\{X_0, X_1, ..., X_N\}} to those of
 its increments \eqn{\{X_1-X_0, X_2-X_1, ..., X_N - X_{N-1}\} }.
 }
 \examples{

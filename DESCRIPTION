@@ -3,7 +3,10 @@ Type: Package
 Title: Linear Algebra with Toeplitz Matrices
 Version: 0.0.1.9003
 Date: 2017-01-14
-Authors@R: c(person("Yun", "Ling", email = "y22ling@uwaterloo.ca", role = c("aut")), person("Martin", "Lysy", email = "mlysy@uwaterloo.ca", role = c("aut", "cre")))
+Authors@R: c(person("Yun", "Ling",
+                    email = "y22ling@uwaterloo.ca", role = "aut"),
+             person("Martin", "Lysy",
+	            email = "mlysy@uwaterloo.ca", role = c("cre", "aut")))
 Description: R wrapper to a C++ library for linear algebra with positive-
     definite Toeplitz matrices. In particular, a "superfast" O(n log^2 n) solver
     for Toeplitz systems is provided, whereas the more common Levinson algorithm for
@@ -13,6 +16,7 @@ Description: R wrapper to a C++ library for linear algebra with positive-
     provided as a header-only library for low-level usage outside of R.
 License: GPL (>= 3)
 Imports:
+    stats,
     methods,
     Rcpp (>= 0.12.4),
     fftw

@@ -3,7 +3,7 @@
 # @return The log-determinant \code{log(det(V))}.
 # @keywords internal
 ldet <- function(V) {
-  determinant(V, log = TRUE)$mod[1]
+  determinant(V, logarithm = TRUE)$mod[1]
 }
 
 # Log of Multi-Gamma Function

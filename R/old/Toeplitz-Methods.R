@@ -1,0 +1,155 @@
+#' Methods for Toeplitz matrices.
+#'
+#' Contains methods for efficient linear algebra involving Toeplitz variance matrices.
+#' @details \code{Toeplitz_Matrix} objects are created with the R constructor \code{Toeplitz}, which accepts an autocorrelation vector \code{acf}, or an integer \code{n} which can be used to preallocate memory.  The \code{acf} of the \code{Toeplitz_Matrix} is accessed with \code{setAcf} and \code{getAcf}.
+#' The \code{Toeplitz_Matrix} class efficiently implements some generic methods Toeplitz variance matrix calculations, e.g., %*% (multiplication), \code{solve}, \code{determinant}.  Non-generic methods implemented for Toeplitz matrices are:
+#' \itemize{
+#'   \item \code{setAcf(acf1)}: input the acf of Toeplitz variance
+#'   \item \code{getAcf()}: obtain the inputed acf
+#'   \item \code{traceT2(acf2)}: matrix trace of \code{solve(.self, toeplitz(acf2))}.
+#'   \item \code{traceT4(acf2, acf3)}: matrix trace of \code{solve(.self, toeplitz(acf2))} %*% \code{solve(.self, toeplitz(acf3))}.
+#' }
+#' These are used for calculating the gradient and Hessian of multivariate normal loglikelihoods having Toeplitz variance matrix.
+#' @exportClass Toeplitz_Matrix
+#' @name Toeplitz-Methods
+NULL
+
+# class skeleton
+.Toeplitz <- setRefClass("Toeplitz_Matrix",
+                         fields = list(cpp_ptr = "externalptr",
+                                       size = "numeric"))
+.Toeplitz$lock("cpp_ptr")
+.Toeplitz$lock("size")
+
+#--- non-generic methods -------------------------------------------------------
+
+# internal constructor
+.Toeplitz$methods(initialize = function(n) {
+  cpp_ptr <<- .Toeplitz_constructor(n)
+  size <<- n
+})
+
+# getter/setter
+#' Set the autocorrelation of a Toeplitz matrix.
+#'
+#' @name setAcf
+#' @usage .self$setAcf(acf)
+#' @param acf autocorrelation vector
+#' @return Nothing: sets the acf of the Toeplitz matrix
+NULL
+.Toeplitz$methods(setAcf = function(acf) {
+  if(length(acf) != size) {
+    stop("acf has wrong length.")
+  }
+  .Toeplitz_setAcf(cpp_ptr, acf)
+})
+#' @name getAcf
+#' @rdname Toeplitz-Methods
+.Toeplitz$methods(getAcf = function() {
+  .Toeplitz_getAcf(cpp_ptr)
+})
+
+# traceT2/traceT4
+#' @name traceT2
+#' @rdname Toeplitz-Methods
+.Toeplitz$methods(traceT2 = function(acf2) {
+  if(length(acf2) != size) {
+    stop("acf2 has wrong length.")
+  }
+  .Toeplitz_traceT2(cpp_ptr, acf2)
+})
+#' @name traceT4
+#' @rdname Toeplitz-Methods
+.Toeplitz$methods(traceT4 = function(acf2, acf3) {
+  if(length(acf2) != size) {
+    stop("acf2 has wrong length.")
+  }
+  if(length(acf3) != size) {
+    stop("acf3 has wrong length.")
+  }
+  .Toeplitz_traceT4(cpp_ptr, acf2, acf3)
+})
+
+#--- generic methods -----------------------------------------------------------
+
+# show method
+setMethod("show", "Toeplitz_Matrix", function(object) {
+  if(.Toeplitz_hasAcf(object$cpp_ptr)) {
+    obj.acf <- object$getAcf()[1:min(6, object$size)]
+    obj.acf <- round(obj.acf, digits = 3)
+    if(object$size > 6) obj.acf <- c(obj.acf, "...")
+  } else {
+    obj.acf <- "NULL"
+  }
+  cat("Toeplitz_Matrix of size", object$size, "\n",
+      "acf: ", obj.acf, "\n")
+})
+
+# dimensions
+#' @rdname Toeplitz-Methods
+setMethod("ncol", "Toeplitz_Matrix", function(x){
+  x$size
+})
+#' @rdname Toeplitz-Methods
+setMethod("nrow", "Toeplitz_Matrix", function(x){
+  x$size
+})
+#' @rdname Toeplitz-Methods
+setMethod("dim", "Toeplitz_Matrix", function(x){
+  rep(x$size, 2)
+})
+
+# Multiplication
+#' @rdname Toeplitz-Methods
+setMethod("%*%", signature(x = "Toeplitz_Matrix", y = "ANY"), function(x, y) {
+  if(is.vector(y)) y <- as.matrix(y)
+  if(!is.matrix(y)) {
+    stop("Second argument should be a matrix or vector.")
+  }
+  if(nrow(y) != x$size) {
+    stop("Toeplitz_Matrix and second argument are non-conformable.")
+  }
+  .Toeplitz_Multiply(x$cpp_ptr, y)
+})
+#' @rdname Toeplitz-Methods
+setMethod("%*%", signature(x = "ANY", y = "Toeplitz_Matrix"), function(x, y) {
+  if(is.vector(x)) x <- as.matrix(x)
+  if(!is.matrix(x)) {
+    stop("First argument should be a matrix or vector.")
+  }
+  if(nrow(y) != x$size) {
+    stop("First argument and Toeplitz_Matrix are non-conformable.")
+  }
+  t(.Toeplitz_Multiply(y$cpp_ptr, t(x)))
+})
+
+# Determinant
+#' @rdname Toeplitz-Methods
+setMethod("determinant", "Toeplitz_Matrix",
+          function(x, logarithm = TRUE, ...) {
+  ldT <- .Toeplitz_Determinant(x$cpp_ptr)
+  if(!logarithm) {
+    ldT <- exp(ldT)
+  }
+  ldT
+})
+
+# Solve
+#' @rdname Toeplitz-Methods
+setMethod("solve", "Toeplitz_Matrix", function(a, b, ...){
+  if(is.vector(b)) b <- as.matrix(b)
+  if(!is.matrix(b)) {
+    stop("b must be a matrix or vector.")
+  }
+  if(nrow(b) != a$size) {
+    stop("a and b are non-conformable.")
+  }
+  .Toeplitz_Solve(a$cpp_ptr, b)
+})
+
+
+#' \item{\code{Toep %*% X}, \code{X %*% Toep}}{Toeplitz-Matrix and Matrix-Toeplitz multiplication.  Also works if \code{X} is a vector.}
+#' \item{\code{solve(Toep, X)}, \code{solve(Toep)}}{Solves Toeplitz systems of equations.  When second argument is missing, returns the inverse of the Toeplitz matrix.}
+#' \item{\code{determinant(Toep)}}{Log-determinant of the Toeplitz matrix, i.e., same thing as \code{determinant(toeplitz(acf))$modulus}.}
+#' \item{\code{Toep$traceT2(acf2)}}{Computes the trace of \code{solve(toeplitz(acf), toeplitz(acf2))}.  This is used in the computation of the gradient of Gaussian likelihoods with Toeplitz variance matrix.}
+#' \item{\code{Toep$traceT4(acf2, acf3)}}{Computes the trace of \code{solve(toeplitz(acf), toeplitz(acf2)) %*% solve(toeplitz(acf), toeplitz(acf3))}.  This is used in the computation of the Hessian of Gaussian likelihoods with Toeplitz variance matrix.}

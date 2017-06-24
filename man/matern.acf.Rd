@@ -22,7 +22,7 @@ An autocorrelation vector of length \eqn{N}.
 Autocorrelation of Matern
 }
 \details{
-the Matern autocorrelation is given by 
+the Matern autocorrelation is given by
 \deqn{\frac{2^{1-\nu}}{\Gamma(\nu)} \left(\sqrt{2\nu}\frac{n\Delta t}{\lambda}\right)^\nu K_\nu\left(\sqrt{2\nu} \frac{n\Delta t}{\lambda}\right)}
 }
 \examples{

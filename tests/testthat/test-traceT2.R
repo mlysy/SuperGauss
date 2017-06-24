@@ -1,6 +1,6 @@
 library(SuperGauss)
 source("SuperGauss-test-functions.R")
-context("traceProduction")
+context("Trace of Matrix-Product")
 
 test_that("trace of inversion of Toeplitz times Toeplitz", {
   N <- round(abs(rnorm(n = 1, mean = 100, sd = 10)))

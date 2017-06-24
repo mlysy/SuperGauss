@@ -13,7 +13,7 @@ acf2msd(gam)
 the MSD at regular time points \eqn{ \{\Delta t, 2\Delta t, ..., N\Delta t\} }.
 }
 \description{
-Converts the ACF of the increment of a regularly sampled stationary-increments process 
+Converts the ACF of the increment of a regularly sampled stationary-increments process
 \eqn{ \{X_1-X_0, X_2-X_1, ..., X_N - X_{N-1} \} } into the MSD of original process \eqn{ \{X_0, X_1, ..., X_N\} }.
 }
 \examples{

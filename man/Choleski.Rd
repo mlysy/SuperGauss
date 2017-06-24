@@ -33,9 +33,9 @@ Both are done with Durbin-Levinson algorithm.
 }
 \examples{
 n <- 30
-p <- 4 
+p <- 4
 Mat <- matrix(rnorm(n * p), n, p)
-acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
+acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = n)
 cholZX(Z = Mat, acf = acf)
 cholXZ(X = Mat, acf = acf)
 }

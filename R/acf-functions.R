@@ -6,10 +6,10 @@
 #' @param dT Interobservation time.
 #' @param N Number of increment observations.
 #' @return An autocorrelation vector of length \eqn{N}.
-#' @details 
-#' The fBM increment autocorrelation is given by: 
+#' @details
+#' The fBM increment autocorrelation is given by:
 #' \deqn{\frac{1}{2} \left[|n-1|^\alpha + |n+1|^\alpha - 2n^\alpha \right]\Delta t^\alpha}
-#' @examples 
+#' @examples
 #' fbm.acf(alpha = 0.5, dT = 1/60, N = 200)
 #' @export
 fbm.acf <- function(alpha, dT, N) {
@@ -29,10 +29,10 @@ fbm.acf <- function(alpha, dT, N) {
 #' @param N Number of increment observations.
 #' @param incr logical; whether or not to return increments.
 #' @return An autocorrelation vector of length \eqn{N}.
-#' @details 
+#' @details
 #' The Squared-Exponential autocorrelation is given by:
 #' \deqn{\exp \{-(\frac{n\Delta t}{\lambda})^2\}}
-#' @examples 
+#' @examples
 #' exp2.acf(lambda = 1, dT = 1/60, N = 200, incr = FALSE)
 #' @export
 exp2.acf <- function(lambda, dT, N, incr = TRUE) {
@@ -49,19 +49,19 @@ exp2.acf <- function(lambda, dT, N, incr = TRUE) {
 }
 
 #' Autocorrelation of Exponential
-#' 
+#'
 #' @param lambda timescale.
 #' @param dT interobservation time.
 #' @param N Number of increment observations.
 #' @param incr logical; whether or not to return increments.
 #' @return An autocorrelation vector of length \eqn{N}.
-#' @details 
+#' @details
 #' The Exponential Autocorrelation is given by:
 #' \deqn{\exp \{-\frac{n\Delta t}{\lambda}\}}
-#' @examples 
+#' @examples
 #' exp.acf(lambda = 1, dT = 1/60, N = 200, incr = FALSE)
 #' @export
-exp.acf <- function(lambda, dT, N, incr = TRUE) {
+exp1.acf <- function(lambda, dT, N, incr = TRUE) {
   # process autocorrelation
   gam <- exp(-(0:N*dT/lambda))
   if(incr) {
@@ -80,11 +80,11 @@ exp.acf <- function(lambda, dT, N, incr = TRUE) {
 #' @param nu smoothness parameter.
 #' @param dT interobservation time.
 #' @param N Number of increment observations.
-#' @details 
-#' the Matern autocorrelation is given by 
+#' @details
+#' the Matern autocorrelation is given by
 #' \deqn{\frac{2^{1-\nu}}{\Gamma(\nu)} \left(\sqrt{2\nu}\frac{n\Delta t}{\lambda}\right)^\nu K_\nu\left(\sqrt{2\nu} \frac{n\Delta t}{\lambda}\right)}
 #' @return An autocorrelation vector of length \eqn{N}.
-#' @examples 
+#' @examples
 #' matern.acf(lambda = 1, nu = 3/2, dT = 1/60, N = 200, incr = FALSE)
 #' @export
 matern.acf <- function(lambda, nu, dT, N, incr = TRUE) {
@@ -105,7 +105,7 @@ matern.acf <- function(lambda, nu, dT, N, incr = TRUE) {
 
 #' Convert the Position ACF to Increment ACF
 #'
-#' Converts the autocorrelation of a stationary sequence \eqn{\{X_0, X_1, ..., X_N\}} to those of 
+#' Converts the autocorrelation of a stationary sequence \eqn{\{X_0, X_1, ..., X_N\}} to those of
 #' its increments \eqn{\{X_1-X_0, X_2-X_1, ..., X_N - X_{N-1}\} }.
 #' @param gam An autocorrelation sequence of length \eqn{N}.
 #' @return An increment autocorrelation sequence of length \eqn{N-1}.
@@ -125,11 +125,11 @@ acf2incr <- function(gam) {
 
 #' Convert the Position MSD to Increment ACF
 #'
-#' Converts the MSD of a regularly sampled stationary-increments process \eqn{ \{X_0, X_1, ..., X_N\} } 
+#' Converts the MSD of a regularly sampled stationary-increments process \eqn{ \{X_0, X_1, ..., X_N\} }
 #' into the ACF of its increments, \eqn{ \{X_1-X_0, X_2-X_1, ..., X_N - X_{N-1}\} }.
 #' @param eta the MSD at \eqn{N} regular time points, \eqn{ \{\Delta t, 2\Delta t, ..., N\Delta t\} }.
 #' @return the ACF at lags \eqn{ \{0, 1, ..., N-1\} }.
-#' @examples 
+#' @examples
 #' msd1 <- runif(10)
 #' msd2acf(msd1)
 #' @export
@@ -143,12 +143,12 @@ msd2acf <- function(eta) {
 }
 
 #' Convert the Increment ACF to Position MSD
-#' 
-#' Converts the ACF of the increment of a regularly sampled stationary-increments process 
+#'
+#' Converts the ACF of the increment of a regularly sampled stationary-increments process
 #' \eqn{ \{X_1-X_0, X_2-X_1, ..., X_N - X_{N-1} \} } into the MSD of original process \eqn{ \{X_0, X_1, ..., X_N\} }.
 #' @param gam the ACF at \eqn{N} lags, \eqn{ \{0, 1, ..., N-1\} }.
 #' @return the MSD at regular time points \eqn{ \{\Delta t, 2\Delta t, ..., N\Delta t\} }.
-#' @examples 
+#' @examples
 #' acf1 <- runif(10)
 #' acf2msd(acf1)
 #' @export
@@ -168,11 +168,11 @@ acf2msd <- function(gam){
 #' @param alpha Subdiffusion exponent
 #' @param tau Width of averaging time-window.
 #' @param t Vector of time points \eqn{ \{\Delta t, 2\Delta t, ..., N\Delta t\} }
-#' @details 
-#' this function returns the MSD of \eqn{Y_t}, the integral of fBM process \eqn{X_t} with subdiffusion 
+#' @details
+#' this function returns the MSD of \eqn{Y_t}, the integral of fBM process \eqn{X_t} with subdiffusion
 #' exponent \eqn{\alpha} \deqn{Y_t = \int_{0}^{\tau} X(t-s)ds}. The expression of the MSD is
 #' \deqn{\frac{(t+\tau)^\alpha + (t-\tau)^\alpha - 2t^\alpha - 2\tau^\alpha}{(\alpha+1)(\alpha+2)}}
-#' @examples 
+#' @examples
 #' fdyn.msd(alpha = 0.8, tau = 1/600, t = (1:200) * 1/60)
 #' @export
 fdyn.msd <- function(alpha, tau, t){
@@ -188,9 +188,9 @@ fdyn.msd <- function(alpha, tau, t){
 #' @param tau Width of averaging time-window.
 #' @param dT interobservation time.
 #' @param N Number of increment observations.
-#' @details this function returns the autocorrelation of the increment of \eqn{Y_t}, the integral of 
+#' @details this function returns the autocorrelation of the increment of \eqn{Y_t}, the integral of
 #' fBM process \eqn{X_t} with subdiffusion exponent \eqn{\alpha} \deqn{Y_t = \int_{0}^{\tau} X(t-s)ds}
-#' @examples 
+#' @examples
 #' fdyn.acf(alpha = 0.8, tau = 1/600, dT = 1/60, N = 200)
 #' @export
 fdyn.acf <- function(alpha, tau, dT, N) {
