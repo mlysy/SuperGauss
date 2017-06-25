@@ -8,9 +8,9 @@
 #' @return An autocorrelation vector of length \eqn{N}.
 #' @details
 #' The fBM increment autocorrelation is given by:
-#' \deqn{\frac{1}{2} \left[|n-1|^\alpha + |n+1|^\alpha - 2n^\alpha \right]\Delta t^\alpha}
+#' \deqn{\frac{1}{2} \Delta t^\alpha \left[|n-1|^\alpha + |n+1|^\alpha - 2n^\alpha \right]}
 #' @examples
-#' fbm.acf(alpha = 0.5, dT = 1/60, N = 200)
+#' fbm.acf(alpha = 0.5, dT = 1/60, N = 10)
 #' @export
 fbm.acf <- function(alpha, dT, N) {
   if(N == 1) {
@@ -59,7 +59,7 @@ exp2.acf <- function(lambda, dT, N, incr = TRUE) {
 #' The Exponential Autocorrelation is given by:
 #' \deqn{\exp \{-\frac{n\Delta t}{\lambda}\}}
 #' @examples
-#' exp.acf(lambda = 1, dT = 1/60, N = 200, incr = FALSE)
+#' exp1.acf(lambda = 1, dT = 1/60, N = 200, incr = FALSE)
 #' @export
 exp1.acf <- function(lambda, dT, N, incr = TRUE) {
   # process autocorrelation
@@ -80,6 +80,7 @@ exp1.acf <- function(lambda, dT, N, incr = TRUE) {
 #' @param nu smoothness parameter.
 #' @param dT interobservation time.
 #' @param N Number of increment observations.
+#' @param incr logical; whether or not to return increments.
 #' @details
 #' the Matern autocorrelation is given by
 #' \deqn{\frac{2^{1-\nu}}{\Gamma(\nu)} \left(\sqrt{2\nu}\frac{n\Delta t}{\lambda}\right)^\nu K_\nu\left(\sqrt{2\nu} \frac{n\Delta t}{\lambda}\right)}

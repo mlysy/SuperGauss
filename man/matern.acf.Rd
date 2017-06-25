@@ -14,6 +14,8 @@ matern.acf(lambda, nu, dT, N, incr = TRUE)
 \item{dT}{interobservation time.}
 
 \item{N}{Number of increment observations.}
+
+\item{incr}{logical; whether or not to return increments.}
 }
 \value{
 An autocorrelation vector of length \eqn{N}.

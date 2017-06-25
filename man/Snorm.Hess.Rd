@@ -38,7 +38,7 @@ p <- 4
 X <- as.matrix(rnorm(N))
 mean <- as.matrix(rnorm(N))
 acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
-acf <- Toeplitz(acf)
+acf <- Toeplitz(acf = acf)
 dmean <- matrix(rnorm(N*p), N, p)
 dacf <- matrix(rnorm(N*p), N, p)
 d2mean <- array(rnorm(N*p*p), dim = c(N, p, p))

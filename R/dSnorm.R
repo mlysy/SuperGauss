@@ -7,14 +7,14 @@
 #' @param mean \eqn{N} vector or matrix
 #' @param acf \eqn{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf
 #' @param log logical, if \code{TRUE} returns log-densities.
-#' @param return vector of densities.
-#' @examples 
+#' @return vector of densities.
+#' @examples
 #' N <- 30
 #' d <- 4
 #' X <- matrix(rnorm(N*d), N, d)
 #' mean <- rnorm(N)
 #' acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
-#' acf <- Toeplitz(acf)
+#' acf <- Toeplitz(acf = acf)
 #' dSnorm(X, mean = mean, acf = acf, log = TRUE)
 #' @export
 dSnorm <- function(X, mean, acf, log = FALSE){
@@ -26,7 +26,7 @@ dSnorm <- function(X, mean, acf, log = FALSE){
     n <- nrow(X)
     d <- ncol(X)
   }
-  
+
   if(missing(mean)){
     mean <- rep(0, n)
   } else{
@@ -41,7 +41,7 @@ dSnorm <- function(X, mean, acf, log = FALSE){
       }
     }
   }
-  
+
   if(class(acf) == "Toeplitz_Matrix"){
     # is Toeplitz
     if(ncol(acf) != n){
@@ -58,7 +58,7 @@ dSnorm <- function(X, mean, acf, log = FALSE){
       stop("acf should be either vector or Toeplitz class")
     }
   }
-  
+
   X <- X - mean
   density <- rep(NA, d)
   for(ii in 1:d){

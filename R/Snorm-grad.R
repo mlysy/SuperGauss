@@ -8,7 +8,7 @@
 #' @param dmean \eqn{n \times p} matrix, where \eqn{p} is the number of parameters, each column is the partial derivative of mean.
 #' @param dacf \eqn{n \times p} matrix, each column is the partial derivative of acf.
 #' @return The gradient of the log-likelihood.
-#' @examples 
+#' @examples
 #' N <- 30
 #' p <- 4
 #' X <- as.matrix(rnorm(N))
@@ -16,7 +16,7 @@
 #' acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
 #' dmean <- matrix(rnorm(N), N, p)
 #' dacf <- matrix(rnorm(N), N, p)
-#' acf <- Toeplitz(acf)
+#' acf <- Toeplitz(acf = acf)
 #' Snorm.grad(X, mean, acf, dmean, dacf)
 #' @export
 Snorm.grad <- function(X, mean, acf, dmean, dacf){
@@ -29,7 +29,7 @@ Snorm.grad <- function(X, mean, acf, dmean, dacf){
     }
     n <- nrow(X)
   }
-  
+
   if(missing(mean)){
     mean <- rep(0, n)
   } else{
@@ -44,7 +44,7 @@ Snorm.grad <- function(X, mean, acf, dmean, dacf){
       }
     }
   }
-  
+
   if(class(acf) == "Toeplitz_Matrix"){
     # is Toeplitz
     if(ncol(acf) != n){
@@ -61,7 +61,7 @@ Snorm.grad <- function(X, mean, acf, dmean, dacf){
       stop("acf should be either vector or Toeplitz class")
     }
   }
-  
+
   if(is.vector(dacf)){
     p <- 1
     dacf <- matrix(dacf, ncol = 1)
@@ -71,7 +71,7 @@ Snorm.grad <- function(X, mean, acf, dmean, dacf){
   if(nrow(dacf) != n){
     stop("dacf has incompatible dimensions with X")
   }
-  
+
   if(missing(dmean)){
     dmean <- matrix(0, n, p)
   } else{
@@ -83,7 +83,7 @@ Snorm.grad <- function(X, mean, acf, dmean, dacf){
       }
     }
   }
-  
+
   X <- X - mean
   SigX <- solve(acf, X)
   trace <- rep(NA, p)

@@ -26,5 +26,5 @@ The Exponential Autocorrelation is given by:
 \deqn{\exp \{-\frac{n\Delta t}{\lambda}\}}
 }
 \examples{
-exp.acf(lambda = 1, dT = 1/60, N = 200, incr = FALSE)
+exp1.acf(lambda = 1, dT = 1/60, N = 200, incr = FALSE)
 }

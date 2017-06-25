@@ -14,8 +14,9 @@ dSnorm(X, mean, acf, log = FALSE)
 \item{acf}{\eqn{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
 
 \item{log}{logical, if \code{TRUE} returns log-densities.}
-
-\item{return}{vector of densities.}
+}
+\value{
+vector of densities.
 }
 \description{
 Efficient density evaluation for the multivariate normal distribution with Toeplitz variance matrix.
@@ -31,6 +32,6 @@ d <- 4
 X <- matrix(rnorm(N*d), N, d)
 mean <- rnorm(N)
 acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
-acf <- Toeplitz(acf)
+acf <- Toeplitz(acf = acf)
 dSnorm(X, mean = mean, acf = acf, log = TRUE)
 }

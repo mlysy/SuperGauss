@@ -11,13 +11,13 @@
 #' @param d2acf \eqn{n \times p \times p} array
 #' @note if d2mean and d2acf is \eqn{n \times 1} matrix or array, it only works when p = 1
 #' @return The Hessian matrix of the log-likelihood.
-#' @examples 
+#' @examples
 #' N <- 30
 #' p <- 4
 #' X <- as.matrix(rnorm(N))
 #' mean <- as.matrix(rnorm(N))
 #' acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
-#' acf <- Toeplitz(acf)
+#' acf <- Toeplitz(acf = acf)
 #' dmean <- matrix(rnorm(N*p), N, p)
 #' dacf <- matrix(rnorm(N*p), N, p)
 #' d2mean <- array(rnorm(N*p*p), dim = c(N, p, p))
@@ -34,7 +34,7 @@ Snorm.Hess <- function(X, mean, acf, dmean, dacf, d2mean, d2acf){
     }
     n <- nrow(X)
   }
-  
+
   if(missing(mean)){
     mean <- rep(0, n)
   } else{
@@ -49,7 +49,7 @@ Snorm.Hess <- function(X, mean, acf, dmean, dacf, d2mean, d2acf){
       }
     }
   }
-  
+
   if(class(acf) == "Toeplitz_Matrix"){
     # is Toeplitz
     if(ncol(acf) != n){
@@ -66,7 +66,7 @@ Snorm.Hess <- function(X, mean, acf, dmean, dacf, d2mean, d2acf){
       stop("acf should be either vector or Toeplitz class")
     }
   }
-  
+
   if(is.vector(dacf)){
     p <- 1
     dacf <- as.matrix(dacf)
@@ -76,7 +76,7 @@ Snorm.Hess <- function(X, mean, acf, dmean, dacf, d2mean, d2acf){
   if(nrow(dacf) != n){
     stop("dacf has incompatible dimensions with X")
   }
-  
+
   if(missing(dmean)){
     dmean <- matrix(0, n, p)
   } else{
@@ -88,10 +88,10 @@ Snorm.Hess <- function(X, mean, acf, dmean, dacf, d2mean, d2acf){
       }
     }
   }
-  
+
   if(missing(d2mean)){
     d2mean <- array(0, dim = c(n, p, p))
-  } else{  
+  } else{
     if(is.vector(d2mean) || is.matrix(d2mean)){
       if(length(d2mean) == 1){
         d2mean <- array(d2mean, dim = c(n, p, p))

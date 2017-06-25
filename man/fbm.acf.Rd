@@ -21,8 +21,8 @@ Autocorrelation of fBM Increments
 }
 \details{
 The fBM increment autocorrelation is given by:
-\deqn{\frac{1}{2} \left[|n-1|^\alpha + |n+1|^\alpha - 2n^\alpha \right]\Delta t^\alpha}
+\deqn{\frac{1}{2} \Delta t^\alpha \left[|n-1|^\alpha + |n+1|^\alpha - 2n^\alpha \right]}
 }
 \examples{
-fbm.acf(alpha = 0.5, dT = 1/60, N = 200)
+fbm.acf(alpha = 0.5, dT = 1/60, N = 10)
 }

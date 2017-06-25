@@ -4,8 +4,7 @@
 \alias{rSnorm}
 \title{Simulation of a Stationary Gaussian Process.}
 \usage{
-rSnorm(n, acf, Z, fft = TRUE, fft.plan, ncut = 0, tol = 1e-06,
-  debug = FALSE)
+rSnorm(n, acf, Z, fft = TRUE, ncut = 0, tol = 1e-06)
 }
 \arguments{
 \item{n}{number of time series to generate.}
@@ -15,8 +14,6 @@ rSnorm(n, acf, Z, fft = TRUE, fft.plan, ncut = 0, tol = 1e-06,
 \item{Z}{optional \code{(2*N-2) x n} or \code{N x n} matrix of iid standard normals, for the fft and Durbin-Levinson methods respectively.}
 
 \item{fft}{logical, whether or not to use the superfast fft-based algorithm of Dietrich-Newsam or the more stable Durbin-Levinson algorithm.  See Details.}
-
-\item{fft.plan}{optional plan to pass to \code{fftw}.}
 
 \item{tol}{relative tolerance on negative eigenvalues.  See Details.}
 
@@ -29,7 +26,7 @@ A \code{nkeep x n} matrix with time series as columns.
 Efficient simulation of a stationary Gaussian process from a given autocorrelation function.
 }
 \details{
-The superfast method fails when the circulant matrix is not positive definite.  This is typically due to one of two things, to which the fft algorithm can be tuned with \code{tol} and \code{nkeep}:
+The superfast method fails when the circulant matrix is not positive definite.  This is typically due to one of two things, for which the fft algorithm can be tuned with \code{tol} and \code{nkeep}:
 \itemize{
 \item \code{tol}: Roundoff error can make tiny eigenvalues appear negative. If \code{evMax} is the maximum eigenvalue, then all negative eigenvalues of magnitude less than \code{tol * evMax} are mapped to this threshold value.  This does not guarantee a positive definite embedding.
 \item \code{nkeep}: The autocorrelation is decaying too slowly on the given timescale. To mitigate this it is possible to increase the time horizon, i.e. input a longer \code{acf} and keep the first \code{nkeep} time series observations. For consistency, \code{nkeep} also applies to Durbin-Levinson method.

@@ -15,10 +15,10 @@
 #' @return An \eqn{n \times p} matrix.
 #' @rdname Choleski
 #' @examples
-#' n <- 30
+#' N <- 30
 #' p <- 4
-#' Mat <- matrix(rnorm(n * p), n, p)
-#' acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = n)
+#' Mat <- matrix(rnorm(N * p), N, p)
+#' acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
 #' cholZX(Z = Mat, acf = acf)
 #' cholXZ(X = Mat, acf = acf)
 #' @export

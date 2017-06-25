@@ -34,6 +34,6 @@ mean <- rnorm(N)
 acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
 dmean <- matrix(rnorm(N), N, p)
 dacf <- matrix(rnorm(N), N, p)
-acf <- Toeplitz(acf)
+acf <- Toeplitz(acf = acf)
 Snorm.grad(X, mean, acf, dmean, dacf)
 }

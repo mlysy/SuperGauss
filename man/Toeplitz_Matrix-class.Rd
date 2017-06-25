@@ -12,6 +12,14 @@
 \alias{\%*\%}
 \alias{determinant}
 \alias{solve}
+\alias{\%*\%,ANY,Toeplitz_Matrix-method}
+\alias{\%*\%,Toeplitz_Matrix,ANY-method}
+\alias{determinant,Toeplitz_Matrix-method}
+\alias{dim,Toeplitz_Matrix-method}
+\alias{ncol,Toeplitz_Matrix-method}
+\alias{nrow,Toeplitz_Matrix-method}
+\alias{show,Toeplitz_Matrix-method}
+\alias{solve,Toeplitz_Matrix-method}
 \alias{Toeplitz}
 \title{Constructor and methods for Toeplitz matrix objects.}
 \usage{
