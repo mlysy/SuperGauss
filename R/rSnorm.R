@@ -15,10 +15,11 @@
 #' @return A \code{nkeep x n} matrix with time series as columns.
 #' @importFrom fftw FFT IFFT planFFT
 #' @examples
-#' acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = 200)
+#' acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = 20)
 #' rSnorm(n = 3, acf = acf)
 #' @export
-rSnorm <- function(n, acf, Z, fft = TRUE, ncut = 0, tol = 1e-6) {
+rSnorm <- function(n = 1, acf, Z, fft = TRUE, nkeep, tol = 1e-6) {
+  if(missing(nkeep)) nkeep <- length(acf)
   if(!fft) {
     if(missing(Z)) {
       N <- length(acf)
@@ -26,11 +27,12 @@ rSnorm <- function(n, acf, Z, fft = TRUE, ncut = 0, tol = 1e-6) {
     } else {
       Z <- as.matrix(Z)
       if(length(Z) != n*N) {
-        stop("Z has incompatible dimensions with n and acf.")
+        stop("Z has incompatible dimensions with n and length(acf).")
       }
     }
     X <- DurbinLevinson_ZX(Z = Z, acf = acf)
-    if(n == 1) X <- c(X)
+    X <- X[1:nkeep,]
+    #if(n == 1) X <- c(X)
   } else {
     N <- length(acf)-1
     NN <- max(2*N,1)
@@ -65,7 +67,8 @@ rSnorm <- function(n, acf, Z, fft = TRUE, ncut = 0, tol = 1e-6) {
     Z[2:N,] <- tmp
     Z <- apply(Z, 2, IFFT, plan = fft.plan, scale = FALSE)
     # remove roundoff error and discard padded values
-    X <- Re(Z[1:(N+1-ncut),])/sqrt(NN)
+    #X <- Re(Z[1:(N+1-ncut),])/sqrt(NN)
+    X <- Re(Z[1:nkeep,])/sqrt(NN)
     #if(n != 1) X <- t(X)
   }
   X

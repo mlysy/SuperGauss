@@ -4,7 +4,7 @@
 \alias{rSnorm}
 \title{Simulation of a Stationary Gaussian Process.}
 \usage{
-rSnorm(n, acf, Z, fft = TRUE, ncut = 0, tol = 1e-06)
+rSnorm(n = 1, acf, Z, fft = TRUE, nkeep, tol = 1e-06)
 }
 \arguments{
 \item{n}{number of time series to generate.}
@@ -15,9 +15,9 @@ rSnorm(n, acf, Z, fft = TRUE, ncut = 0, tol = 1e-06)
 
 \item{fft}{logical, whether or not to use the superfast fft-based algorithm of Dietrich-Newsam or the more stable Durbin-Levinson algorithm.  See Details.}
 
-\item{tol}{relative tolerance on negative eigenvalues.  See Details.}
-
 \item{nkeep}{length of time series.  Defaults to \code{N = length(acf)}.  See Details.}
+
+\item{tol}{relative tolerance on negative eigenvalues.  See Details.}
 }
 \value{
 A \code{nkeep x n} matrix with time series as columns.
@@ -33,6 +33,6 @@ The superfast method fails when the circulant matrix is not positive definite.  
 }
 }
 \examples{
-acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = 200)
+acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = 20)
 rSnorm(n = 3, acf = acf)
 }
