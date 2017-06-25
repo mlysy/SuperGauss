@@ -2,54 +2,54 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 DurbinLevinson_XZ <- function(X, acf) {
-    .Call('SuperGauss_DurbinLevinson_XZ', PACKAGE = 'SuperGauss', X, acf)
+    .Call(SuperGauss_DurbinLevinson_XZ, X, acf)
 }
 
 DurbinLevinson_ZX <- function(Z, acf) {
-    .Call('SuperGauss_DurbinLevinson_ZX', PACKAGE = 'SuperGauss', Z, acf)
+    .Call(SuperGauss_DurbinLevinson_ZX, Z, acf)
 }
 
 DurbinLevinson_Eigen <- function(X, Y, acf, calcMode = 1L) {
-    .Call('SuperGauss_DurbinLevinson_Eigen', PACKAGE = 'SuperGauss', X, Y, acf, calcMode)
+    .Call(SuperGauss_DurbinLevinson_Eigen, X, Y, acf, calcMode)
 }
 
 DurbinLevinson_Base <- function(X, Y, acf, calcMode = 1L) {
-    .Call('SuperGauss_DurbinLevinson_Base', PACKAGE = 'SuperGauss', X, Y, acf, calcMode)
+    .Call(SuperGauss_DurbinLevinson_Base, X, Y, acf, calcMode)
 }
 
 .Toeplitz_constructor <- function(n) {
-    .Call('SuperGauss_Toeplitz_constructor', PACKAGE = 'SuperGauss', n)
+    .Call(SuperGauss_Toeplitz_constructor, n)
 }
 
 .Toeplitz_setAcf <- function(Toep_ptr, acf) {
-    invisible(.Call('SuperGauss_Toeplitz_setAcf', PACKAGE = 'SuperGauss', Toep_ptr, acf))
+    invisible(.Call(SuperGauss_Toeplitz_setAcf, Toep_ptr, acf))
 }
 
 .Toeplitz_getAcf <- function(Toep_ptr) {
-    .Call('SuperGauss_Toeplitz_getAcf', PACKAGE = 'SuperGauss', Toep_ptr)
+    .Call(SuperGauss_Toeplitz_getAcf, Toep_ptr)
 }
 
 .Toeplitz_Multiply <- function(Toep_ptr, X) {
-    .Call('SuperGauss_Toeplitz_Multiply', PACKAGE = 'SuperGauss', Toep_ptr, X)
+    .Call(SuperGauss_Toeplitz_Multiply, Toep_ptr, X)
 }
 
 .Toeplitz_Solve <- function(Toep_ptr, X) {
-    .Call('SuperGauss_Toeplitz_Solve', PACKAGE = 'SuperGauss', Toep_ptr, X)
+    .Call(SuperGauss_Toeplitz_Solve, Toep_ptr, X)
 }
 
 .Toeplitz_Determinant <- function(Toep_ptr) {
-    .Call('SuperGauss_Toeplitz_Determinant', PACKAGE = 'SuperGauss', Toep_ptr)
+    .Call(SuperGauss_Toeplitz_Determinant, Toep_ptr)
 }
 
 .Toeplitz_traceT2 <- function(Toep_ptr, acf2) {
-    .Call('SuperGauss_Toeplitz_traceT2', PACKAGE = 'SuperGauss', Toep_ptr, acf2)
+    .Call(SuperGauss_Toeplitz_traceT2, Toep_ptr, acf2)
 }
 
 .Toeplitz_traceT4 <- function(Toep_ptr, acf2, acf3) {
-    .Call('SuperGauss_Toeplitz_traceT4', PACKAGE = 'SuperGauss', Toep_ptr, acf2, acf3)
+    .Call(SuperGauss_Toeplitz_traceT4, Toep_ptr, acf2, acf3)
 }
 
 .Toeplitz_hasAcf <- function(Toep_ptr) {
-    .Call('SuperGauss_Toeplitz_hasAcf', PACKAGE = 'SuperGauss', Toep_ptr)
+    .Call(SuperGauss_Toeplitz_hasAcf, Toep_ptr)
 }
 

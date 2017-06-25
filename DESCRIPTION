@@ -1,20 +1,14 @@
 Package: SuperGauss
 Type: Package
-Title: Linear Algebra with Toeplitz Matrices
-Version: 0.0.1.9003
-Date: 2017-01-14
+Title: Superfast Likelihood Inference for Stationary Gaussian Time Series
+Version: 0.0.1.9010
+Date: 2017-07-01
 Authors@R: c(person("Yun", "Ling",
                     email = "y22ling@uwaterloo.ca", role = "aut"),
              person("Martin", "Lysy",
 	            email = "mlysy@uwaterloo.ca", role = c("cre", "aut")))
-Description: R wrapper to a C++ library for linear algebra with positive-
-    definite Toeplitz matrices. In particular, a "superfast" O(n log^2 n) solver
-    for Toeplitz systems is provided, whereas the more common Levinson algorithm for
-    such systems is O(n^2). The implementation uses Fast Fourier Transforms provided
-    by the fftw library. In addition to the solver, the package provides superfast
-    algorithms for matrix-vector multiplication and determinants. The C++ code is
-    provided as a header-only library for low-level usage outside of R.
-License: GPL (>= 3)
+Description: Likelihood evaluations for stationary Gaussian time series are typically obtained via the Durbin-Levinson algorithm, which scales as O(n^2) in the number of time series observations.  This package provides a "superfast" O(n log^2 n) algorithm written in C++, crossing over with Durbin-Levinson around n = 300.  Efficient implementations of the score and Hessian functions are also provided, leading to superfast versions of inference algorithms such as Newton-Raphson and Hamiltonian Monte Carlo.  The C++ code provides a Toeplitz matrix class packaged as a header-only library, to simplify low-level usage in other packages and outside of R.
+License: GPL-3
 Imports:
     stats,
     methods,

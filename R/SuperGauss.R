@@ -4,8 +4,8 @@
 #'
 #' @docType package
 #' @name SuperGauss
-#' @import Rcpp
-#' @importFrom methods new
+#' @importFrom Rcpp evalCpp
+#' @importFrom methods new show
 #' @importFrom stats rnorm
-#' @useDynLib SuperGauss
+#' @useDynLib SuperGauss, .registration = TRUE
 NULL
