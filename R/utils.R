@@ -27,38 +27,3 @@ toeplitz2 <- function(col, row, debug = FALSE) {
   }
   T
 }
-
-# names of prior
-.PriorNames <- c("Lambda", "Omega", "Psi", "nu")
-
-# Default prior specification
-.DefaultPrior <- function(prior, p, q, noSigma) {
-  noBeta <- p == 0
-  # extract elements
-  Lambda <- prior$Lambda
-  Omega <- prior$Omega
-  nu <- prior$nu
-  Psi <- prior$Psi
-  # assign defaults
-  if(!noBeta) {
-    noBeta <- (length(Omega) == 1) && is.na(Omega)
-  }
-  if(noBeta) {
-    Lambda <- 0
-    Omega <- NA
-  } else {
-    if(is.null(Lambda)) Lambda <- matrix(0,p,q)
-    if(is.null(Omega) || all(Omega == 0)) Omega <- matrix(0,p,p)
-  }
-  if(missing(noSigma) || !noSigma) {
-    noSigma <- (length(nu) == 1) && is.na(nu)
-  }
-  if(noSigma) {
-    Psi <- 0
-    nu <- NA
-  } else {
-    if(is.null(nu)) nu <- 0
-    if(is.null(Psi) || all(Psi == 0)) Psi <- matrix(0,q,q)
-  }
-  list(Lambda = Lambda, Omega = Omega, Psi = Psi, nu = nu)
-}
