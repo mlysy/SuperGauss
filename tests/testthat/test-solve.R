@@ -18,9 +18,9 @@ test_that("Toeplitz-matrix inversion", {
     acf.mat <- toeplitz(acf)
     Toep$setAcf(acf)
     if(cp$b) {
-      expect_equal(acf.mat %*% solve(Toep, X), X, tolerance = 1e-6)
+      expect_equal(acf.mat %*% solve(Toep, X), X, tolerance = 1e-5)
     } else {
-      expect_equal(Toep %*% solve(Toep), diag(N), tolerance = 1e-6)
+      expect_equal(Toep %*% solve(Toep), diag(N), tolerance = 1e-5)
     }
   }
 })

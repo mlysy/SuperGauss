@@ -10,7 +10,6 @@ pkg.path <- getwd()
 #require(devtools)
 
 # regenerates Rcpp interface (i.e., RcppExports)
-#pkg.path <- "D:/GitHub/SuperGauss"
 Rcpp::compileAttributes(pkgdir = pkg.path)
 devtools::document(pkg = pkg.path)
 devtools::install(pkg = pkg.path, args = "--clean") # installs the package

@@ -2,6 +2,7 @@
 
 export(Snorm.Hess)
 export(Snorm.grad)
+export(Toep.mult)
 export(Toeplitz)
 export(acf2incr)
 export(acf2msd)

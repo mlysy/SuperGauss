@@ -4,18 +4,18 @@
 \alias{Snorm.grad}
 \title{Gradient of a Stationary Gaussian Log-Likelihood}
 \usage{
-Snorm.grad(X, mean, acf, dmean, dacf)
+Snorm.grad(X, mu, acf, dmu, dacf)
 }
 \arguments{
-\item{X}{\eqn{n \times 1} matrix, follows N(mean, Variance).}
+\item{X}{\eqn{N \times d} matrix, each column i.i.d. follows multivariate Gaussian distribution with mean \code{mu} and Toeplitz variance given by \code{acf}.}
 
-\item{mean}{\eqn{n} vector or matrix.}
+\item{mu}{length \eqn{N} vector or matrix.}
 
-\item{acf}{\eqn{n} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
+\item{acf}{length \eqn{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
 
-\item{dmean}{\eqn{n \times p} matrix, where \eqn{p} is the number of parameters, each column is the partial derivative of mean.}
+\item{dmu}{size \eqn{N \times p} matrix, where \eqn{p} is the number of parameters, each column is the partial derivative of \code{mu}.}
 
-\item{dacf}{\eqn{n \times p} matrix, each column is the partial derivative of acf.}
+\item{dacf}{size \eqn{N \times p} matrix, each column is the partial derivative of \code{acf}.}
 }
 \value{
 The gradient of the log-likelihood.
@@ -25,15 +25,25 @@ Efficient evaluation of log-likelihood gradient for stationary Gaussian data.
 }
 \note{
 package "SuperGauss" is required
+
+the order of partial derivative in \code{dmu} and \code{\dacf} must be identical. Assuming that \eqn{\beta} is
+the second parameter, then second column of \code{dmu} should be \eqn{\frac{\partial \mu}{\partial \beta}}, second column of 
+\code{dacf} should be \eqn{\frac{\partial acf}{\partial \beta}}
 }
 \examples{
-N <- 30
-p <- 4
-X <- as.matrix(rnorm(N))
-mean <- rnorm(N)
-acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
-dmean <- matrix(rnorm(N), N, p)
-dacf <- matrix(rnorm(N), N, p)
-acf <- Toeplitz(acf = acf)
-Snorm.grad(X, mean, acf, dmean, dacf)
+N <- 300
+d <- 4
+X <- matrix(rnorm(N*d), N, d)
+theta <- 0.1
+lambda <- 2
+
+mu <- theta^2 * rep(1, N)
+acf <- exp(-lambda * (1:N - 1))
+acf <- Toeplitz(acf)
+dmu <- matrix(0, N, 2)
+dmu[, 1] <- 2 * theta * rep(1, N)
+dacf <- matrix(0, N, 2)
+dacf[, 2] <- -lambda * exp(-lambda * (1:N - 1))
+
+Snorm.grad(X, mu, acf, dmu, dacf)
 }

@@ -4,22 +4,22 @@
 \alias{Snorm.Hess}
 \title{Hessian of a Stationary Gaussian Log-Likelihood}
 \usage{
-Snorm.Hess(X, mean, acf, dmean, dacf, d2mean, d2acf)
+Snorm.Hess(X, mu, acf, dmu, dacf, d2mu, d2acf)
 }
 \arguments{
-\item{X}{\eqn{n \times d} matrix, d i.i.d. vector follows N(mean, Variance).}
+\item{X}{\eqn{N \times d} matrix, each column i.i.d. follows multivariate Gaussian distribution with mean \code{mu} and Toeplitz variance given by \code{acf}.}
 
-\item{mean}{\eqn{n} vector or matrix.}
+\item{mu}{length \eqn{N} vector or matrix.}
 
-\item{acf}{\eqn{n} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
+\item{acf}{length \eqn{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
 
-\item{dmean}{\eqn{n \times p} matrix, where p is the number of parameters, each column is the partial derivative of mean}
+\item{dmu}{size \eqn{N \times p} matrix, where \eqn{p} is the number of parameters, each column is the partial derivative of \code{mu}.}
 
-\item{dacf}{\eqn{n \times p} matrix, each column is the partial deruvative of acf}
+\item{dacf}{size \eqn{N \times p} matrix, each column is the partial derivative of \code{acf}.}
 
-\item{d2mean}{\eqn{n \times p \times p} array}
+\item{d2mu}{\eqn{N \times p \times p} array, each column is the second partial derivative of \code{mu}}
 
-\item{d2acf}{\eqn{n \times p \times p} array}
+\item{d2acf}{\eqn{N \times p \times p} array,  each column is the second partial derivative of \code{mu}}
 }
 \value{
 The Hessian matrix of the log-likelihood.
@@ -30,18 +30,29 @@ Efficient calculation of the Hessian matrix of the log-likelihood of stationary 
 \note{
 package "SuperGauss" is required
 
-if d2mean and d2acf is \eqn{n \times 1} matrix or array, it only works when p = 1
+the order of partial derivative in \code{d2mean} and \code{d2acf} must be identical. Assuming that 
+\eqn{\alpha} and \eqn{\beta} are respectively 1st and 2nd parameters. the (1, 2)th column of \code{d2mu} 
+should be \eqn{\frac{\partial^2 \mu}{\partial \alpha \partial \beta}} while the (1, 2)th column of \code{d2acf}
+should be \eqn{\frac{\partial^2 acf}{\partial \alpha \partial \beta}}.
+
+if d2mu and d2acf is \eqn{N \times 1} matrix or array, it only works when p = 1
 }
 \examples{
-N <- 30
-p <- 4
-X <- as.matrix(rnorm(N))
-mean <- as.matrix(rnorm(N))
-acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
-acf <- Toeplitz(acf = acf)
-dmean <- matrix(rnorm(N*p), N, p)
-dacf <- matrix(rnorm(N*p), N, p)
-d2mean <- array(rnorm(N*p*p), dim = c(N, p, p))
-d2acf <- array(rnorm(N*p*p), dim = c(N, p, p))
-Snorm.Hess(X, mean, acf, dmean, dacf, d2mean, d2acf)
+N <- 300
+d <- 4
+X <- matrix(rnorm(N*d), N, d)
+theta <- 0.1
+lambda <- 2
+
+mu <- theta^2 * rep(1, N)
+acf <- exp(-lambda * (1:N - 1))
+acf <- Toeplitz(acf)
+dmu <- dacf <- matrix(0, N, 2)
+dmu[, 1] <- 2 * theta * rep(1, N)
+dacf[, 2] <- -lambda * exp(-lambda * (1:N - 1))
+d2mu <- d2acf <- array(0, c(N, 2, 2))
+d2mu[, 1, 1] <- 2 * rep(1, N)
+d2acf[, 2, 2] <- lambda^2 * exp(-lambda * (1:N - 1))
+
+Snorm.Hess(X, mu, acf, dmu, dacf, d2mu, d2acf)
 }

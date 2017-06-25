@@ -2,154 +2,74 @@
 #'
 #' Efficient calculation of the Hessian matrix of the log-likelihood of stationary Gaussian data.
 #' @note package "SuperGauss" is required
-#' @param X \eqn{n \times d} matrix, d i.i.d. vector follows N(mean, Variance).
-#' @param mean \eqn{n} vector or matrix.
-#' @param acf \eqn{n} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf
-#' @param dmean \eqn{n \times p} matrix, where p is the number of parameters, each column is the partial derivative of mean
-#' @param dacf \eqn{n \times p} matrix, each column is the partial deruvative of acf
-#' @param d2mean \eqn{n \times p \times p} array
-#' @param d2acf \eqn{n \times p \times p} array
-#' @note if d2mean and d2acf is \eqn{n \times 1} matrix or array, it only works when p = 1
+#' @param X \eqn{N \times d} matrix, each column i.i.d. follows multivariate Gaussian distribution with mean \code{mu} and Toeplitz variance given by \code{acf}.
+#' @param mu length \eqn{N} vector or matrix.
+#' @param acf length \eqn{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf
+#' @param dmu size \eqn{N \times p} matrix, where \eqn{p} is the number of parameters, each column is the partial derivative of \code{mu}.
+#' @param dacf size \eqn{N \times p} matrix, each column is the partial derivative of \code{acf}.
+#' @param d2mu \eqn{N \times p \times p} array, each column is the second partial derivative of \code{mu}
+#' @param d2acf \eqn{N \times p \times p} array,  each column is the second partial derivative of \code{mu}
+#' @note 
+#' the order of partial derivative in \code{d2mean} and \code{d2acf} must be identical. Assuming that 
+#' \eqn{\alpha} and \eqn{\beta} are respectively 1st and 2nd parameters. the (1, 2)th column of \code{d2mu} 
+#' should be \eqn{\frac{\partial^2 \mu}{\partial \alpha \partial \beta}} while the (1, 2)th column of \code{d2acf}
+#' should be \eqn{\frac{\partial^2 acf}{\partial \alpha \partial \beta}}.
+#' @note if d2mu and d2acf is \eqn{N \times 1} matrix or array, it only works when p = 1
 #' @return The Hessian matrix of the log-likelihood.
-#' @examples
-#' N <- 30
-#' p <- 4
-#' X <- as.matrix(rnorm(N))
-#' mean <- as.matrix(rnorm(N))
-#' acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
-#' acf <- Toeplitz(acf = acf)
-#' dmean <- matrix(rnorm(N*p), N, p)
-#' dacf <- matrix(rnorm(N*p), N, p)
-#' d2mean <- array(rnorm(N*p*p), dim = c(N, p, p))
-#' d2acf <- array(rnorm(N*p*p), dim = c(N, p, p))
-#' Snorm.Hess(X, mean, acf, dmean, dacf, d2mean, d2acf)
+#' @examples 
+#' N <- 300
+#' d <- 4
+#' X <- matrix(rnorm(N*d), N, d)
+#' theta <- 0.1
+#' lambda <- 2
+#' 
+#' mu <- theta^2 * rep(1, N)
+#' acf <- exp(-lambda * (1:N - 1))
+#' acf <- Toeplitz(acf)
+#' dmu <- dacf <- matrix(0, N, 2)
+#' dmu[, 1] <- 2 * theta * rep(1, N)
+#' dacf[, 2] <- -lambda * exp(-lambda * (1:N - 1))
+#' d2mu <- d2acf <- array(0, c(N, 2, 2))
+#' d2mu[, 1, 1] <- 2 * rep(1, N)
+#' d2acf[, 2, 2] <- lambda^2 * exp(-lambda * (1:N - 1))
+#' 
+#' Snorm.Hess(X, mu, acf, dmu, dacf, d2mu, d2acf)
 #' @export
-Snorm.Hess <- function(X, mean, acf, dmean, dacf, d2mean, d2acf){
+Snorm.Hess <- function(X, mu, acf, dmu, dacf, d2mu, d2acf){
   if(is.vector(X)){
-    n <- length(X)
-    X <- matrix(X, n, 1)
-  } else{
-    if(ncol(X) != 1){
-      stop("X should have only 1 column")
-    }
-    n <- nrow(X)
-  }
-
-  if(missing(mean)){
-    mean <- rep(0, n)
-  } else{
-    if(length(mean) == 1){
-      mean <- rep(mean, n)
-    } else{
-      if(length(mean) != n){
-        stop("mean has incompatible dimension with X")
-      }
-      if(is.matrix(mean)){
-        mean <- as.vector(mean)
-      }
-    }
-  }
-
-  if(class(acf) == "Toeplitz_Matrix"){
-    # is Toeplitz
-    if(ncol(acf) != n){
-      stop("acf has incompatible dimension with X")
-    }
-  }else{
-    if(is.vector(acf)){
-      if(length(acf) != n){
-        stop("acf has incompatible dimension with X")
-      }else{
-        acf <- Toeplitz(acf)
-      }
-    }else{
-      stop("acf should be either vector or Toeplitz class")
-    }
-  }
-
-  if(is.vector(dacf)){
+    N <- length(X)
     p <- 1
-    dacf <- as.matrix(dacf)
+    X <- as.matrix(X)
   } else{
-    p <- ncol(dacf)
+    N <- nrow(X)
+    d <- ncol(X)
   }
-  if(nrow(dacf) != n){
-    stop("dacf has incompatible dimensions with X")
-  }
-
-  if(missing(dmean)){
-    dmean <- matrix(0, n, p)
-  } else{
-    if(length(dmean) == 1 || length(dmean) == n){
-      dmean <- matrix(dmean, n, p)
-    } else{
-      if(!(is.matrix(dmean) && ncol(dmean) == p && nrow(dmean) == n)){
-        stop("dmean has incompatible dimensions with dacf")
-      }
-    }
-  }
-
-  if(missing(d2mean)){
-    d2mean <- array(0, dim = c(n, p, p))
-  } else{
-    if(is.vector(d2mean) || is.matrix(d2mean)){
-      if(length(d2mean) == 1){
-        d2mean <- array(d2mean, dim = c(n, p, p))
-      }else{
-        if(p == 1 && length(d2mean) == n){
-          d2mean <- array(d2mean, dim = c(n, p, p))
-        } else{
-          stop("d2mean is incompatible with dacf")
-        }
-      }
-    } else{
-      if(!prod(as.numeric(dim(d2mean) == c(n, p, p)))){
-        stop("dimension of d2mean is incompatible with dacf")
-      }
-    }
-  }
-
-  if(is.vector(d2acf) || is.matrix(d2acf)){
-    if(p == 1 && length(d2acf) == n){
-      d2acf <- array(d2acf, dim = c(n, p, p))
-    } else{
-      stop("d2acf is incompatible with dacf")
-    }
-  } else{
-    if(!prod(as.numeric(dim(d2acf) == c(n, p, p)))){
-      stop("dimension of d2acf is incompatible with dacf")
-    }
-  }
-  acf.vec <- acf$getAcf()
-  X <- X - mean
-  SigX <- solve(acf, X)     # stores Sigma^-1 * X
+  
+  mu <- .format.mu(mu, N)
+  acf <- .format.acf(acf, N)
+  dacf <- .format.dacf(dacf, N)$dacf
+  p <- .format.dacf(dacf, N)$p
+  dmu <- .format.dmu(dmu, N, p)
+  d2mu <- .format.d2mu(d2mu, N, p)
+  d2acf <- .format.d2acf(d2acf, N, p)
+  
+  X <- X - mu
+  SigX <- solve(acf, X)     # stores Sigma^-1 * X, size N x d
   hess <- matrix(NA, p, p)
-  SigMu <- matrix(NA, n, p) # stores Sigma^-1 * Mean_i
+  SigMu <- solve(acf, dmu) # stores Sigma^-1 * mu_i, size N x p
+  Sig2X <- matrix(NA, N, p * d) # stores Sigma_i * SigX, size N x pd
   for(ii in 1:p){
-    SigMu[,ii] <- solve(acf, dmean[, ii])
+    Sig2X[, d * (ii-1) + 1:d] <- Toep.mult(dacf[, ii], SigX)
   }
-  Sig2X <- matrix(NA, n, p) # stores Sigma_i * SigX
   for(ii in 1:p){
-    acf$setAcf(dacf[, ii])
-    Sig2X[, ii] <- acf %*% SigX
-  }
-  Sigd2X <- matrix(NA, p, p) # stores SigX' * Sigma_ij * SigX
-  for(ii in 1:p){
-    for(jj in ii:p){ # symmetric hessian matrix
-      acf$setAcf(d2acf[, ii, jj])
-      Sigd2X[ii, jj] <- crossprod(SigX, acf %*% SigX)
+    for(jj in ii:p){
+      hess[ii, jj] <- sum(crossprod(d2mu[, ii, jj], SigX) - crossprod(SigMu[, ii], Sig2X[, d * (jj-1) + 1:d]) - 
+                            crossprod(SigMu[, jj], Sig2X[, d * (ii-1) + 1:d])) - d * crossprod(dmu[, ii], SigMu[, jj])
+      hess[ii, jj] <- hess[ii, jj] - .trace(crossprod(Sig2X[, d * (jj-1) + 1:d], solve(acf, Sig2X[, d * (ii-1) + 1:d])) - 
+                                              crossprod(SigX, Toep.mult(d2acf[, ii, jj], SigX)) / 2)
+      hess[ii, jj] <- hess[ii, jj] - d / 2 * (acf$traceT2(d2acf[, ii, jj]) - acf$traceT4(dacf[, jj], dacf[, ii]))
     }
   }
-  acf$setAcf(acf.vec)
-  for(ii in 1:p){
-    for(jj in ii:p){ # symmetric hessian matrix
-      hess[ii, jj] <- crossprod(d2mean[, ii, jj], SigX) - crossprod(SigMu[,ii], Sig2X[, jj]) -
-        crossprod(SigMu[,jj], Sig2X[, ii]) - crossprod(dmean[, ii], solve(acf, dmean[, jj])) -
-        crossprod(Sig2X[, jj], solve(acf, Sig2X[, ii])) - acf$traceT2(d2acf[, ii, jj]) / 2 +
-        acf$traceT4(dacf[, jj], dacf[, ii]) / 2
-    }
-  }
-  hess <- hess + Sigd2X / 2
   hess[lower.tri(hess)] <- t(hess)[lower.tri(hess)]
   hess
 }

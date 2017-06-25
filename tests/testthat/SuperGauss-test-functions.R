@@ -11,19 +11,17 @@ acf2incr.SGtest <- function(gam) {
   igam
 }
 
-fbm.acf.SGtest <- function(H, dT, N, incr = TRUE){
-   gam <- (dT*(0:N))^(2*H)
-   if(incr){
-     # increments
-     ans <- -1/2 * acf2incr.SGtest(gam)
-   } else{
-     # observations
-     ans <- gam[1:N]
-   }
-   ans
+fbm.acf.SGtest <- function(alpha, dT, N) {
+  if(N == 1) {
+    acf <- dT^alpha
+  } else {
+    acf <- (dT*(0:N))^alpha
+    acf <- .5 * (acf[1:N+1] + c(acf[2], acf[1:(N-1)]) - 2*acf[1:N])
+  }
+  acf
 }
 
-exp2.acf.SGtest <- function(lambda, dT, N, incr = TRUE) {
+exp2.acf.SGtest <- function(lambda, dT, N, incr) {
   # process autocorrelation
   gam <- exp(-(0:N*dT/lambda)^2)
   if(incr) {
@@ -36,7 +34,7 @@ exp2.acf.SGtest <- function(lambda, dT, N, incr = TRUE) {
   ans
 }
 
-exp.acf.SGtest <- function(lambda, dT, N, incr = TRUE) {
+exp.acf.SGtest <- function(lambda, dT, N, incr) {
   # process autocorrelation
   gam <- exp(-(0:N*dT/lambda))
   if(incr) {
@@ -49,7 +47,7 @@ exp.acf.SGtest <- function(lambda, dT, N, incr = TRUE) {
   ans
 }
 
-matern.acf.SGtest <- function(lambda, nu, dT, N, incr = TRUE) {
+matern.acf.SGtest <- function(lambda, nu, dT, N, incr) {
   # process autocorrelation
   tt <- sqrt(2*nu) * (0:N)*dT/lambda
   gam <- nu * log(.5 * tt) - lgamma(nu)
@@ -76,7 +74,7 @@ acf.get.SGtest <- function(N, type, dT, incr = TRUE){
     acf <- exp.acf.SGtest(lambda, dT, N, incr)
   }
   if(type == "fbm"){
-    acf <- fbm.acf.SGtest(H, dT, N, incr)
+    acf <- fbm.acf.SGtest(H, dT, N)
   }else{
     acf <- matern.acf.SGtest(lambda, nu, dT, N, incr)
   }
@@ -89,4 +87,48 @@ trace.SGtest <- function(mat){
   }else{
     sum(diag(mat))
   }
+}
+
+fbm.acf.grad.SGtest <- function(alpha, dT, N) {
+  if(N == 1) {
+    dacf <- dT^alpha * log(alpha)
+  } else {
+    dacf <- c(0, (dT*(1:N))^alpha * log(dT*(1:N)))
+    dacf <- .5 * (dacf[1:N+1] + c(dacf[2], dacf[1:(N-1)]) - 2*dacf[1:N])
+  }
+  dacf
+}
+
+fbm.acf.hess.SGtest <- function(alpha, dT, N) {
+  if(N == 1) {
+    d2acf <- dT^alpha * log(alpha)^2
+  } else {
+    d2acf <- c(0, (dT*(1:N))^alpha * log(dT*(1:N))^2)
+    d2acf <- .5 * (d2acf[1:N+1] + c(d2acf[2], d2acf[1:(N-1)]) - 2*d2acf[1:N])
+  }
+  d2acf
+}
+
+
+fbm.mu.SGtest <- function(mu, N){
+  rep(mu^2, N)
+}
+
+fbm.mu.grad.SGtest <- function(mu, N){
+  rep(2 * mu, N)
+}
+
+fbm.mu.hess.SGtest <- function(mu, N){
+  rep(2, N)
+}
+
+test.grad.hess.SGtest <- function(Theta, X, acf, dT){
+  N <- nrow(X)
+  theta <- Theta[1]
+  alpha <- Theta[2]
+  mu <- fbm.mu.SGtest(theta, N)
+  acf1 <- fbm.acf.SGtest(alpha, dT, N)
+  acf$setAcf(acf1)
+  dnsy <- dSnorm(X = X, mu = mu, acf = acf)
+  dnsy
 }

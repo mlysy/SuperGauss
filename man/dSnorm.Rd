@@ -4,19 +4,18 @@
 \alias{dSnorm}
 \title{Density of a Stationary Gaussian Process}
 \usage{
-dSnorm(X, mean, acf, log = FALSE)
+dSnorm(X, mu, acf, log = TRUE)
 }
 \arguments{
-\item{X}{\eqn{N \times d} matrix, d i.i.d. vector follows N(mean, Variance)}
+\item{X}{\eqn{N \times d} matrix, d i.i.d. vector follows N(mu, Variance)}
 
-\item{mean}{\eqn{N} vector or matrix}
+\item{mu}{\eqn{N} vector or matrix}
 
 \item{acf}{\eqn{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
 
 \item{log}{logical, if \code{TRUE} returns log-densities.}
-}
-\value{
-vector of densities.
+
+\item{return}{vector of densities.}
 }
 \description{
 Efficient density evaluation for the multivariate normal distribution with Toeplitz variance matrix.
@@ -24,14 +23,18 @@ Efficient density evaluation for the multivariate normal distribution with Toepl
 \note{
 package "SuperGauss" is required
 
-When input {X, mean, acf} data type can be either vector or matrix, if vector, convert it into \code{n x 1} matrix
+When input {X, mu, acf} data type can be either vector or matrix, if vector, convert it into \code{n x 1} matrix
 }
 \examples{
-N <- 30
+N <- 300
 d <- 4
 X <- matrix(rnorm(N*d), N, d)
-mean <- rnorm(N)
-acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = N)
-acf <- Toeplitz(acf = acf)
-dSnorm(X, mean = mean, acf = acf, log = TRUE)
+theta <- 0.1
+lambda <- 2
+
+mu <- theta^2 * rep(1, N)
+acf <- exp(-lambda * (1:N - 1))
+acf <- Toeplitz(acf)
+
+dSnorm(X, mu = mean, acf = acf, log = TRUE)
 }
