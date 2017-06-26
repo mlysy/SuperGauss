@@ -15,11 +15,13 @@ devtools::document(pkg = pkg.path)
 devtools::install(pkg = pkg.path, args = "--clean") # installs the package
 devtools::build(pkg = pkg.path) # builds a tar.gz file
 
+# check
+devtools::check("SuperGauss")
+
 # restart R before testing changes
 testthat::test_package("SuperGauss")
 
 # cran check
-
 
 
 # generating the pdf manual using rd file

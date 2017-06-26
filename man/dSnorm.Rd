@@ -14,8 +14,9 @@ dSnorm(X, mu, acf, log = TRUE)
 \item{acf}{\eqn{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
 
 \item{log}{logical, if \code{TRUE} returns log-densities.}
-
-\item{return}{vector of densities.}
+}
+\value{
+density (log density) of stationary Gaussian system
 }
 \description{
 Efficient density evaluation for the multivariate normal distribution with Toeplitz variance matrix.
@@ -34,7 +35,7 @@ lambda <- 2
 
 mu <- theta^2 * rep(1, N)
 acf <- exp(-lambda * (1:N - 1))
-acf <- Toeplitz(acf)
+acf <- Toeplitz(acf = acf)
 
-dSnorm(X, mu = mean, acf = acf, log = TRUE)
+dSnorm(X, mu, acf, log = TRUE)
 }

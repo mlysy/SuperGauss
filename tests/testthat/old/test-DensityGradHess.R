@@ -1,4 +1,3 @@
-library(SuperGauss)
 source("SuperGauss-test-functions.R")
 context("density, score and Hessian matrix")
 
@@ -25,11 +24,11 @@ test_that("density, score and Hessian matrix of stationary Gaussian process", {
     acf$setAcf(acf1)
     Snorm.grad(X, mu, acf, dmu, dacf)
   }, numDeriv::grad(func = test.grad.hess.SGtest, x = Theta, X = X, acf = acf, dT = dT), 
-  tolerance = 1)
+  tolerance = 10)
   
   expect_equal({
     acf$setAcf(acf1)
     Snorm.Hess(X, mu, acf, dmu, dacf, d2mu, d2acf)
   }, numDeriv::hessian(func = test.grad.hess.SGtest, x = Theta, X = X, acf = acf, dT = dT), 
-  tolerance = 1)
+  tolerance = 10)
 })

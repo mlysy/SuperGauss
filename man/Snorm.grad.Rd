@@ -26,7 +26,7 @@ Efficient evaluation of log-likelihood gradient for stationary Gaussian data.
 \note{
 package "SuperGauss" is required
 
-the order of partial derivative in \code{dmu} and \code{\dacf} must be identical. Assuming that \eqn{\beta} is
+the order of partial derivative in \code{dmu} and \code{dacf} must be identical. Assuming that \eqn{\beta} is
 the second parameter, then second column of \code{dmu} should be \eqn{\frac{\partial \mu}{\partial \beta}}, second column of 
 \code{dacf} should be \eqn{\frac{\partial acf}{\partial \beta}}
 }
@@ -39,7 +39,7 @@ lambda <- 2
 
 mu <- theta^2 * rep(1, N)
 acf <- exp(-lambda * (1:N - 1))
-acf <- Toeplitz(acf)
+acf <- Toeplitz(acf = acf)
 dmu <- matrix(0, N, 2)
 dmu[, 1] <- 2 * theta * rep(1, N)
 dacf <- matrix(0, N, 2)

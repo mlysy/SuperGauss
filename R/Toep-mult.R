@@ -4,15 +4,15 @@
 #' @param vec vector of length \code{N} giving the first column (or row) of the Toeplitz matrix
 #' @param X vector of length \code{N} or matrix of dimension \code{N x d}
 #' @return A matrix of size of X
-#' @details computes \code{toeplitz(vec) %*% X}
+#' @details computes \code{toeplitz(vec) * X}
 #' computes 
 #' @importFrom fftw FFT IFFT planFFT
 #' @examples 
 #' vec <- rnorm(200)
 #' X <- matrix(rnorm(200 * 5), 200, 5)
-#' vec.mult(vec, X)
+#' Toep.mult(vec, X)
 #' @export 
-vec.mult <- function(vec, X){
+Toep.mult <- function(vec, X){
   N <- length(vec)
   
   if(is.vector(X)){

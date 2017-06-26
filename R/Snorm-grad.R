@@ -8,7 +8,7 @@
 #' @param dmu size \eqn{N \times p} matrix, where \eqn{p} is the number of parameters, each column is the partial derivative of \code{mu}.
 #' @param dacf size \eqn{N \times p} matrix, each column is the partial derivative of \code{acf}.
 #' @note 
-#' the order of partial derivative in \code{dmu} and \code{\dacf} must be identical. Assuming that \eqn{\beta} is
+#' the order of partial derivative in \code{dmu} and \code{dacf} must be identical. Assuming that \eqn{\beta} is
 #' the second parameter, then second column of \code{dmu} should be \eqn{\frac{\partial \mu}{\partial \beta}}, second column of 
 #' \code{dacf} should be \eqn{\frac{\partial acf}{\partial \beta}}
 #' @return The gradient of the log-likelihood.
@@ -21,7 +21,7 @@
 #' 
 #' mu <- theta^2 * rep(1, N)
 #' acf <- exp(-lambda * (1:N - 1))
-#' acf <- Toeplitz(acf)
+#' acf <- Toeplitz(acf = acf)
 #' dmu <- matrix(0, N, 2)
 #' dmu[, 1] <- 2 * theta * rep(1, N)
 #' dacf <- matrix(0, N, 2)

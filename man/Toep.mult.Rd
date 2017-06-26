@@ -4,10 +4,10 @@
 \alias{Toep.mult}
 \title{Toeplitz matrix multiplies vector or matrix}
 \usage{
-Toep.mult(Toep, X)
+Toep.mult(vec, X)
 }
 \arguments{
-\item{Toep}{vector of length \code{N} giving the first column (or row) of the Toeplitz matrix}
+\item{vec}{vector of length \code{N} giving the first column (or row) of the Toeplitz matrix}
 
 \item{X}{vector of length \code{N} or matrix of dimension \code{N x d}}
 }
@@ -18,7 +18,7 @@ A matrix of size of X
 efficient computation of symmetric Toeplitz matrix times arbitary vector or matrix using Fast Fourier Transformation
 }
 \examples{
-Toep <- rnorm(200)
+vec <- rnorm(200)
 X <- matrix(rnorm(200 * 5), 200, 5)
-Toep.mult(Toep, X)
+Toep.mult(vec, X)
 }

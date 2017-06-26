@@ -7,7 +7,7 @@
 #' @param mu \eqn{N} vector or matrix
 #' @param acf \eqn{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf
 #' @param log logical, if \code{TRUE} returns log-densities.
-#' @param return vector of densities.
+#' @return  density (log density) of stationary Gaussian system
 #' @examples 
 #' N <- 300
 #' d <- 4
@@ -17,9 +17,9 @@
 #' 
 #' mu <- theta^2 * rep(1, N)
 #' acf <- exp(-lambda * (1:N - 1))
-#' acf <- Toeplitz(acf)
+#' acf <- Toeplitz(acf = acf)
 #' 
-#' dSnorm(X, mu = mean, acf = acf, log = TRUE)
+#' dSnorm(X, mu, acf, log = TRUE)
 #' @export
 dSnorm <- function(X, mu, acf, log = TRUE){
   if(is.vector(X)){
