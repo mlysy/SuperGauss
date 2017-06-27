@@ -17,6 +17,10 @@ A matrix of size of X
 \description{
 efficient computation of symmetric Toeplitz matrix times arbitary vector or matrix using Fast Fourier Transformation
 }
+\details{
+computes \code{toeplitz(vec) * X}
+computes
+}
 \examples{
 vec <- rnorm(200)
 X <- matrix(rnorm(200 * 5), 200, 5)
