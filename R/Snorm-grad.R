@@ -1,17 +1,17 @@
-#' Gradient of a Stationary Gaussian Log-Likelihood
+#' @title Gradient of a stationary Gaussian log-Likelihood
 #'
-#' Efficient evaluation of log-likelihood gradient for stationary Gaussian data.
-#' @note package "SuperGauss" is required
-#' @param X \eqn{N \times d} matrix, each column i.i.d. follows multivariate Gaussian distribution with mean \code{mu} and Toeplitz variance given by \code{acf}.
-#' @param mu length \eqn{N} vector or matrix.
-#' @param acf length \eqn{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf
-#' @param dmu size \eqn{N \times p} matrix, where \eqn{p} is the number of parameters, each column is the partial derivative of \code{mu}.
-#' @param dacf size \eqn{N \times p} matrix, each column is the partial derivative of \code{acf}.
+#' @description Efficient evaluation of log-likelihood gradient for stationary Gaussian data.
+#' @param X size \code{N x d} matrix, each column i.i.d. follows multivariate Gaussian distribution with mean \code{mu} and Toeplitz variance given by \code{acf}
+#' @param mu length \code{N} vector or matrix
+#' @param acf length \code{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf
+#' @param dmu size \code{N x p} matrix, where \code{p} is the number of parameters, each column is the partial derivative of \code{mu}
+#' @param dacf size \code{N x p} matrix, each column is the partial derivative of \code{acf}
 #' @note 
-#' the order of partial derivative in \code{dmu} and \code{dacf} must be identical. Assuming that \eqn{\beta} is
-#' the second parameter, then second column of \code{dmu} should be \eqn{\frac{\partial \mu}{\partial \beta}}, second column of 
-#' \code{dacf} should be \eqn{\frac{\partial acf}{\partial \beta}}
-#' @return The gradient of the log-likelihood.
+#' Order of partial derivative in \code{dmu} and \code{dacf} must be identical. For i-th parameter \eqn{\theta_i}, i-th
+#' column of \code{dmu} must be \eqn{\frac{\partial \mu}{\partial \theta_i}}{d\mu/d\theta_i}
+#' and i-th column of \code{dacf} must be 
+#' \eqn{\frac{\partial acf}{\partial \theta_i}}{dacf/d\theta_i}
+#' @return Length \code{N} vector containing the gradient of the log-likelihood.
 #' @examples 
 #' N <- 300
 #' d <- 4
@@ -49,7 +49,7 @@ Snorm.grad <- function(X, mu, acf, dmu, dacf){
   SigX <- solve(acf, X)
   grad <- rep(NA, p)
   for(ii in 1:p){
-    grad[ii] <- .trace(crossprod(SigX, Toep.mult(dacf[, ii], SigX))) - d * acf$traceT2(dacf[, ii])
+    grad[ii] <- .trace(crossprod(SigX, toep.mult(dacf[, ii], SigX))) - d * acf$traceT2(dacf[, ii])
   }
   grad <- grad / 2
   grad <- grad + apply(crossprod(dmu, SigX), 1, sum)

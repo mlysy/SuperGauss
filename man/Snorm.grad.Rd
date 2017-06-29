@@ -2,33 +2,32 @@
 % Please edit documentation in R/Snorm-grad.R
 \name{Snorm.grad}
 \alias{Snorm.grad}
-\title{Gradient of a Stationary Gaussian Log-Likelihood}
+\title{Gradient of a stationary Gaussian log-Likelihood}
 \usage{
 Snorm.grad(X, mu, acf, dmu, dacf)
 }
 \arguments{
-\item{X}{\eqn{N \times d} matrix, each column i.i.d. follows multivariate Gaussian distribution with mean \code{mu} and Toeplitz variance given by \code{acf}.}
+\item{X}{size \code{N x d} matrix, each column i.i.d. follows multivariate Gaussian distribution with mean \code{mu} and Toeplitz variance given by \code{acf}}
 
-\item{mu}{length \eqn{N} vector or matrix.}
+\item{mu}{length \code{N} vector or matrix}
 
-\item{acf}{length \eqn{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
+\item{acf}{length \code{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
 
-\item{dmu}{size \eqn{N \times p} matrix, where \eqn{p} is the number of parameters, each column is the partial derivative of \code{mu}.}
+\item{dmu}{size \code{N x p} matrix, where \code{p} is the number of parameters, each column is the partial derivative of \code{mu}}
 
-\item{dacf}{size \eqn{N \times p} matrix, each column is the partial derivative of \code{acf}.}
+\item{dacf}{size \code{N x p} matrix, each column is the partial derivative of \code{acf}}
 }
 \value{
-The gradient of the log-likelihood.
+Length \code{N} vector containing the gradient of the log-likelihood.
 }
 \description{
 Efficient evaluation of log-likelihood gradient for stationary Gaussian data.
 }
 \note{
-package "SuperGauss" is required
-
-the order of partial derivative in \code{dmu} and \code{dacf} must be identical. Assuming that \eqn{\beta} is
-the second parameter, then second column of \code{dmu} should be \eqn{\frac{\partial \mu}{\partial \beta}}, second column of 
-\code{dacf} should be \eqn{\frac{\partial acf}{\partial \beta}}
+Order of partial derivative in \code{dmu} and \code{dacf} must be identical. For i-th parameter \eqn{\theta_i}, i-th
+column of \code{dmu} must be \eqn{\frac{\partial \mu}{\partial \theta_i}}{d\mu/d\theta_i}
+and i-th column of \code{dacf} must be 
+\eqn{\frac{\partial acf}{\partial \theta_i}}{dacf/d\theta_i}
 }
 \examples{
 N <- 300

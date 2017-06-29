@@ -7,20 +7,20 @@
 rSnorm(n = 1, acf, Z, fft = TRUE, nkeep, tol = 1e-06)
 }
 \arguments{
-\item{n}{number of time series to generate.}
+\item{n}{Number of time series to generate}
 
-\item{acf}{vector of length \code{N} giving the autocorrelation of the series.}
+\item{acf}{length \code{N} vector giving the autocorrelation of the series}
 
-\item{Z}{optional \code{(2*N-2) x n} or \code{N x n} matrix of iid standard normals, for the fft and Durbin-Levinson methods respectively.}
+\item{Z}{Optional, size \code{(2N-2) x n} or \code{N x n} matrix of iid standard normals, for the fft and Durbin-Levinson methods respectively}
 
-\item{fft}{logical, whether or not to use the superfast fft-based algorithm of Dietrich-Newsam or the more stable Durbin-Levinson algorithm.  See Details.}
+\item{fft}{Logical, whether or not to use the superfast fft-based algorithm of Dietrich-Newsam or the more stable Durbin-Levinson algorithm, see Details}
 
-\item{nkeep}{length of time series.  Defaults to \code{N = length(acf)}.  See Details.}
+\item{nkeep}{Length of time series.  Defaults to \code{N = length(acf)}, see Details}
 
-\item{tol}{relative tolerance on negative eigenvalues.  See Details.}
+\item{tol}{Relative tolerance on negative eigenvalues, see Details}
 }
 \value{
-A \code{nkeep x n} matrix with time series as columns.
+Size \code{nkeep x n} matrix with time series as columns.
 }
 \description{
 Efficient simulation of a stationary Gaussian process from a given autocorrelation function.
@@ -33,6 +33,7 @@ The superfast method fails when the circulant matrix is not positive definite.  
 }
 }
 \examples{
-acf <- fbm.acf(alpha = 0.8, dT = 1/60, N = 20)
+N <- 10
+acf <- exp(-(1:N - 1))
 rSnorm(n = 3, acf = acf)
 }

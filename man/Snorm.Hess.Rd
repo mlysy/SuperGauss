@@ -2,40 +2,37 @@
 % Please edit documentation in R/Snorm-hess.R
 \name{Snorm.Hess}
 \alias{Snorm.Hess}
-\title{Hessian of a Stationary Gaussian Log-Likelihood}
+\title{Hessian of a stationary Gaussian log-Likelihood}
 \usage{
 Snorm.Hess(X, mu, acf, dmu, dacf, d2mu, d2acf)
 }
 \arguments{
-\item{X}{\eqn{N \times d} matrix, each column i.i.d. follows multivariate Gaussian distribution with mean \code{mu} and Toeplitz variance given by \code{acf}.}
+\item{X}{size \code{N x d} matrix, each column i.i.d. follows multivariate Gaussian distribution with mean \code{mu} and Toeplitz variance given by \code{acf}}
 
-\item{mu}{length \eqn{N} vector or matrix.}
+\item{mu}{length \code{N} vector or matrix}
 
-\item{acf}{length \eqn{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
+\item{acf}{length \code{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
 
-\item{dmu}{size \eqn{N \times p} matrix, where \eqn{p} is the number of parameters, each column is the partial derivative of \code{mu}.}
+\item{dmu}{size \code{N x p} matrix, where \code{p} is the number of parameters, each column is the partial derivative of \code{mu}}
 
-\item{dacf}{size \eqn{N \times p} matrix, each column is the partial derivative of \code{acf}.}
+\item{dacf}{size \code{N x p} matrix, each column is the partial derivative of \code{acf}}
 
-\item{d2mu}{\eqn{N \times p \times p} array, each column is the second partial derivative of \code{mu}}
+\item{d2mu}{size \code{N x p x p} array, each column is the second partial derivative of \code{mu}}
 
-\item{d2acf}{\eqn{N \times p \times p} array,  each column is the second partial derivative of \code{mu}}
+\item{d2acf}{size \code{N x p x p} array,  each column is the second partial derivative of \code{mu}}
 }
 \value{
-The Hessian matrix of the log-likelihood.
+Size \code{p x p} Hessian matrix of the log-likelihood.
 }
 \description{
 Efficient calculation of the Hessian matrix of the log-likelihood of stationary Gaussian data.
 }
 \note{
-package "SuperGauss" is required
-
-the order of partial derivative in \code{d2mean} and \code{d2acf} must be identical. Assuming that 
-\eqn{\alpha} and \eqn{\beta} are respectively 1st and 2nd parameters. the (1, 2)th column of \code{d2mu} 
-should be \eqn{\frac{\partial^2 \mu}{\partial \alpha \partial \beta}} while the (1, 2)th column of \code{d2acf}
-should be \eqn{\frac{\partial^2 acf}{\partial \alpha \partial \beta}}.
-
-if d2mu and d2acf is \eqn{N \times 1} matrix or array, it only works when p = 1
+Order of partial derivative in \code{dmu}, \code{dacf}, \code{d2mu} and \code{d2acf} must be identical. 
+For i-th and j-th parameter \eqn{\theta_i, \theta_j}, ij-th
+column of \code{d2mu} must be \eqn{\frac{\partial^2 \mu}{\partial \theta_i \partial \theta_j}}{d2\mu/(d\theta_i d\theta_j)}
+and ij-th column of \code{d2acf} must be 
+\eqn{\frac{\partial^2 acf}{\partial \theta_i \partial \theta_j}}{d2acf/(d\theta_i d\theta_j)}
 }
 \examples{
 N <- 300

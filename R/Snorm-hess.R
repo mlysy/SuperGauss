@@ -1,21 +1,20 @@
-#' Hessian of a Stationary Gaussian Log-Likelihood
+#' @title Hessian of a stationary Gaussian log-Likelihood
 #'
-#' Efficient calculation of the Hessian matrix of the log-likelihood of stationary Gaussian data.
-#' @note package "SuperGauss" is required
-#' @param X \eqn{N \times d} matrix, each column i.i.d. follows multivariate Gaussian distribution with mean \code{mu} and Toeplitz variance given by \code{acf}.
-#' @param mu length \eqn{N} vector or matrix.
-#' @param acf length \eqn{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf
-#' @param dmu size \eqn{N \times p} matrix, where \eqn{p} is the number of parameters, each column is the partial derivative of \code{mu}.
-#' @param dacf size \eqn{N \times p} matrix, each column is the partial derivative of \code{acf}.
-#' @param d2mu \eqn{N \times p \times p} array, each column is the second partial derivative of \code{mu}
-#' @param d2acf \eqn{N \times p \times p} array,  each column is the second partial derivative of \code{mu}
+#' @description Efficient calculation of the Hessian matrix of the log-likelihood of stationary Gaussian data.
+#' @param X size \code{N x d} matrix, each column i.i.d. follows multivariate Gaussian distribution with mean \code{mu} and Toeplitz variance given by \code{acf}
+#' @param mu length \code{N} vector or matrix
+#' @param acf length \code{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf
+#' @param dmu size \code{N x p} matrix, where \code{p} is the number of parameters, each column is the partial derivative of \code{mu}
+#' @param dacf size \code{N x p} matrix, each column is the partial derivative of \code{acf}
+#' @param d2mu size \code{N x p x p} array, each column is the second partial derivative of \code{mu}
+#' @param d2acf size \code{N x p x p} array,  each column is the second partial derivative of \code{mu}
 #' @note 
-#' the order of partial derivative in \code{d2mean} and \code{d2acf} must be identical. Assuming that 
-#' \eqn{\alpha} and \eqn{\beta} are respectively 1st and 2nd parameters. the (1, 2)th column of \code{d2mu} 
-#' should be \eqn{\frac{\partial^2 \mu}{\partial \alpha \partial \beta}} while the (1, 2)th column of \code{d2acf}
-#' should be \eqn{\frac{\partial^2 acf}{\partial \alpha \partial \beta}}.
-#' @note if d2mu and d2acf is \eqn{N \times 1} matrix or array, it only works when p = 1
-#' @return The Hessian matrix of the log-likelihood.
+#' Order of partial derivative in \code{dmu}, \code{dacf}, \code{d2mu} and \code{d2acf} must be identical. 
+#' For i-th and j-th parameter \eqn{\theta_i, \theta_j}, ij-th
+#' column of \code{d2mu} must be \eqn{\frac{\partial^2 \mu}{\partial \theta_i \partial \theta_j}}{d2\mu/(d\theta_i d\theta_j)}
+#' and ij-th column of \code{d2acf} must be 
+#' \eqn{\frac{\partial^2 acf}{\partial \theta_i \partial \theta_j}}{d2acf/(d\theta_i d\theta_j)}
+#' @return Size \code{p x p} Hessian matrix of the log-likelihood.
 #' @examples 
 #' N <- 300
 #' d <- 4
@@ -59,14 +58,14 @@ Snorm.Hess <- function(X, mu, acf, dmu, dacf, d2mu, d2acf){
   SigMu <- solve(acf, dmu) # stores Sigma^-1 * mu_i, size N x p
   Sig2X <- matrix(NA, N, p * d) # stores Sigma_i * SigX, size N x pd
   for(ii in 1:p){
-    Sig2X[, d * (ii-1) + 1:d] <- Toep.mult(dacf[, ii], SigX)
+    Sig2X[, d * (ii-1) + 1:d] <- toep.mult(dacf[, ii], SigX)
   }
   for(ii in 1:p){
     for(jj in ii:p){
       hess[ii, jj] <- sum(crossprod(d2mu[, ii, jj], SigX) - crossprod(SigMu[, ii], Sig2X[, d * (jj-1) + 1:d]) - 
                             crossprod(SigMu[, jj], Sig2X[, d * (ii-1) + 1:d])) - d * crossprod(dmu[, ii], SigMu[, jj])
       hess[ii, jj] <- hess[ii, jj] - .trace(crossprod(Sig2X[, d * (jj-1) + 1:d], solve(acf, Sig2X[, d * (ii-1) + 1:d])) - 
-                                              crossprod(SigX, Toep.mult(d2acf[, ii, jj], SigX)) / 2)
+                                              crossprod(SigX, toep.mult(d2acf[, ii, jj], SigX)) / 2)
       hess[ii, jj] <- hess[ii, jj] - d / 2 * (acf$traceT2(d2acf[, ii, jj]) - acf$traceT4(dacf[, jj], dacf[, ii]))
     }
   }

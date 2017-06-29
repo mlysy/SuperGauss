@@ -2,32 +2,27 @@
 % Please edit documentation in R/dSnorm.R
 \name{dSnorm}
 \alias{dSnorm}
-\title{Density of a Stationary Gaussian Process}
+\title{Joint density of a stationary Gaussian process}
 \usage{
 dSnorm(X, mu, acf, log = TRUE)
 }
 \arguments{
-\item{X}{\eqn{N \times d} matrix, d i.i.d. vector follows N(mu, Variance)}
+\item{X}{size \code{N x d} matrix, each column i.i.d. follows multivariate Gaussian distribution with mean \code{mu} and Toeplitz variance given by \code{acf}}
 
-\item{mu}{\eqn{N} vector or matrix}
+\item{mu}{length \eqn{N} vector or matrix, mean of the process}
 
-\item{acf}{\eqn{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
+\item{acf}{length \code{N} vector containing the first column of process variance, or a size \code{N} Toeplitz class initialized by acf}
 
-\item{log}{logical, if \code{TRUE} returns log-densities.}
+\item{log}{logical, if \code{TRUE} returns log-densities}
 }
 \value{
-density (log density) of stationary Gaussian system
+Density (log density) of stationary Gaussian system.
 }
 \description{
 Efficient density evaluation for the multivariate normal distribution with Toeplitz variance matrix.
 }
-\note{
-package "SuperGauss" is required
-
-When input {X, mu, acf} data type can be either vector or matrix, if vector, convert it into \code{n x 1} matrix
-}
 \examples{
-N <- 300
+N <- 10
 d <- 4
 X <- matrix(rnorm(N*d), N, d)
 theta <- 0.1

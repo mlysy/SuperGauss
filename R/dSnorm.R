@@ -1,15 +1,13 @@
-#' Density of a Stationary Gaussian Process
+#' @title Joint density of a stationary Gaussian process
 #'
-#' Efficient density evaluation for the multivariate normal distribution with Toeplitz variance matrix.
-#' @note package "SuperGauss" is required
-#' @note When input {X, mu, acf} data type can be either vector or matrix, if vector, convert it into \code{n x 1} matrix
-#' @param X \eqn{N \times d} matrix, d i.i.d. vector follows N(mu, Variance)
-#' @param mu \eqn{N} vector or matrix
-#' @param acf \eqn{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf
-#' @param log logical, if \code{TRUE} returns log-densities.
-#' @return  density (log density) of stationary Gaussian system
+#' @description  Efficient density evaluation for the multivariate normal distribution with Toeplitz variance matrix.
+#' @param X size \code{N x d} matrix, each column i.i.d. follows multivariate Gaussian distribution with mean \code{mu} and Toeplitz variance given by \code{acf}
+#' @param mu length \eqn{N} vector or matrix, mean of the process
+#' @param acf length \code{N} vector containing the first column of process variance, or a size \code{N} Toeplitz class initialized by acf
+#' @param log logical, if \code{TRUE} returns log-densities
+#' @return Density (log density) of stationary Gaussian system.
 #' @examples 
-#' N <- 300
+#' N <- 10
 #' d <- 4
 #' X <- matrix(rnorm(N*d), N, d)
 #' theta <- 0.1

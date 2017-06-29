@@ -1,4 +1,3 @@
-# setwd("D:/GitHub/SuperGauss/tests/testthat")
 # library(testthat)
 
 acf2incr.SGtest <- function(gam) {

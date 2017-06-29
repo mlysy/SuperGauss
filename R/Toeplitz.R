@@ -1,6 +1,6 @@
-#' Constructor and methods for Toeplitz matrix objects.
+#' @title Constructor and methods for Toeplitz matrix objects.
 #'
-#' The \code{Toeplitz_Matrix} class contains efficient methods for linear algebra with symmetric positive definite (i.e., variance) Toeplitz matrices.
+#' @description The \code{Toeplitz_Matrix} class contains efficient methods for linear algebra with symmetric positive definite (i.e., variance) Toeplitz matrices.
 #'
 #' @aliases setAcf getAcf traceT2 traceT4 show.Toeplitz_Matrix %*% determinant solve %*%,ANY,Toeplitz_Matrix-method %*%,Toeplitz_Matrix,ANY-method determinant,Toeplitz_Matrix-method dim,Toeplitz_Matrix-method ncol,Toeplitz_Matrix-method nrow,Toeplitz_Matrix-method show,Toeplitz_Matrix-method solve,Toeplitz_Matrix-method
 #' @section Methods:
