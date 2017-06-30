@@ -74,36 +74,6 @@ exp1.acf <- function(lambda, dT, N, incr = TRUE) {
   ans
 }
 
-#' Autocorrelation of Matern
-#'
-#' @param lambda timescale.
-#' @param nu smoothness parameter.
-#' @param dT interobservation time.
-#' @param N Number of increment observations.
-#' @param incr logical; whether or not to return increments.
-#' @details
-#' the Matern autocorrelation is given by
-#' \deqn{\frac{2^{1-\nu}}{\Gamma(\nu)} \left(\sqrt{2\nu}\frac{n\Delta t}{\lambda}\right)^\nu K_\nu\left(\sqrt{2\nu} \frac{n\Delta t}{\lambda}\right)}
-#' @return An autocorrelation vector of length \eqn{N}.
-#' @examples
-#' matern.acf(lambda = 1, nu = 3/2, dT = 1/60, N = 200, incr = FALSE)
-#' @export
-matern.acf <- function(lambda, nu, dT, N, incr = TRUE) {
-  # process autocorrelation
-  tt <- sqrt(2*nu) * (0:N)*dT/lambda
-  gam <- nu * log(.5 * tt) - lgamma(nu)
-  gam <- 2 * exp(gam) * besselK(tt, nu)
-  gam[tt == 0] <- 1
-  if(incr) {
-    # increments
-    ans <- acf2incr(gam)
-  } else {
-    # observations
-    ans <- gam[1:N]
-  }
-  ans
-}
-
 #' Convert the Position ACF to Increment ACF
 #'
 #' Converts the autocorrelation of a stationary sequence \eqn{\{X_0, X_1, ..., X_N\}} to those of
