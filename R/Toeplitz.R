@@ -11,7 +11,7 @@
 #' \item{\code{nrow(Toep)}, \code{ncol(Toep)}, \code{dim(Toep)}}{Selected dimension(s) of the matrix.}
 #' \item{\code{Toep \%*\% X}, \code{X \%*\% Toep}}{Toeplitz-Matrix and Matrix-Toeplitz multiplication.  Also works if \code{X} is a vector.}
 #' \item{\code{solve(Toep, X)}, \code{solve(Toep)}}{Solves Toeplitz systems of equations.  When second argument is missing, returns the inverse of the Toeplitz matrix.}
-#' \item{\code{determinant(Toep)}}{Log-determinant of the Toeplitz matrix, i.e., same thing as \code{determinant(toeplitz(acf))$modulus}.}
+#' \item{\code{determinant(Toep)}}{Log-determinant of the Toeplitz matrix, i.e., same thing as \code{log(det(toeplitz(acf)))}.}
 #' \item{\code{Toep$traceT2(acf2)}}{If \code{T1 == toeplitz(acf)} and \code{T2 == toeplitz(acf2)}, computes the trace of \code{solve(T1, T2)}.  This is used in the computation of the gradient of Gaussian likelihoods with Toeplitz variance matrix.}
 #' \item{\code{Toep$traceT4(acf2, acf3)}}{If \code{T1 == toeplitz(acf)}, \code{T2 == toeplitz(acf2)}, and \code{T3 == toeplitz(acf3)}, computes the trace of \code{solve(T1, T2) \%*\% solve(T1, T3)}.  This is used in the computation of the Hessian of Gaussian likelihoods with Toeplitz variance matrix.}
 #' }
@@ -49,8 +49,8 @@
 
 # exported constructor
 #' @rdname Toeplitz-class
-#' @param n size of the Toeplitz matrix.
-#' @param acf autocorrelation vector of Toeplitz matrix.
+#' @param n Size of the Toeplitz matrix.
+#' @param acf Autocorrelation vector of Toeplitz matrix.
 #' @return A \code{Toeplitz} object.
 #' @export
 Toeplitz <- function(n, acf) {

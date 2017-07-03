@@ -2,20 +2,22 @@
 % Please edit documentation in R/acf2msd.R
 \name{acf2msd}
 \alias{acf2msd}
-\title{Increment autocorrelation(ACF) to Position mean square displacement(MSD).}
+\title{Convert autocorrelation of stationary increments to mean squared displacement of posititions.}
 \usage{
-acf2msd(gam)
+acf2msd(acf)
 }
 \arguments{
-\item{gam}{length \code{N} vector of ACF}
+\item{acf}{length-\code{N} vector of autocorrelations (ACF) of a stationary increment sequence.}
 }
 \value{
-Length \code{N} vector of MSD.
+Length-\code{N} vector of mean square displacements (MSD) of the corresponding positions.
 }
 \description{
-Converts the ACF of the increment of a regularly sampled stationary-increments process
-\code{{dX1, dX2, ..., dXN}} into the MSD of original process \code{{X1, ..., XN}}.
+Convert autocorrelation of stationary increments to mean squared displacement of posititions.
+}
+\details{
+If \eqn{X(t)} is a stationary increments process, then \eqn{\Delta X_0, \Delta X_1, \ldots} with \eqn{\Delta X_n = X((n+1)\Delta t) - X(n \Delta t)} is a stationary time series.  This function converts the ACF of this series into the MSD of the corresponding positions, namely returns the sequence \eqn{\eta_1, \ldots, \eta_N}, where \eqn{\eta_i = \mathrm{var}(X(i\Delta t))}{\eta_i = var(X(i\Delta t))}.
 }
 \examples{
-acf2msd(rnorm(10))
+acf2msd(acf = exp(-(0:10)))
 }

@@ -1,6 +1,6 @@
 #' @title Gradient of the loglikelihood of a multivariate normal with Toeplitz variance matrix.
 #'
-#' @description Efficient evaluation of log-likelihood gradient for stationary Gaussian data.
+#' @description Superfast evaluation of loglikelihood gradient.
 #' @param X A length-\code{N} vector of multivariate normal observations.
 #' @param mu A scalar or length-\code{N} vector of means.  If missing defaults to the vector of zeros.
 #' @param acf A \code{Toeplitz} object or length-\code{N} vector containing the first column of the Toeplitz variance matrix.

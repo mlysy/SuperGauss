@@ -2,34 +2,34 @@
 % Please edit documentation in R/rSnorm.R
 \name{rSnorm}
 \alias{rSnorm}
-\title{Simulation of a Stationary Gaussian Process.}
+\title{Simulation of a stationary Gaussian time series.}
 \usage{
 rSnorm(n = 1, acf, Z, fft = TRUE, nkeep, tol = 1e-06)
 }
 \arguments{
-\item{n}{Number of time series to generate}
+\item{n}{Number of time series to generate.}
 
-\item{acf}{length \code{N} vector giving the autocorrelation of the series}
+\item{acf}{Length-\code{N} vector giving the autocorrelation of the series.}
 
-\item{Z}{Optional, size \code{(2N-2) x n} or \code{N x n} matrix of iid standard normals, for the fft and Durbin-Levinson methods respectively}
+\item{Z}{Optional size \code{(2N-2) x n} or \code{N x n} matrix of iid standard normals, to use in the fft and Durbin-Levinson methods respectively.}
 
-\item{fft}{Logical, whether or not to use the superfast fft-based algorithm of Dietrich-Newsam or the more stable Durbin-Levinson algorithm, see Details}
+\item{fft}{Logical, whether or not to use the superfast FFT-based algorithm of Chan and Wood or the more stable Durbin-Levinson algorithm.  See Details.}
 
-\item{nkeep}{Length of time series.  Defaults to \code{N = length(acf)}, see Details}
+\item{nkeep}{Length of time series.  Defaults to \code{N = length(acf)}. See Details.}
 
-\item{tol}{Relative tolerance on negative eigenvalues, see Details}
+\item{tol}{Relative tolerance on negative eigenvalues.  See Details.}
 }
 \value{
-Size \code{nkeep x n} matrix with time series as columns.
+Length-\code{nkeep} vector or size \code{nkeep x n} matrix with time series as columns.
 }
 \description{
-Efficient simulation of a stationary Gaussian process from a given autocorrelation function.
+Simulation of a stationary Gaussian time series.
 }
 \details{
-The superfast method fails when the circulant matrix is not positive definite.  This is typically due to one of two things, for which the fft algorithm can be tuned with \code{tol} and \code{nkeep}:
-\itemize{
-\item \code{tol}: Roundoff error can make tiny eigenvalues appear negative. If \code{evMax} is the maximum eigenvalue, then all negative eigenvalues of magnitude less than \code{tol * evMax} are mapped to this threshold value.  This does not guarantee a positive definite embedding.
-\item \code{nkeep}: The autocorrelation is decaying too slowly on the given timescale. To mitigate this it is possible to increase the time horizon, i.e. input a longer \code{acf} and keep the first \code{nkeep} time series observations. For consistency, \code{nkeep} also applies to Durbin-Levinson method.
+The superfast method fails when the circulant matrix is not positive definite.  This is typically due to one of two things, for which the FFT algorithm can be tuned with \code{tol} and \code{nkeep}:
+\describe{
+\item{\code{tol}}{Roundoff error can make tiny eigenvalues appear negative. If \code{evMax} is the maximum eigenvalue, then all negative eigenvalues of magnitude less than \code{tol * evMax} are mapped to this threshold value.  This does not guarantee a positive definite embedding.}
+\item{\code{nkeep}}{The autocorrelation is decaying too slowly on the given timescale. To mitigate this it is possible to increase the time horizon, i.e. input a longer \code{acf} and keep the first \code{nkeep} time series observations. For consistency, \code{nkeep} also applies to Durbin-Levinson method.}
 }
 }
 \examples{

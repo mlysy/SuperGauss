@@ -1,14 +1,13 @@
-#' @title Autocorrelation(ACF) of power exponential processes
+#' @title Power-Exponential autocorrelation function
 #'
-#' @description Return the ACF of power exponential process at different lags
-#' @param tseq length \code{N} vector of timepoints
-#' @param lambda Timescale parameter
-#' @param rho Power parameter
-#' @return Length \code{N} vector of power-exponential ACF.
+#' @param tseq Length-\code{N} vector of timepoints.
+#' @param lambda Timescale parameter.
+#' @param rho Power parameter.
+#' @return Length-\code{N} autocorrelation vector.
 #' @details
-#' The power-exponential ACF is given by:
+#' The power-exponential autocorrelation function is given by:
 #' \deqn{
-#' \textrm{acf}(t) = \exp \{-(\frac{t}{\lambda})^\rho\}
+#' \textrm{acf}(t) = \exp \left\{-(\frac{t}{\lambda})^\rho\right\}
 #' }{
 #' \textrm{acf}(t) = exp (-(t / \lambda)^\rho)
 #' }

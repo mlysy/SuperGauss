@@ -2,20 +2,19 @@
 % Please edit documentation in R/acf2incr.R
 \name{acf2incr}
 \alias{acf2incr}
-\title{Position autocorrelation(ACF) to Increment ACF.}
+\title{Convert position to increment autocorrelations.}
 \usage{
-acf2incr(gam)
+acf2incr(acf)
 }
 \arguments{
-\item{gam}{length \code{N} vector of position ACF}
+\item{acf}{Length-\code{N} vector of position autocorrelations.}
 }
 \value{
-Length \code{N-1} vector if increment ACF.
+Length \code{N-1} vector if increment autocorrelations.
 }
 \description{
-Converts the ACF of a stationary sequence \code{{X0, X1, ..., XN}} to those of
-its increments \code{{dX1, dX2, ..., dXN}}.
+Converts the autocorrelation of a stationary sequence \code{X} to that of its increments, \code{dX == diff(X)}.
 }
 \examples{
-acf2incr(rnorm(10))
+acf2incr(acf = exp(-(0:10)))
 }

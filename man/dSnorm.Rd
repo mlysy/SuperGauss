@@ -16,7 +16,7 @@ dSnormDL(X, mu, acf, log = FALSE)
 
 \item{acf}{Vector containing the first column of the Toeplitz variance matrix.  For \code{dSnorm}, can also be a \code{Toeplitz} object.}
 
-\item{log}{Logical, whether to the return PDF on log scale.}
+\item{log}{Logical, whether to return the multivariate normal density on the log scale.}
 }
 \value{
 Vector of (log-)densities, one for each column of \code{X}.

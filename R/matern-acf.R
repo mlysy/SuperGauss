@@ -3,7 +3,6 @@
 #' @param tseq Vector of time points at which the autocorrelation is to be calculated.
 #' @param lambda Timescale parameter.
 #' @param nu Smoothness parameter.
-#' @return Vector of autocorrelations.
 #' @details
 #' The Matern autocorrelation is given by
 #' \deqn{

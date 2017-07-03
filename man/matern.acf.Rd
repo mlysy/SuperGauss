@@ -14,8 +14,6 @@ matern.acf(tseq, lambda, nu)
 \item{nu}{Smoothness parameter.}
 }
 \value{
-Vector of autocorrelations.
-
 An autocorrelation vector of length \code{N}.
 }
 \description{

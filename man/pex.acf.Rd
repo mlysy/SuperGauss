@@ -2,27 +2,24 @@
 % Please edit documentation in R/pex-acf.R
 \name{pex.acf}
 \alias{pex.acf}
-\title{Autocorrelation(ACF) of power exponential processes}
+\title{Power-Exponential autocorrelation function}
 \usage{
 pex.acf(tseq, lambda, rho)
 }
 \arguments{
-\item{tseq}{length \code{N} vector of timepoints}
+\item{tseq}{Length-\code{N} vector of timepoints.}
 
-\item{lambda}{Timescale parameter}
+\item{lambda}{Timescale parameter.}
 
-\item{rho}{Power parameter}
+\item{rho}{Power parameter.}
 }
 \value{
-Length \code{N} vector of power-exponential ACF.
-}
-\description{
-Return the ACF of power exponential process at different lags
+Length-\code{N} autocorrelation vector.
 }
 \details{
-The power-exponential ACF is given by:
+The power-exponential autocorrelation function is given by:
 \deqn{
-\textrm{acf}(t) = \exp \{-(\frac{t}{\lambda})^\rho\}
+\textrm{acf}(t) = \exp \left\{-(\frac{t}{\lambda})^\rho\right\}
 }{
 \textrm{acf}(t) = exp (-(t / \lambda)^\rho)
 }

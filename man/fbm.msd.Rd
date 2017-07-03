@@ -12,7 +12,7 @@ fbm.msd(tseq, H)
 \item{H}{Hurst parameter (between 0 and 1).}
 }
 \value{
-Length \code{N} vector of mean square displacements.
+Length-\code{N} vector of mean square displacements.
 }
 \description{
 Mean square displacement of fractional Brownian motion.
@@ -20,7 +20,7 @@ Mean square displacement of fractional Brownian motion.
 \details{
 The mean squared displacement (MSD) of a stochastic process $X_t$ is defined as
 \deqn{
-\mathrm{\scriptsize MSD}_X(t) = E[(X_t - X(0)_0)^2].
+\mathrm{\scriptsize MSD}_X(t) = E[(X_t - X_0)^2].
 }{
 MSD_X(t) = E[(X_t - X_0)^2].
 }

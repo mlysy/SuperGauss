@@ -21,7 +21,7 @@ Snorm.grad(X, mu, acf, dmu, dacf)
 A length-\code{p} vector containing the gradient of the loglikelihood.
 }
 \description{
-Efficient evaluation of log-likelihood gradient for stationary Gaussian data.
+Superfast evaluation of loglikelihood gradient.
 }
 \examples{
 # two parameter inference

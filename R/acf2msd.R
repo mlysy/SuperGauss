@@ -1,19 +1,18 @@
-#' @title Increment autocorrelation(ACF) to Position mean square displacement(MSD).
+#' Convert autocorrelation of stationary increments to mean squared displacement of posititions.
 #'
-#' @description Converts the ACF of the increment of a regularly sampled stationary-increments process
-#' \code{{dX1, dX2, ..., dXN}} into the MSD of original process \code{{X1, ..., XN}}.
-#' @param gam length \code{N} vector of ACF
-#' @return Length \code{N} vector of MSD.
+#' @param acf length-\code{N} vector of autocorrelations (ACF) of a stationary increment sequence.
+#' @return Length-\code{N} vector of mean square displacements (MSD) of the corresponding positions.
+#' @details If \eqn{X(t)} is a stationary increments process, then \eqn{\Delta X_0, \Delta X_1, \ldots} with \eqn{\Delta X_n = X((n+1)\Delta t) - X(n \Delta t)} is a stationary time series.  This function converts the ACF of this series into the MSD of the corresponding positions, namely returns the sequence \eqn{\eta_1, \ldots, \eta_N}, where \eqn{\eta_i = \mathrm{var}(X(i\Delta t))}{\eta_i = var(X(i\Delta t))}.
 #' @examples
-#' acf2msd(rnorm(10))
+#' acf2msd(acf = exp(-(0:10)))
 #' @export
-acf2msd <- function(gam){
-  N <- length(gam)
-  eta <- rep(NA, N)
-  eta[1] <- gam[1]
-  eta[2] <- 2 * (gam[2] + eta[1])
+acf2msd <- function(acf){
+  N <- length(acf)
+  msd <- rep(NA, N)
+  msd[1] <- acf[1]
+  msd[2] <- 2 * (acf[2] + msd[1])
   for(ii in 3:N){
-    eta[ii] <- 2 * (gam[ii] + eta[ii - 1]) - eta[ii - 2]
+    msd[ii] <- 2 * (acf[ii] + msd[ii - 1]) - msd[ii - 2]
   }
-  eta
+  msd
 }

@@ -25,7 +25,7 @@ Snorm.hess(X, mu, acf, dmu, dacf, d2mu, d2acf)
 The \code{p x p} Hessian matrix of the loglikelihood.
 }
 \description{
-Hessian of the loglikelihood of a multivariate normal with Toeplitz variance matrix.
+Superfast evaluation of loglikelihood Hessian.
 }
 \examples{
 # two parameter inference
@@ -54,8 +54,8 @@ d2mu.fun <- function(theta) {
 N <- 300
 theta <- rexp(2)
 X <- rSnorm(n = 1, acf = acf.fun(theta)) + mu.fun(theta)
-#'
-# likelihood gradient
+
+# likelihood Hessian
 Snorm.hess(X = X, mu = mu.fun(theta), acf = acf.fun(theta),
            dmu = dmu.fun(theta), dacf = dacf.fun(theta),
            d2mu = d2mu.fun(theta), d2acf = d2acf.fun(theta))

@@ -4,7 +4,7 @@
 #' @param X Vector or matrix, of which each column is a multivariate observation.
 #' @param mu Vector or matrix of mean values of compatible dimensions with \code{X}.  Defaults to all zeros.
 #' @param acf Vector containing the first column of the Toeplitz variance matrix.  For \code{dSnorm}, can also be a \code{Toeplitz} object.
-#' @param log Logical, whether to the return PDF on log scale.
+#' @param log Logical, whether to return the multivariate normal density on the log scale.
 #' @return Vector of (log-)densities, one for each column of \code{X}.
 #' @examples
 #' N <- 10

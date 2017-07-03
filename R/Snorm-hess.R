@@ -1,5 +1,5 @@
-#' Hessian of the loglikelihood of a multivariate normal with Toeplitz variance matrix.
-#'
+#' @title Hessian of the loglikelihood of a multivariate normal with Toeplitz variance matrix.
+#' @description Superfast evaluation of loglikelihood Hessian.
 #' @inheritParams Snorm.grad
 #' @param d2mu A \code{p x p} matrix or \code{N x p x p} array of second partial derivatives of \code{mu}.  If missing defaults to zeros.
 #' @param d2acf A \code{N x p x p} array of second partial derivatives of \code{acf}.
@@ -31,8 +31,8 @@
 #' N <- 300
 #' theta <- rexp(2)
 #' X <- rSnorm(n = 1, acf = acf.fun(theta)) + mu.fun(theta)
-#' #'
-#' # likelihood gradient
+#'
+#' # likelihood Hessian
 #' Snorm.hess(X = X, mu = mu.fun(theta), acf = acf.fun(theta),
 #'            dmu = dmu.fun(theta), dacf = dacf.fun(theta),
 #'            d2mu = d2mu.fun(theta), d2acf = d2acf.fun(theta))

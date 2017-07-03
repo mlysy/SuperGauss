@@ -24,12 +24,12 @@ inline void DurbinLevinsonXZ(const Eigen::MatrixBase<T1>& X,
         bool ZtoX) {
 #define _X const_cast<Eigen::MatrixBase<T1>& >(X)
 #define _Z const_cast<Eigen::MatrixBase<T2>& >(Z)
-  int n,m;
+  int n; //,m;
   n = acf.size();
-  m = X.rows();
+  //m = X.rows();
   double nu, sqrtNu, rp;
   nu = acf(0);
-  int ii, jj, kk;
+  int ii; //, jj, kk;
   for(ii = 0; ii < n; ii++) {
     // variance
     if(ii > 0) nu *= (1-phi(ii-1)*phi(ii-1));
