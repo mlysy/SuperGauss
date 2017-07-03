@@ -23,7 +23,6 @@ testthat::test_package("SuperGauss")
 
 # cran check
 
-
 # generating the pdf manual using rd file
 pack <- "SuperGauss"
 path <- find.package(pack)

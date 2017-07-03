@@ -1,73 +1,74 @@
-#' Hessian of a Stationary Gaussian Log-Likelihood
+#' Hessian of the loglikelihood of a multivariate normal with Toeplitz variance matrix.
 #'
-#' Efficient calculation of the Hessian matrix of the log-likelihood of stationary Gaussian data.
-#' @note package "SuperGauss" is required
-#' @param X \eqn{N \times d} matrix, each column i.i.d. follows multivariate Gaussian distribution with mean \code{mu} and Toeplitz variance given by \code{acf}.
-#' @param mu length \eqn{N} vector or matrix.
-#' @param acf length \eqn{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf
-#' @param dmu size \eqn{N \times p} matrix, where \eqn{p} is the number of parameters, each column is the partial derivative of \code{mu}.
-#' @param dacf size \eqn{N \times p} matrix, each column is the partial derivative of \code{acf}.
-#' @param d2mu \eqn{N \times p \times p} array, each column is the second partial derivative of \code{mu}
-#' @param d2acf \eqn{N \times p \times p} array,  each column is the second partial derivative of \code{mu}
-#' @note 
-#' the order of partial derivative in \code{d2mean} and \code{d2acf} must be identical. Assuming that 
-#' \eqn{\alpha} and \eqn{\beta} are respectively 1st and 2nd parameters. the (1, 2)th column of \code{d2mu} 
-#' should be \eqn{\frac{\partial^2 \mu}{\partial \alpha \partial \beta}} while the (1, 2)th column of \code{d2acf}
-#' should be \eqn{\frac{\partial^2 acf}{\partial \alpha \partial \beta}}.
-#' @note if d2mu and d2acf is \eqn{N \times 1} matrix or array, it only works when p = 1
-#' @return The Hessian matrix of the log-likelihood.
-#' @examples 
+#' @inheritParams Snorm.grad
+#' @param d2mu A \code{p x p} matrix or \code{N x p x p} array of second partial derivatives of \code{mu}.  If missing defaults to zeros.
+#' @param d2acf A \code{N x p x p} array of second partial derivatives of \code{acf}.
+#' @return The \code{p x p} Hessian matrix of the loglikelihood.
+#' @examples
+#' # two parameter inference
+#' acf.fun <- function(theta) theta[2]^2 * exp(-(1:N-1))
+#' mu.fun <- function(theta) theta[1] * (1:N) + log(theta[2] + 1:N)
+#'
+#' # partial derivatives
+#' dacf.fun <- function(theta) {
+#'   cbind(0, 2*theta[2] * exp(-(1:N-1)))
+#' }
+#' dmu.fun <- function(theta) cbind(1:N, 1/(theta[2] + 1:N))
+#'
+#' # 2nd order partials
+#' d2acf.fun <- function(theta) {
+#'   H <- array(0, dim = c(N, 2, 2))
+#'   H[,2,2] <- 2*exp(-(1:N-1))
+#'   H
+#' }
+#' d2mu.fun <- function(theta) {
+#'   H <- array(0, dim = c(N, 2, 2))
+#'   H[,2,2] <- -1/(theta[2] + 1:N)^2
+#'   H
+#' }
+#'
+#' # generate data
 #' N <- 300
-#' d <- 4
-#' X <- matrix(rnorm(N*d), N, d)
-#' theta <- 0.1
-#' lambda <- 2
-#' 
-#' mu <- theta^2 * rep(1, N)
-#' acf <- exp(-lambda * (1:N - 1))
-#' acf <- Toeplitz(acf = acf)
-#' dmu <- dacf <- matrix(0, N, 2)
-#' dmu[, 1] <- 2 * theta * rep(1, N)
-#' dacf[, 2] <- -lambda * exp(-lambda * (1:N - 1))
-#' d2mu <- d2acf <- array(0, c(N, 2, 2))
-#' d2mu[, 1, 1] <- 2 * rep(1, N)
-#' d2acf[, 2, 2] <- lambda^2 * exp(-lambda * (1:N - 1))
-#' 
-#' Snorm.Hess(X, mu, acf, dmu, dacf, d2mu, d2acf)
+#' theta <- rexp(2)
+#' X <- rSnorm(n = 1, acf = acf.fun(theta)) + mu.fun(theta)
+#' #'
+#' # likelihood gradient
+#' Snorm.hess(X = X, mu = mu.fun(theta), acf = acf.fun(theta),
+#'            dmu = dmu.fun(theta), dacf = dacf.fun(theta),
+#'            d2mu = d2mu.fun(theta), d2acf = d2acf.fun(theta))
 #' @export
-Snorm.Hess <- function(X, mu, acf, dmu, dacf, d2mu, d2acf){
-  if(is.vector(X)){
-    N <- length(X)
-    p <- 1
-    X <- as.matrix(X)
-  } else{
-    N <- nrow(X)
-    d <- ncol(X)
-  }
-  
-  mu <- .format.mu(mu, N)
+Snorm.hess <- function(X, mu, acf, dmu, dacf, d2mu, d2acf) {
+  if(!is.vector(X)) stop("X must be a vector.")
+  N <- length(X)
   acf <- .format.acf(acf, N)
-  dacf <- .format.dacf(dacf, N)$dacf
-  p <- .format.dacf(dacf, N)$p
-  dmu <- .format.dmu(dmu, N, p)
-  d2mu <- .format.d2mu(d2mu, N, p)
-  d2acf <- .format.d2acf(d2acf, N, p)
-  
-  X <- X - mu
-  SigX <- solve(acf, X)     # stores Sigma^-1 * X, size N x d
-  hess <- matrix(NA, p, p)
-  SigMu <- solve(acf, dmu) # stores Sigma^-1 * mu_i, size N x p
-  Sig2X <- matrix(NA, N, p * d) # stores Sigma_i * SigX, size N x pd
-  for(ii in 1:p){
-    Sig2X[, d * (ii-1) + 1:d] <- Toep.mult(dacf[, ii], SigX)
+  p <- .get.p(dmu, dacf)
+  Mu <- .format.mu(mu = mu, dmu = dmu, d2mu = d2mu,
+                   N = N, p = p, grad.only = FALSE)
+  mu <- Mu$mu
+  dmu <- Mu$dmu
+  d2mu <- Mu$d2mu
+  Dacf <- .format.dacf(dacf = dacf, d2acf = d2acf,
+                       N = N, p = p, grad.only = FALSE)
+  dacf <- Dacf$dacf
+  d2acf <- Dacf$d2acf
+
+  Z <- X - mu
+  SigZ <- c(solve(acf, Z))
+  SigMu <- solve(acf, dmu)
+  SigZ2 <- matrix(NA, N, p)
+  for(ii in 1:p) {
+    SigZ2[,ii] <- toep.mult(dacf[,ii], SigZ)
   }
-  for(ii in 1:p){
-    for(jj in ii:p){
-      hess[ii, jj] <- sum(crossprod(d2mu[, ii, jj], SigX) - crossprod(SigMu[, ii], Sig2X[, d * (jj-1) + 1:d]) - 
-                            crossprod(SigMu[, jj], Sig2X[, d * (ii-1) + 1:d])) - d * crossprod(dmu[, ii], SigMu[, jj])
-      hess[ii, jj] <- hess[ii, jj] - .trace(crossprod(Sig2X[, d * (jj-1) + 1:d], solve(acf, Sig2X[, d * (ii-1) + 1:d])) - 
-                                              crossprod(SigX, Toep.mult(d2acf[, ii, jj], SigX)) / 2)
-      hess[ii, jj] <- hess[ii, jj] - d / 2 * (acf$traceT2(d2acf[, ii, jj]) - acf$traceT4(dacf[, jj], dacf[, ii]))
+  SigZ3 <- solve(acf, SigZ2)
+  CP1 <- crossprod(SigMu, SigZ2)
+  CP2 <- crossprod(dmu, SigMu)
+  CP3 <- colSums(d2mu * SigZ)
+  hess <- CP3 - CP1 - t(CP1) - CP2
+  for(ii in 1:p) {
+    for(jj in ii:p) {
+      hess[ii,jj] <- hess[ii,jj] - crossprod(SigZ2[,jj], SigZ3[,ii])
+      hess[ii,jj] <- hess[ii,jj] + .5 * crossprod(SigZ, toep.mult(d2acf[,ii,jj], SigZ))
+      hess[ii,jj] <- hess[ii,jj] - .5 * (acf$traceT2(d2acf[,ii,jj]) -  acf$traceT4(dacf[,jj], dacf[,ii]))
     }
   }
   hess[lower.tri(hess)] <- t(hess)[lower.tri(hess)]

@@ -1,57 +1,54 @@
-#' Gradient of a Stationary Gaussian Log-Likelihood
+#' @title Gradient of the loglikelihood of a multivariate normal with Toeplitz variance matrix.
 #'
-#' Efficient evaluation of log-likelihood gradient for stationary Gaussian data.
-#' @note package "SuperGauss" is required
-#' @param X \eqn{N \times d} matrix, each column i.i.d. follows multivariate Gaussian distribution with mean \code{mu} and Toeplitz variance given by \code{acf}.
-#' @param mu length \eqn{N} vector or matrix.
-#' @param acf length \eqn{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf
-#' @param dmu size \eqn{N \times p} matrix, where \eqn{p} is the number of parameters, each column is the partial derivative of \code{mu}.
-#' @param dacf size \eqn{N \times p} matrix, each column is the partial derivative of \code{acf}.
-#' @note 
-#' the order of partial derivative in \code{dmu} and \code{dacf} must be identical. Assuming that \eqn{\beta} is
-#' the second parameter, then second column of \code{dmu} should be \eqn{\frac{\partial \mu}{\partial \beta}}, second column of 
-#' \code{dacf} should be \eqn{\frac{\partial acf}{\partial \beta}}
-#' @return The gradient of the log-likelihood.
-#' @examples 
+#' @description Efficient evaluation of log-likelihood gradient for stationary Gaussian data.
+#' @param X A length-\code{N} vector of multivariate normal observations.
+#' @param mu A scalar or length-\code{N} vector of means.  If missing defaults to the vector of zeros.
+#' @param acf A \code{Toeplitz} object or length-\code{N} vector containing the first column of the Toeplitz variance matrix.
+#' @param dmu A length-\code{p} vector or \code{N x p} matrix of partial derivatives of \code{mu} along the columns.  If missing defaults to a matrix of zeros.
+#' @param dacf An \code{N x p} matrix with the partial derivatives of \code{acf} along the columns.
+#' @return A length-\code{p} vector containing the gradient of the loglikelihood.
+#' @examples
+#' # two parameter inference
+#' acf.fun <- function(theta) theta[2]^2 * exp(-theta[1]*(1:N-1))
+#' mu.fun <- function(theta) theta[1]
+#'
+#' # partial derivatives
+#' dacf.fun <- function(theta) {
+#'   ea <- exp(-theta[1]*(1:N-1))
+#'   cbind(-theta[1]*theta[2]^2 * ea, 2*theta[2] * ea)
+#' }
+#' dmu.fun <- function(theta) c(1, 0)
+#'
+#' # generate data
 #' N <- 300
-#' d <- 4
-#' X <- matrix(rnorm(N*d), N, d)
-#' theta <- 0.1
-#' lambda <- 2
-#' 
-#' mu <- theta^2 * rep(1, N)
-#' acf <- exp(-lambda * (1:N - 1))
-#' acf <- Toeplitz(acf = acf)
-#' dmu <- matrix(0, N, 2)
-#' dmu[, 1] <- 2 * theta * rep(1, N)
-#' dacf <- matrix(0, N, 2)
-#' dacf[, 2] <- -lambda * exp(-lambda * (1:N - 1))
-#' 
-#' Snorm.grad(X, mu, acf, dmu, dacf)
+#' theta <- rexp(2)
+#' X <- rSnorm(n = 1, acf = acf.fun(theta)) + mu.fun(theta)
+#'
+#' # likelihood gradient
+#' Snorm.grad(X = X, mu = mu.fun(theta), dmu = dmu.fun(theta),
+#'            acf = acf.fun(theta), dacf = dacf.fun(theta))
 #' @export
-Snorm.grad <- function(X, mu, acf, dmu, dacf){
-  if(is.vector(X)){
-    N <- length(X)
-    d <- 1
-    X <- as.matrix(X)
-  } else{
-    N <- nrow(X)
-    d <- ncol(X)
-  }
-  
-  mu <- .format.mu(mu, N)
+Snorm.grad <- function(X, mu, acf, dmu, dacf) {
+  # format arguments
+  if(!is.vector(X)) stop("X must be a vector.")
+  N <- length(X)
   acf <- .format.acf(acf, N)
-  dacf <- .format.dacf(dacf, N)$dacf
-  p <- .format.dacf(dacf, N)$p
-  dmu <- .format.dmu(dmu, N, p)
-  
-  X <- X - mu
-  SigX <- solve(acf, X)
+  p <- .get.p(dmu, dacf)
+  ## if(!is.matrix(dacf) || nrow(dacf) != N) {
+  ##   stop("dacf must be a matrix with nrow(dacf) == length(X).")
+  ## }
+  ## p <- ncol(dacf)
+  Mu <- .format.mu(mu = mu, dmu = dmu, N = N, p = p)
+  mu <- Mu$mu
+  dmu <- Mu$dmu
+  dacf <- .format.dacf(dacf = dacf, N = N, p = p)$dacf
+  # gradient calculation
+  Z <- c(X - mu)
+  SigZ <- c(solve(acf, Z))
   grad <- rep(NA, p)
-  for(ii in 1:p){
-    grad[ii] <- .trace(crossprod(SigX, Toep.mult(dacf[, ii], SigX))) - d * acf$traceT2(dacf[, ii])
+  for(ii in 1:p) {
+    grad[ii] <- crossprod(SigZ, toep.mult(dacf[,ii], SigZ))
+    grad[ii] <- grad[ii] - acf$traceT2(dacf[,ii])
   }
-  grad <- grad / 2
-  grad <- grad + apply(crossprod(dmu, SigX), 1, sum)
-  grad
+  .5 * grad + colSums(dmu * SigZ)
 }

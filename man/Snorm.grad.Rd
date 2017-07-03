@@ -2,48 +2,45 @@
 % Please edit documentation in R/Snorm-grad.R
 \name{Snorm.grad}
 \alias{Snorm.grad}
-\title{Gradient of a Stationary Gaussian Log-Likelihood}
+\title{Gradient of the loglikelihood of a multivariate normal with Toeplitz variance matrix.}
 \usage{
 Snorm.grad(X, mu, acf, dmu, dacf)
 }
 \arguments{
-\item{X}{\eqn{N \times d} matrix, each column i.i.d. follows multivariate Gaussian distribution with mean \code{mu} and Toeplitz variance given by \code{acf}.}
+\item{X}{A length-\code{N} vector of multivariate normal observations.}
 
-\item{mu}{length \eqn{N} vector or matrix.}
+\item{mu}{A scalar or length-\code{N} vector of means.  If missing defaults to the vector of zeros.}
 
-\item{acf}{length \eqn{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
+\item{acf}{A \code{Toeplitz} object or length-\code{N} vector containing the first column of the Toeplitz variance matrix.}
 
-\item{dmu}{size \eqn{N \times p} matrix, where \eqn{p} is the number of parameters, each column is the partial derivative of \code{mu}.}
+\item{dmu}{A length-\code{p} vector or \code{N x p} matrix of partial derivatives of \code{mu} along the columns.  If missing defaults to a matrix of zeros.}
 
-\item{dacf}{size \eqn{N \times p} matrix, each column is the partial derivative of \code{acf}.}
+\item{dacf}{An \code{N x p} matrix with the partial derivatives of \code{acf} along the columns.}
 }
 \value{
-The gradient of the log-likelihood.
+A length-\code{p} vector containing the gradient of the loglikelihood.
 }
 \description{
 Efficient evaluation of log-likelihood gradient for stationary Gaussian data.
 }
-\note{
-package "SuperGauss" is required
-
-the order of partial derivative in \code{dmu} and \code{dacf} must be identical. Assuming that \eqn{\beta} is
-the second parameter, then second column of \code{dmu} should be \eqn{\frac{\partial \mu}{\partial \beta}}, second column of 
-\code{dacf} should be \eqn{\frac{\partial acf}{\partial \beta}}
-}
 \examples{
+# two parameter inference
+acf.fun <- function(theta) theta[2]^2 * exp(-theta[1]*(1:N-1))
+mu.fun <- function(theta) theta[1]
+
+# partial derivatives
+dacf.fun <- function(theta) {
+  ea <- exp(-theta[1]*(1:N-1))
+  cbind(-theta[1]*theta[2]^2 * ea, 2*theta[2] * ea)
+}
+dmu.fun <- function(theta) c(1, 0)
+
+# generate data
 N <- 300
-d <- 4
-X <- matrix(rnorm(N*d), N, d)
-theta <- 0.1
-lambda <- 2
+theta <- rexp(2)
+X <- rSnorm(n = 1, acf = acf.fun(theta)) + mu.fun(theta)
 
-mu <- theta^2 * rep(1, N)
-acf <- exp(-lambda * (1:N - 1))
-acf <- Toeplitz(acf = acf)
-dmu <- matrix(0, N, 2)
-dmu[, 1] <- 2 * theta * rep(1, N)
-dacf <- matrix(0, N, 2)
-dacf[, 2] <- -lambda * exp(-lambda * (1:N - 1))
-
-Snorm.grad(X, mu, acf, dmu, dacf)
+# likelihood gradient
+Snorm.grad(X = X, mu = mu.fun(theta), dmu = dmu.fun(theta),
+           acf = acf.fun(theta), dacf = dacf.fun(theta))
 }

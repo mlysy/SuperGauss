@@ -3,23 +3,21 @@ source("SuperGauss-test-functions.R")
 context("Trace of Matrix-Product")
 
 test_that("trace of inversion of Toeplitz times Toeplitz", {
-  N <- round(abs(rnorm(n = 1, mean = 100, sd = 10)))
-  d <- round(abs(rnorm(n = 1, mean = 10, sd = 3)))
-  Toep <- Toeplitz(N)
   case.par <- expand.grid(type = c("exp", "exp2", "fbm", "matern"),
+                          first0 = c(TRUE, FALSE),
                           dT = c(1/60, 1/30, 1/15))
   ncase <- nrow(case.par)
-  acf1 <- rnorm(N)
-  acf.mat1 <- toeplitz(acf1)
   for(ii in 1:ncase){
+    N <- sample(10:30, 1)
+    Toep <- Toeplitz(N)
     cp <- case.par[ii, ]
     type <- as.character(cp$type)
     dT <- cp$dT
-    acf <- acf.get.SGtest(N, type, dT)
-    acf.mat <- toeplitz(acf)
-    Toep$setAcf(acf)
-    acf.inv <- solve(acf.mat)
-    trace.rst <- trace.SGtest(acf.inv %*% acf.mat1)
-    expect_equal(Toep$traceT2(acf1), trace.rst, tolerance = abs(1e-7 * trace.rst))
+    acf1 <- rnorm(1, mean = 1e15) * acf.get.SGtest(N, type, dT)
+    acf2 <- runif(1) * exp(-(1:N))
+    if(cp$first0) acf2[1] <- 0
+    Toep$setAcf(acf1)
+    trace.rst <- trace.SGtest(solve(toeplitz(acf1), toeplitz(acf2)))
+    expect_equal(Toep$traceT2(acf2), trace.rst)
   }
 })

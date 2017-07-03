@@ -17,10 +17,8 @@
 
 // InverseProduct
 class Toeplitz {
-  // dimension
-  int n;
+  int n; // size of matrix
   // int d;
-
   // fft space
   VectorFFT* L1fft;
   VectorFFT* L11fft;
@@ -31,67 +29,47 @@ class Toeplitz {
   VectorFFT* U1fft;
   VectorFFT* U2fft;
   VectorFFT* Toepfft;
-
   // inverse-fft space
   VectorIFFT* Invfft;
-
   double* phi2;
   double* temVec;
 
   // Flag controling the inner loop
-  bool has_acf;
-  bool has_mult;
-  bool has_solve;
-  bool acf_is_0;
+  bool has_acf; // has acf been set yet
+  bool has_mult; // have multiplication fft's been computed yet
+  bool has_solve; // has Gohberg-Semencul decomposition been computed yet
+  //bool acf_is_0;
 
-  // Superfast Algorithm Space
-  GSchurN* Gs;
+  GSchurN* Gs; // Gohberg-Sememcul decomposition
+  double* acf; // acf of the Toeplitz matrix
 
-  // acf input
-  double* acf;
-
-  double compTrace(double*, double*, int);
-  bool zeroTest(double*, int);
-  void flagMult();
-  void flagSolve();
+  // trace of L*U, triangular Toeplitz matrices
+  double trace_LU(double* acf1, double* acf2, int n);
+  bool all_zeros(double* acf, int n); // check if vector is all zeros
+  void mult_setup(); // one-time calcs for multiplication
+  void solve_setup(); // one-time calcs for solving linear systems
  public:
-  Toeplitz(int);
-  ~Toeplitz();
-
-  // input the acf
-  void acfInput(double*);
-
-  // copy the acf
-  void acfOutput(double*);
-
-  // size of the matrix
-  int size();
-
-  // whether or not the acf has been set
-  bool hasAcf();
-
-  // Toeplitz * vector
-  void multVec(double*, double*);
-
-  // Toeplitz^-1 * vector
-  void solveVec(double*, double*);
-
-  // return the log-determinant
-  double logDet();
-
+  Toeplitz(int n_); // constructor
+  ~Toeplitz(); // destructor
+  void setAcf(double* acfIn); // acf input
+  void getAcf(double* acfOut); // acf output
+  int size(); // size of the matrix
+  bool hasAcf(); // whether or not the acf has been set
+  void multVec(double* yOut, double* xIn); // Toeplitz * vector
+  void solveVec(double* yOut, double* xIn); // Toeplitz^-1 * vector
+  double logDet(); // log-determinant
   // trace(Toeplitz^-1 * Toeplitz_2)
-  double traceProd(double*);
-
+  double traceProd(double* acf2);
   // trace(Toeplitz^-1 * Toeplitz_2 * Toeplitz^-1 * Toeplitz_3)
-  double traceDeriv(double*, double*);
+  double traceDeriv(double* acf2, double* acf3);
+  void getPhi(double* phiOut); // first column of inverse matrix
 };
+
 //------------------------------------------------------
 
 inline Toeplitz::Toeplitz(int n_) {
   n = n_;
-
   Gs = new GSchurN(n, 64); // default base 64
-
   L1fft = new VectorFFT(2 * n);
   L11fft = new VectorFFT(2 * n);
   L2fft = new VectorFFT(2 * n);
@@ -102,7 +80,6 @@ inline Toeplitz::Toeplitz(int n_) {
   U2fft = new VectorFFT(2 * n);
   Toepfft = new VectorFFT(2 * n);
   Invfft = new VectorIFFT(2 * n);
-
   acf = new double[n];
   phi2 = new double[n];
   temVec = new double[n];
@@ -112,7 +89,6 @@ inline Toeplitz::Toeplitz(int n_) {
 inline Toeplitz::~Toeplitz() {
 
   delete Gs;
-
   delete L1fft;
   delete L11fft;
   delete L2fft;
@@ -123,14 +99,13 @@ inline Toeplitz::~Toeplitz() {
   delete U2fft;
   delete Toepfft;
   delete Invfft;
-
   delete[] acf;
   delete[] phi2;
   delete[] temVec;
 }
 
 // calculating the trace of L1 L2', lower trangular toeplitz composed of acf of size n
-inline double Toeplitz::compTrace(double* acf1, double* acf2, int n) {
+inline double Toeplitz::trace_LU(double* acf1, double* acf2, int n) {
   double trace = 0;
   for(int ii = 0; ii < n; ++ii){
     trace += (n - ii) * acf1[ii] * acf2[ii];
@@ -138,7 +113,7 @@ inline double Toeplitz::compTrace(double* acf1, double* acf2, int n) {
   return trace;
 }
 
-inline bool Toeplitz::zeroTest(double* acf, int n) {
+inline bool Toeplitz::all_zeros(double* acf, int n) {
   bool acf_is_0 = true;
   for(int ii = 0; ii < n; ++ii){
     if(fabs(acf[ii]) > 0.0){
@@ -150,9 +125,8 @@ inline bool Toeplitz::zeroTest(double* acf, int n) {
 }
 
 //-------------------------------------------------------------------------------------------------
-inline void Toeplitz::acfInput(double* acfA) {
-  std::copy(acfA, acfA + n, acf);
-
+inline void Toeplitz::setAcf(double* acfIn) {
+  std::copy(acfIn, acfIn + n, acf);
   has_acf = true;
   has_mult = false;
   has_solve = false;
@@ -160,8 +134,8 @@ inline void Toeplitz::acfInput(double* acfA) {
 }
 
 //-------------------------------------------------------------------------------------------------
-inline void Toeplitz::acfOutput(double *acfA) {
-  std::copy(acf, acf + n, acfA);
+inline void Toeplitz::getAcf(double *acfOut) {
+  std::copy(acf, acf + n, acfOut);
   return;
 }
 
@@ -176,7 +150,13 @@ inline int Toeplitz::size() {
 }
 
 //-------------------------------------------------------------------------------------------------
-inline void Toeplitz::flagMult(){
+inline void Toeplitz::getPhi(double* phiOut) {
+  std::copy(Gs->Phi, Gs->Phi + n, phiOut);
+  return;
+}
+
+//-------------------------------------------------------------------------------------------------
+inline void Toeplitz::mult_setup(){
   std::copy(acf, acf + n, Toepfft->in);
   std::copy(acf + 1, acf + n, Toepfft->in + n + 1);
   std::reverse(Toepfft->in + n + 1, Toepfft->in + 2 * n);
@@ -187,7 +167,7 @@ inline void Toeplitz::flagMult(){
 
 // Toeplitz matrix vector multiplication
 inline void Toeplitz::multVec(double* yOut, double* xIn) {
-  bool acf_is_0 = zeroTest(acf, n);
+  bool acf_is_0 = all_zeros(acf, n);
 
   if(acf_is_0) {
     std::fill(yOut, yOut + n, 0);
@@ -195,7 +175,7 @@ inline void Toeplitz::multVec(double* yOut, double* xIn) {
   }
 
   if(!has_mult){
-    flagMult();
+    mult_setup();
   }
 
   std::copy(xIn, xIn + n, xfft->in);
@@ -208,7 +188,7 @@ inline void Toeplitz::multVec(double* yOut, double* xIn) {
 
 //-------------------------------------------------------------------------------------------------
 // compute part, generate required parts for TraceProd and InverseMult
-inline void Toeplitz::flagSolve() {
+inline void Toeplitz::solve_setup() {
 
   Gs->Compute(acf);
 
@@ -234,7 +214,7 @@ inline void Toeplitz::flagSolve() {
 
 inline void Toeplitz::solveVec(double* yOut, double* xIn) {
   if(!has_solve){
-    flagSolve();
+    solve_setup();
   }
 
   std::copy(xIn, xIn + n, xfft->in);
@@ -269,7 +249,7 @@ inline void Toeplitz::solveVec(double* yOut, double* xIn) {
 
 inline double Toeplitz::logDet() {
   if(!has_solve){
-    flagSolve();
+    solve_setup();
   }
   return Gs->ldV;
 }
@@ -277,17 +257,22 @@ inline double Toeplitz::logDet() {
 
 // trace(Toeplitz^-1 * Toeplitz_2)
 inline double Toeplitz::traceProd(double* acf2) {
-  bool acf2_is_0 = zeroTest(acf2, n);
+  bool is_small_acf20;
+  double t0;
   double trace;
-  if(acf2_is_0){
+  if(all_zeros(acf2, n)) {
     return 0.0;
   }
 
   if(!has_solve){
-    flagSolve();
+    solve_setup();
   }
 
-  std::copy(acf2, acf2 + n, U1fft->in);
+  std::copy(acf2 + 1, acf2 + n, U1fft->in + 1);
+  // check first term
+  is_small_acf20 = fabs(acf2[0]) < 0.0001;
+  t0 = is_small_acf20 ? acf2[0] + 1.0 : acf2[0];
+  U1fft->in[0] = t0;
   U1fft->fft(); //U1
   std::copy(acf2 + 1, acf2 + n, U2fft->in + 1);
   U2fft->fft(); //U2
@@ -295,42 +280,48 @@ inline double Toeplitz::traceProd(double* acf2) {
   // tr{U1'L1L1'U1}
   vecConv(Invfft->in, L1fft->out, U1fft->out, 2 * (n / 2 + 1));
   Invfft->Ifft();
-  trace = compTrace(Invfft->out, Invfft->out, n);
+  trace = trace_LU(Invfft->out, Invfft->out, n);
 
   // tr{U1'L2L2'U1}
   vecConv(Invfft->in, L2fft->out, U1fft->out, 2 * (n / 2 + 1));
   Invfft->Ifft();
-  trace -= compTrace(Invfft->out, Invfft->out, n);
+  trace -= trace_LU(Invfft->out, Invfft->out, n);
 
   // tr{U2'L1L1'U2}
   vecConv(Invfft->in, L1fft->out, U2fft->out, 2 * (n / 2 + 1));
   Invfft->Ifft();
-  trace -= compTrace(Invfft->out, Invfft->out, n);
+  trace -= trace_LU(Invfft->out, Invfft->out, n);
 
   // tr{U2'L2L2'U2}
   vecConv(Invfft->in, L2fft->out, U2fft->out, 2 * (n / 2 + 1));
   Invfft->Ifft();
-  trace += compTrace(Invfft->out, Invfft->out, n);
+  trace += trace_LU(Invfft->out, Invfft->out, n);
 
   // trace
   trace /= Gs->Phi[0];
-  trace /= acf2[0];
+  trace /= t0;
+  if(is_small_acf20) {
+    t0 = 0.0;
+    for(int ii=1; ii<n; ii++) {
+      t0 += (n-2*ii) * Gs->Phi[ii] * Gs->Phi[ii];
+    }
+    trace -= n * Gs->Phi[0] + t0/Gs->Phi[0];
+  }
   return trace;
 }
 
 
 // trace(Toeplitz^-1 * Toeplitz_2 * Toeplitz^-1 * Toeplitz_3)
+// TODO: this need to be corrected for when acf3[0] == 0.
 inline double Toeplitz::traceDeriv(double* acf2, double* acf3) {
-  bool acf2_is_0 = zeroTest(acf2, n);
-  bool acf3_is_0 = zeroTest(acf3, n);
   double trace2;
 
-  if(acf2_is_0 | acf3_is_0) {
+  if(all_zeros(acf2, n) | all_zeros(acf3, n)) {
     return 0.0;
   }
 
   if(!has_solve) {
-    flagSolve();
+    solve_setup();
   }
 
   // phi2 = - Toeplitz^-1 * Toeplitz_2 * phi ------------------------------
@@ -385,7 +376,7 @@ inline double Toeplitz::traceDeriv(double* acf2, double* acf3) {
   // 2, tr(L1(-phi2) * L1(phi)' * Toeplitz_3) = -tr(L1(phi2) * L1(phi)' * L1'(acf3)
   //    * L1(acf3)) + tr(L1(phi2) * L1(phi)' * L2'(acf3) * L2(acf3))
 
-  // 2.1, tr(L1(phi2) * L1(phi)' * L1'(acf3) * L1(acf3)) = compTrace(L1(acf3) * L1(phi2),
+  // 2.1, tr(L1(phi2) * L1(phi)' * L1'(acf3) * L1(acf3)) = trace_LU(L1(acf3) * L1(phi2),
   //      L1(acf3) * L1(phi)) = temp
   std::copy(acf3, acf3 + n, U1fft->in);
   U1fft->fft();
@@ -402,9 +393,9 @@ inline double Toeplitz::traceDeriv(double* acf2, double* acf3) {
   vecConv(Invfft->in, U1fft->out, xfft->out, 2 * (n / 2 + 1));
   Invfft->Ifft();
 
-  trace2 -= 2 * compTrace(Invfft->out, temVec, n) / acf3[0];
+  trace2 -= 2 * trace_LU(Invfft->out, temVec, n) / acf3[0];
 
-  // 2.2, tr(L1(phi2) * L1(phi)' * L2'(acf3) * L2(acf3)) = compTrace(L2(acf3) * L1(phi2),
+  // 2.2, tr(L1(phi2) * L1(phi)' * L2'(acf3) * L2(acf3)) = trace_LU(L2(acf3) * L1(phi2),
   //      L2(acf3) * L1(phi)) = temp
   U2fft->in[0] = 0;
   std::copy(acf3 + 1, acf3 + n, U2fft->in + 1);
@@ -418,12 +409,12 @@ inline double Toeplitz::traceDeriv(double* acf2, double* acf3) {
   vecConv(Invfft->in, U2fft->out, xfft->out, 2 * (n / 2 + 1));
   Invfft->Ifft();
 
-  trace2 += 2 * compTrace(Invfft->out, temVec, n) / acf3[0];
+  trace2 += 2 * trace_LU(Invfft->out, temVec, n) / acf3[0];
 
   // 3, tr(_L2(phi2) * _L2(phi)' * Toeplitz_3) = tr(_L2(phi2) * _L2'(phi) * L1'(acf3)
   //    * L1(acf3)) / acf3[1] - tr(_L2(phi2) * _L2(phi)' * L2'(acf3) * L2(acf3)) / acf3[1]
 
-  // 3.1, tr(L2(phi2) * L2'(phi) * L1'(acf3) * L1(acf3)) = compTrace(L1(acf3) * _L2(phi2),
+  // 3.1, tr(L2(phi2) * L2'(phi) * L1'(acf3) * L1(acf3)) = trace_LU(L1(acf3) * _L2(phi2),
   //      L1(acf3) * _L2(phi)) = temp
   Lxfft->in[0] = 0;
   std::copy(phi2 + 1, phi2 + n, Lxfft->in + 1);
@@ -441,9 +432,9 @@ inline double Toeplitz::traceDeriv(double* acf2, double* acf3) {
   vecConv(Invfft->in, U1fft->out, xfft->out, 2 * (n / 2 + 1));
   Invfft->Ifft();
 
-  trace2 += 2 * compTrace(Invfft->out, temVec, n) / acf3[0];
+  trace2 += 2 * trace_LU(Invfft->out, temVec, n) / acf3[0];
 
-  // 3.2, tr(_L2(phi2) * _L2(phi)' * L2'(acf3) * L2(acf3)) = compTrace(L2(acf3) * _L2(phi2),
+  // 3.2, tr(_L2(phi2) * _L2(phi)' * L2'(acf3) * L2(acf3)) = trace_LU(L2(acf3) * _L2(phi2),
   //      L2(acf3) * _L2(phi)) = temp
   vecConv(Invfft->in, U2fft->out, Lxfft->out, 2 * (n / 2 + 1));
   Invfft->Ifft();
@@ -453,7 +444,7 @@ inline double Toeplitz::traceDeriv(double* acf2, double* acf3) {
   vecConv(Invfft->in, U2fft->out, xfft->out, 2 * (n / 2 + 1));
   Invfft->Ifft();
 
-  trace2 -= 2 * compTrace(Invfft->out, temVec, n) / acf3[0];
+  trace2 -= 2 * trace_LU(Invfft->out, temVec, n) / acf3[0];
 
   // tr = tr / phi[1]
   trace2 /= Gs->Phi[0];

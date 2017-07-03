@@ -1,4 +1,3 @@
-# setwd("D:/GitHub/SuperGauss/tests/testthat")
 # library(testthat)
 
 acf2incr.SGtest <- function(gam) {
@@ -81,13 +80,7 @@ acf.get.SGtest <- function(N, type, dT, incr = TRUE){
   acf
 }
 
-trace.SGtest <- function(mat){
-  if(length(mat) == 1){
-    as.numeric(mat)
-  }else{
-    sum(diag(mat))
-  }
-}
+trace.SGtest <- function(mat) sum(diag(as.matrix(mat)))
 
 fbm.acf.grad.SGtest <- function(alpha, dT, N) {
   if(N == 1) {

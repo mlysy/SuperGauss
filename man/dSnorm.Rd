@@ -2,32 +2,33 @@
 % Please edit documentation in R/dSnorm.R
 \name{dSnorm}
 \alias{dSnorm}
-\title{Density of a Stationary Gaussian Process}
+\alias{dSnormDL}
+\title{Density of a multivariate normal with Toeplitz variance matrix.}
 \usage{
-dSnorm(X, mu, acf, log = TRUE)
+dSnorm(X, mu, acf, log = FALSE)
+
+dSnormDL(X, mu, acf, log = FALSE)
 }
 \arguments{
-\item{X}{\eqn{N \times d} matrix, d i.i.d. vector follows N(mu, Variance)}
+\item{X}{Vector or matrix, of which each column is a multivariate observation.}
 
-\item{mu}{\eqn{N} vector or matrix}
+\item{mu}{Vector or matrix of mean values of compatible dimensions with \code{X}.  Defaults to all zeros.}
 
-\item{acf}{\eqn{N} vector or matrix, first column of variance matrix, or a Toeplitz class initialized by acf}
+\item{acf}{Vector containing the first column of the Toeplitz variance matrix.  For \code{dSnorm}, can also be a \code{Toeplitz} object.}
 
-\item{log}{logical, if \code{TRUE} returns log-densities.}
+\item{log}{Logical, whether to the return PDF on log scale.}
 }
 \value{
-density (log density) of stationary Gaussian system
+Vector of (log-)densities, one for each column of \code{X}.
 }
 \description{
 Efficient density evaluation for the multivariate normal distribution with Toeplitz variance matrix.
 }
-\note{
-package "SuperGauss" is required
-
-When input {X, mu, acf} data type can be either vector or matrix, if vector, convert it into \code{n x 1} matrix
+\details{
+\code{dSnorm} and \code{dSnormDL} have identical outputs, with the former using the generalized Schur algorithm and the latter, the Durbin-Levinson algorithm, which is more common but slower.  \code{dSnormDL} is provided mainly for speed comparisons.
 }
 \examples{
-N <- 300
+N <- 10
 d <- 4
 X <- matrix(rnorm(N*d), N, d)
 theta <- 0.1

@@ -2,7 +2,7 @@
 % Please edit documentation in R/matern-acf.R
 \name{matern.acf}
 \alias{matern.acf}
-\title{Matern autocorrelation function}
+\title{Matern autocorrelation function.}
 \usage{
 matern.acf(tseq, lambda, nu)
 }
@@ -16,19 +16,19 @@ matern.acf(tseq, lambda, nu)
 \value{
 Vector of autocorrelations.
 
-An autocorrelation vector of length \eqn{N}.
+An autocorrelation vector of length \code{N}.
 }
 \description{
-Matern autocorrelation function
+Matern autocorrelation function.
 }
 \details{
 The Matern autocorrelation is given by
 \deqn{
-\textrm{acf}(t) = \frac{2^{1-\nu}}{\Gamma(\nu)} \left(\sqrt{2\nu}\frac{n\Delta t}{\lambda}\right)^\nu K_\nu\left(\sqrt{2\nu} \frac{n\Delta t}{\lambda}\right),
+\textrm{acf}(t) = \frac{2^{1-\nu}}{\Gamma(\nu)} \left(\sqrt{2\nu}\frac{t}{\lambda}\right)^\nu K_\nu\left(\sqrt{2\nu} \frac{t}{\lambda}\right),
 }{
 acf(t) = 2^(1-\nu)/\Gamma(\nu) * (\sqrt{2\nu} * t/\lambda)^\nu * K_\nu(\sqrt{2\nu} * t/\lambda),
 }
-where \eqn{K_\nu(x)} is the Bessel function of the XX kind.
+where \eqn{K_\nu(x)} is the modified Bessel function of second kind.
 }
 \examples{
 matern.acf(tseq = 1:10, lambda = 1, nu = 3/2)
