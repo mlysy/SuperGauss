@@ -25,7 +25,7 @@ Size \code{N x p} residual or observation matrix.
 Multiplies the Choleski decomposition of the Toeplitz matrix with another matrix, or solves a system of equations with the Cholesky factor.
 }
 \details{
-\code{cholZX} computes \code{chol(toeplitz(acf))\' * Z} and \code{cholZX} computes \code{chol(toeplitz(acf))\'^{-1} * X}.  Both functions use the Durbin-Levinson algorithm.
+If \code{C == t(chol(toeplitz(acf)))}, then \code{cholZX} computes \code{C \%*\% Z} and \code{cholZX} computes \code{solve(C, X)}.  Both functions use the Durbin-Levinson algorithm.
 }
 \examples{
 N <- 10

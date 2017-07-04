@@ -18,7 +18,7 @@ Length-\code{N} vector of mean square displacements.
 Mean square displacement of fractional Brownian motion.
 }
 \details{
-The mean squared displacement (MSD) of a stochastic process $X_t$ is defined as
+The mean squared displacement (MSD) of a stochastic process \eqn{X_t} is defined as
 \deqn{
 \mathrm{\scriptsize MSD}_X(t) = E[(X_t - X_0)^2].
 }{

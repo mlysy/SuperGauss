@@ -22,9 +22,9 @@ Power-exponential autocorrelation function.
 \details{
 The power-exponential autocorrelation function is given by:
 \deqn{
-\textrm{acf}(t) = \exp \left\{-(\frac{t}{\lambda})^\rho\right\}
+\mathrm{\scriptsize ACF}(t) = \exp \left\{-(t/\lambda)^\rho\right\}.
 }{
-\textrm{acf}(t) = exp (-(t / \lambda)^\rho)
+acf(t) = exp (-(t / \lambda)^\rho).
 }
 }
 \examples{
