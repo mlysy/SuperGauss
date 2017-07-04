@@ -59,12 +59,11 @@ If \code{Toep} is a \code{Toeplitz} object with first row/column given by \code{
 # construction
 acf <- exp(-(1:5))
 Toep <- Toeplitz(acf = acf)
-\dontrun{
 # alternatively, can allocate space first
 Toep <- Toeplitz(n = length(acf))
 Toep$setAcf(acf = acf)
-}
-dim(Toep)
+
+dim(Toep) # == c(nrow(Toep), ncol(Toep))
 Toep # show method
 Toep$getAcf() # extract the acf
 

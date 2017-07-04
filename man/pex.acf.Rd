@@ -2,7 +2,7 @@
 % Please edit documentation in R/pex-acf.R
 \name{pex.acf}
 \alias{pex.acf}
-\title{Power-Exponential autocorrelation function}
+\title{Power-exponential autocorrelation function.}
 \usage{
 pex.acf(tseq, lambda, rho)
 }
@@ -15,6 +15,9 @@ pex.acf(tseq, lambda, rho)
 }
 \value{
 Length-\code{N} autocorrelation vector.
+}
+\description{
+Power-exponential autocorrelation function.
 }
 \details{
 The power-exponential autocorrelation function is given by:

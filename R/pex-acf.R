@@ -1,4 +1,4 @@
-#' @title Power-Exponential autocorrelation function
+#' Power-exponential autocorrelation function.
 #'
 #' @param tseq Length-\code{N} vector of timepoints.
 #' @param lambda Timescale parameter.
@@ -7,9 +7,9 @@
 #' @details
 #' The power-exponential autocorrelation function is given by:
 #' \deqn{
-#' \textrm{acf}(t) = \exp \left\{-(\frac{t}{\lambda})^\rho\right\}
+#' \mathrm{\scriptsize ACF}(t) = \exp \left\{-(t/\lambda)^\rho\right\}.
 #' }{
-#' \textrm{acf}(t) = exp (-(t / \lambda)^\rho)
+#' acf(t) = exp (-(t / \lambda)^\rho).
 #' }
 #' @examples
 #' pex.acf(tseq = 1:10, lambda = 1, rho = 2)

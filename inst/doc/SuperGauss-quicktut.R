@@ -1,40 +1,4 @@
----
-title: "Superfast Likelihood Inference for Stationary Gaussian Time Series"
-author: "Yun Ling, Martin Lysy"
-date: "`r Sys.Date()`"
-output:
-  html_vignette:
-    toc: true
-bibliography: references.bib
-csl: taylor-and-francis-harvard-x.csl
-link-citations: true
-vignette: >
-  %\VignetteIndexEntry{SuperGauss}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
----
-
-\newcommand{\bm}[1]{\boldsymbol{#1}}
-\newcommand{\rv}[3][1]{#2_{#1},\ldots,#2_{#3}}
-\newcommand{\X}{\bm{X}}
-\newcommand{\cov}{\mathrm{cov}}
-\newcommand{\dt}{\Delta t}
-\newcommand{\msd}{\mathrm{\scriptsize MSD}}
-\newcommand{\acf}{\mathrm{\scriptsize ACF}}
-\newcommand{\dX}{\Delta\X}
-\newcommand{\VH}{\bm{V}_H}
-
-This vignette illustrates the basic functionality of the **`SuperGauss`** package by simulating a few stochastic processes and estimating their parameters from regularly spaced data.
-
-## Simulation of fractional Brownian motion
-
-A one-dimensional fractional Brownian motion (fBM) $X_t = X(t)$ is a continuous Gaussian process with $E[X_t] = 0$ and $\cov(X_t, X_s) = \tfrac 1 2 (|t|^{2H} + |s|^{2H} - |t-s|^{2H})$, for $0 < H < 1$.  fBM is not stationary but has stationary increments, such that $(X_{t+\dt} - X_t) \stackrel{D}{=} (X_{s+\dt} - X_s)$ for any $s,t$.  As such, its covariance function is completely determined its mean squared displacement (MSD)
-$$
-\msd_X(t) = E[(X_t - X_0)^2] = |t|^{2H}.
-$$
-When the Hurst parameter $H = \tfrac 1 2$, fBM reduces to ordinary Brownian motion.
-
-```{r fbmsim, include = FALSE}
+## ----fbmsim, include = FALSE---------------------------------------------
 require(SuperGauss)
 
 N <- 3000 # number of observations
@@ -60,11 +24,35 @@ system.time({
 system.time({
   matrix(rnorm(N*npaths), npaths, N) %*% chol(toeplitz(acf))
 })
-```
-The following **R** code generates `r npaths` independent fBM realizations of length $N = `r N`$ with $H = `r H`$.  The timing of the "superfast" method [@wood.chan94] provided in this package is compared to that of a "fast" method [e.g., @brockwell.davis91] and to the usual method (Cholesky decomposition of an unstructured variance matrix).
-```{r fbmsim}
-```
-```{r, fig.width = 10, fig.height = 5, out.width = "90%"}
+
+## ----fbmsim--------------------------------------------------------------
+require(SuperGauss)
+
+N <- 3000 # number of observations
+dT <- 1/60 # time between observations (seconds)
+H <- .3 # Hurst parameter
+
+tseq <- (0:N)*dT # times at which to sample fBM
+npaths <- 5 # number of fBM paths to generate
+
+# to generate fbm, generate its increments, which are stationary
+msd <- fbm.msd(tseq = tseq[-1], H = H)
+acf <- msd2acf(msd = msd) # convert msd to acf
+
+# superfast method
+system.time({
+  dX <- rSnorm(n = npaths, acf = acf, fft = TRUE)
+})
+# fast method (about 3x as slow)
+system.time({
+  rSnorm(n = npaths, acf = acf, fft = FALSE)
+})
+# unstructured variance method (much slower)
+system.time({
+  matrix(rnorm(N*npaths), npaths, N) %*% chol(toeplitz(acf))
+})
+
+## ---- fig.width = 10, fig.height = 5, out.width = "90%"------------------
 # convert increments to position measurements
 Xt <- apply(rbind(0, dX), 2, cumsum)
 
@@ -76,28 +64,8 @@ plot(0, type = "n", xlim = range(tseq), ylim = range(Xt),
 for(ii in 1:npaths) {
   lines(tseq, Xt[,ii], col = clrs[ii], lwd = 2)
 }
-```
 
-## Inference for the Hurst parameter
-
-Suppose that $\X = (\rv [0] X N)$ are equally spaced observations of an fBM process with $X_i = X(i \dt)$, and let $\dX = (\rv [0] {\Delta X} {N-1})$ denote the corresponding increments, $\Delta X_i = X_{i+1} - X_i$.  Then the loglikelihood function for $H$ is
-$$
-\ell(H \mid \dX) = -\tfrac 1 2 \big(\dX' \VH^{-1} \dX + \log |\VH|\big),
-$$
-where $V_H$ is a Toeplitz matrix,
-$$
-\VH = [\cov(\Delta X_i, \Delta X_j)]_{0 \le i,j < N} = \begin{bmatrix} \gamma_0 & \gamma_1 & \cdots & \gamma_{N-1} \\
-                      \gamma_1 & \gamma_0 & \cdots & \gamma_{N-2} \\
-					  \vdots & \vdots & \ddots & \vdots \\
-					  \gamma_{N-1} & \gamma_{N-2} & \cdots & \gamma_0
-      \end{bmatrix}.
-$$
-Thus, each evaluation of the loglikelihood requires the inverse and log-determinant of a Toeplitz matrix, which scales as $\mathcal O(N^2)$ with the Durbin-Levinson algorithm.  The **`SuperGauss`** package implements an extended version of the Generalized Schur algorithm of @ammar.gragg88, which scales these computations as $\mathcal O(N \log^2 N)$.  With careful memory management and extensive use of the **`FFTW`** library [@frigo.johnson05], the **`SuperGauss`** implementation crosses over Durbin-Levinson at around $N = 300$.
-
-### The `Toeplitz` matrix class
-
-The bulk of the likelihood calculations in **`SuperGauss`** are handled by the `Toeplitz` matrix class.  A `Toeplitz` object is created as follows:
-```{r}
+## ------------------------------------------------------------------------
 # allocate and assign in one step
 Toep <- Toeplitz(acf = acf)
 Toep
@@ -106,9 +74,8 @@ Toep
 Toep <- Toeplitz(n = N)
 Toep
 Toep$setAcf(acf = acf) # assign later
-```
-Its primary methods are illustrated below:
-```{r}
+
+## ------------------------------------------------------------------------
 all(acf == Toep$getAcf()) # extract acf
 
 # matrix multiplication
@@ -126,12 +93,8 @@ range(y1-y2)
 ld1 <- determinant(toeplitz(acf))$mod
 ld2 <- determinant(Toep) # note: no $mod
 c(ld1, ld2)
-```
 
-### Maximum likelihood calculation
-
-The following code shows how to obtain the maximum likelihood of $H$ and its standard error for a given fBM path.  For speed comparisons, the optimization is done both using the superfast Generalized Schur algorithm and the fast Durbin-Levinson algorithm.
-```{r}
+## ------------------------------------------------------------------------
 dX <- diff(Xt[,1]) # obtain the increments of a given path
 N <- length(dX)
 
@@ -169,12 +132,8 @@ Hmle <- GS.mle$max
 Hse <- -hessian(func = loglik.GS, x = Hmle) # observed Fisher Information
 Hse <- sqrt(1/Hse[1])
 c(mle = Hmle, se = Hse)
-```
 
-### Caution with `ReferenceClasses`
-
-In order to effectively manage memory in the underlying **C++** code, the `Toeplitz` class is implemented using **R**'s "Reference Classes".  Among other things, this means that when a `Toeplitz` object is passed to a function, the function does not make a copy of it: all modifications to the object inside the object are reflected on the object outside the function as well, as in the following example:
-```{r}
+## ------------------------------------------------------------------------
 T1 <- Toeplitz(n = N)
 T2 <- T1 # shallow copy: both of these point to the same memory location
 
@@ -192,16 +151,8 @@ loglik <- function(H) {
 loglik(H = .3)
 T1
 T2
-```
 
-## Superfast Newton-Raphson
-
-In addition to the superfast algorithm for Gaussian likelihood evaluations , **`SuperGauss`** provides such algorithms for the loglikelihood gradient and Hessian functions, leading to superfast versions of many inference algorithms such as Newton-Raphson and Hamiltonian Monte Carlo.  An example of the former is given below using the two-parameter exponential autocorrelation model
-$$
-\acf_X(t \mid \lambda, \sigma) = \sigma^2 \exp(- |t/\lambda|).
-$$
-
-```{r}
+## ------------------------------------------------------------------------
 # autocorrelation function
 exp.acf <- function(t, lambda, sigma) sigma^2 * exp(-abs(t/lambda))
 # gradient, returned as a 2-column matrix
@@ -257,6 +208,4 @@ rbind(true = c(lambda = lambda, sigma = sigma),
       est = mle.fit$estimate,
       se = sqrt(diag(solve(mle.fit$hessian))))
 
-```
 
-## References

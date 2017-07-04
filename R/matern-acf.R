@@ -6,7 +6,7 @@
 #' @details
 #' The Matern autocorrelation is given by
 #' \deqn{
-#' \textrm{acf}(t) = \frac{2^{1-\nu}}{\Gamma(\nu)} \left(\sqrt{2\nu}\frac{t}{\lambda}\right)^\nu K_\nu\left(\sqrt{2\nu} \frac{t}{\lambda}\right),
+#' \mathrm{\scripsize ACF}(t) = \frac{2^{1-\nu}}{\Gamma(\nu)} \left(\sqrt{2\nu}\frac{t}{\lambda}\right)^\nu K_\nu\left(\sqrt{2\nu} \frac{t}{\lambda}\right),
 #' }{
 #' acf(t) = 2^(1-\nu)/\Gamma(\nu) * (\sqrt{2\nu} * t/\lambda)^\nu * K_\nu(\sqrt{2\nu} * t/\lambda),
 #' }

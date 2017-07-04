@@ -1,2 +1,4 @@
 ^setup\.R$
 ^todo\.md$
+^README\.md$
+tests/dontrun

@@ -20,12 +20,11 @@
 #' # construction
 #' acf <- exp(-(1:5))
 #' Toep <- Toeplitz(acf = acf)
-#' \dontrun{
 #' # alternatively, can allocate space first
 #' Toep <- Toeplitz(n = length(acf))
 #' Toep$setAcf(acf = acf)
-#' }
-#' dim(Toep)
+#'
+#' dim(Toep) # == c(nrow(Toep), ncol(Toep))
 #' Toep # show method
 #' Toep$getAcf() # extract the acf
 #'
@@ -103,11 +102,7 @@ Toeplitz <- function(n, acf) {
   if(length(acf3) != size) {
     stop("acf3 has wrong length.")
   }
-  small1 <- abs(acf3[1]) < .0001
-  if(small1) acf3[1] <- 1 + acf3[1]
-  T4 <- .Toeplitz_traceT4(cpp_ptr, acf2, acf3)
-  if(small1) T4 <- T4 - .Toeplitz_traceT4(cpp_ptr, acf2, c(1, rep(0, size-1)))
-  T4
+  .Toeplitz_traceT4(cpp_ptr, acf2, acf3)
 })
 
 ## .traceT4 <- function(acf, acf2, acf3) {

@@ -6,7 +6,7 @@
 #' @param Z Length-\code{N} or \code{N x p} matrix of residuals.
 #' @param acf Length-\code{N} autocorrelation vector of the Toeplitz variance matrix.
 #' @return Size \code{N x p} residual or observation matrix.
-#' @details \code{cholZX} computes \code{chol(toeplitz(acf))\' * Z} and \code{cholZX} computes \code{chol(toeplitz(acf))\'^{-1} * X}.  Both functions use the Durbin-Levinson algorithm.
+#' @details If \code{C == t(chol(toeplitz(acf)))}, then \code{cholZX} computes \code{C \%*\% Z} and \code{cholZX} computes \code{solve(C, X)}.  Both functions use the Durbin-Levinson algorithm.
 #' @rdname Choleski
 #' @examples
 #' N <- 10

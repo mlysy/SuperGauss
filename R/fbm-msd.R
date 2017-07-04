@@ -3,7 +3,7 @@
 #' @param tseq Length-\code{N} vector of timepoints.
 #' @param H Hurst parameter (between 0 and 1).
 #' @return Length-\code{N} vector of mean square displacements.
-#' @details The mean squared displacement (MSD) of a stochastic process $X_t$ is defined as
+#' @details The mean squared displacement (MSD) of a stochastic process \eqn{X_t} is defined as
 #' \deqn{
 #' \mathrm{\scriptsize MSD}_X(t) = E[(X_t - X_0)^2].
 #' }{
