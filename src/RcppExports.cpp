@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // DurbinLevinson_XZ
 Eigen::MatrixXd DurbinLevinson_XZ(Eigen::MatrixXd X, Eigen::VectorXd acf);
-RcppExport SEXP _SuperGauss_DurbinLevinson_XZ(SEXP XSEXP, SEXP acfSEXP) {
+RcppExport SEXP SuperGauss_DurbinLevinson_XZ(SEXP XSEXP, SEXP acfSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -20,7 +20,7 @@ END_RCPP
 }
 // DurbinLevinson_ZX
 Eigen::MatrixXd DurbinLevinson_ZX(Eigen::MatrixXd Z, Eigen::VectorXd acf);
-RcppExport SEXP _SuperGauss_DurbinLevinson_ZX(SEXP ZSEXP, SEXP acfSEXP) {
+RcppExport SEXP SuperGauss_DurbinLevinson_ZX(SEXP ZSEXP, SEXP acfSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -32,7 +32,7 @@ END_RCPP
 }
 // DurbinLevinson_Eigen
 Rcpp::List DurbinLevinson_Eigen(Eigen::MatrixXd X, Eigen::MatrixXd Y, Eigen::VectorXd acf, int calcMode);
-RcppExport SEXP _SuperGauss_DurbinLevinson_Eigen(SEXP XSEXP, SEXP YSEXP, SEXP acfSEXP, SEXP calcModeSEXP) {
+RcppExport SEXP SuperGauss_DurbinLevinson_Eigen(SEXP XSEXP, SEXP YSEXP, SEXP acfSEXP, SEXP calcModeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -46,7 +46,7 @@ END_RCPP
 }
 // DurbinLevinson_Base
 Rcpp::List DurbinLevinson_Base(NumericMatrix X, NumericMatrix Y, NumericVector acf, int calcMode);
-RcppExport SEXP _SuperGauss_DurbinLevinson_Base(SEXP XSEXP, SEXP YSEXP, SEXP acfSEXP, SEXP calcModeSEXP) {
+RcppExport SEXP SuperGauss_DurbinLevinson_Base(SEXP XSEXP, SEXP YSEXP, SEXP acfSEXP, SEXP calcModeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -60,7 +60,7 @@ END_RCPP
 }
 // Toeplitz_constructor
 SEXP Toeplitz_constructor(int n);
-RcppExport SEXP _SuperGauss_Toeplitz_constructor(SEXP nSEXP) {
+RcppExport SEXP SuperGauss_Toeplitz_constructor(SEXP nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -71,7 +71,7 @@ END_RCPP
 }
 // Toeplitz_setAcf
 void Toeplitz_setAcf(SEXP Toep_ptr, NumericVector acf);
-RcppExport SEXP _SuperGauss_Toeplitz_setAcf(SEXP Toep_ptrSEXP, SEXP acfSEXP) {
+RcppExport SEXP SuperGauss_Toeplitz_setAcf(SEXP Toep_ptrSEXP, SEXP acfSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type Toep_ptr(Toep_ptrSEXP);
@@ -82,7 +82,7 @@ END_RCPP
 }
 // Toeplitz_getAcf
 NumericVector Toeplitz_getAcf(SEXP Toep_ptr);
-RcppExport SEXP _SuperGauss_Toeplitz_getAcf(SEXP Toep_ptrSEXP) {
+RcppExport SEXP SuperGauss_Toeplitz_getAcf(SEXP Toep_ptrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -93,7 +93,7 @@ END_RCPP
 }
 // Toeplitz_getPhi
 NumericVector Toeplitz_getPhi(SEXP Toep_ptr);
-RcppExport SEXP _SuperGauss_Toeplitz_getPhi(SEXP Toep_ptrSEXP) {
+RcppExport SEXP SuperGauss_Toeplitz_getPhi(SEXP Toep_ptrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -104,7 +104,7 @@ END_RCPP
 }
 // Toeplitz_Multiply
 NumericMatrix Toeplitz_Multiply(SEXP Toep_ptr, NumericMatrix X);
-RcppExport SEXP _SuperGauss_Toeplitz_Multiply(SEXP Toep_ptrSEXP, SEXP XSEXP) {
+RcppExport SEXP SuperGauss_Toeplitz_Multiply(SEXP Toep_ptrSEXP, SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -116,7 +116,7 @@ END_RCPP
 }
 // Toeplitz_Solve
 NumericMatrix Toeplitz_Solve(SEXP Toep_ptr, NumericMatrix X);
-RcppExport SEXP _SuperGauss_Toeplitz_Solve(SEXP Toep_ptrSEXP, SEXP XSEXP) {
+RcppExport SEXP SuperGauss_Toeplitz_Solve(SEXP Toep_ptrSEXP, SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -128,7 +128,7 @@ END_RCPP
 }
 // Toeplitz_Determinant
 double Toeplitz_Determinant(SEXP Toep_ptr);
-RcppExport SEXP _SuperGauss_Toeplitz_Determinant(SEXP Toep_ptrSEXP) {
+RcppExport SEXP SuperGauss_Toeplitz_Determinant(SEXP Toep_ptrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -139,7 +139,7 @@ END_RCPP
 }
 // Toeplitz_traceT2
 double Toeplitz_traceT2(SEXP Toep_ptr, NumericVector acf2);
-RcppExport SEXP _SuperGauss_Toeplitz_traceT2(SEXP Toep_ptrSEXP, SEXP acf2SEXP) {
+RcppExport SEXP SuperGauss_Toeplitz_traceT2(SEXP Toep_ptrSEXP, SEXP acf2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -151,7 +151,7 @@ END_RCPP
 }
 // Toeplitz_traceT4
 double Toeplitz_traceT4(SEXP Toep_ptr, NumericVector acf2, NumericVector acf3);
-RcppExport SEXP _SuperGauss_Toeplitz_traceT4(SEXP Toep_ptrSEXP, SEXP acf2SEXP, SEXP acf3SEXP) {
+RcppExport SEXP SuperGauss_Toeplitz_traceT4(SEXP Toep_ptrSEXP, SEXP acf2SEXP, SEXP acf3SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -164,7 +164,7 @@ END_RCPP
 }
 // Toeplitz_hasAcf
 bool Toeplitz_hasAcf(SEXP Toep_ptr);
-RcppExport SEXP _SuperGauss_Toeplitz_hasAcf(SEXP Toep_ptrSEXP) {
+RcppExport SEXP SuperGauss_Toeplitz_hasAcf(SEXP Toep_ptrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -175,20 +175,20 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_SuperGauss_DurbinLevinson_XZ", (DL_FUNC) &_SuperGauss_DurbinLevinson_XZ, 2},
-    {"_SuperGauss_DurbinLevinson_ZX", (DL_FUNC) &_SuperGauss_DurbinLevinson_ZX, 2},
-    {"_SuperGauss_DurbinLevinson_Eigen", (DL_FUNC) &_SuperGauss_DurbinLevinson_Eigen, 4},
-    {"_SuperGauss_DurbinLevinson_Base", (DL_FUNC) &_SuperGauss_DurbinLevinson_Base, 4},
-    {"_SuperGauss_Toeplitz_constructor", (DL_FUNC) &_SuperGauss_Toeplitz_constructor, 1},
-    {"_SuperGauss_Toeplitz_setAcf", (DL_FUNC) &_SuperGauss_Toeplitz_setAcf, 2},
-    {"_SuperGauss_Toeplitz_getAcf", (DL_FUNC) &_SuperGauss_Toeplitz_getAcf, 1},
-    {"_SuperGauss_Toeplitz_getPhi", (DL_FUNC) &_SuperGauss_Toeplitz_getPhi, 1},
-    {"_SuperGauss_Toeplitz_Multiply", (DL_FUNC) &_SuperGauss_Toeplitz_Multiply, 2},
-    {"_SuperGauss_Toeplitz_Solve", (DL_FUNC) &_SuperGauss_Toeplitz_Solve, 2},
-    {"_SuperGauss_Toeplitz_Determinant", (DL_FUNC) &_SuperGauss_Toeplitz_Determinant, 1},
-    {"_SuperGauss_Toeplitz_traceT2", (DL_FUNC) &_SuperGauss_Toeplitz_traceT2, 2},
-    {"_SuperGauss_Toeplitz_traceT4", (DL_FUNC) &_SuperGauss_Toeplitz_traceT4, 3},
-    {"_SuperGauss_Toeplitz_hasAcf", (DL_FUNC) &_SuperGauss_Toeplitz_hasAcf, 1},
+    {"SuperGauss_DurbinLevinson_XZ", (DL_FUNC) &SuperGauss_DurbinLevinson_XZ, 2},
+    {"SuperGauss_DurbinLevinson_ZX", (DL_FUNC) &SuperGauss_DurbinLevinson_ZX, 2},
+    {"SuperGauss_DurbinLevinson_Eigen", (DL_FUNC) &SuperGauss_DurbinLevinson_Eigen, 4},
+    {"SuperGauss_DurbinLevinson_Base", (DL_FUNC) &SuperGauss_DurbinLevinson_Base, 4},
+    {"SuperGauss_Toeplitz_constructor", (DL_FUNC) &SuperGauss_Toeplitz_constructor, 1},
+    {"SuperGauss_Toeplitz_setAcf", (DL_FUNC) &SuperGauss_Toeplitz_setAcf, 2},
+    {"SuperGauss_Toeplitz_getAcf", (DL_FUNC) &SuperGauss_Toeplitz_getAcf, 1},
+    {"SuperGauss_Toeplitz_getPhi", (DL_FUNC) &SuperGauss_Toeplitz_getPhi, 1},
+    {"SuperGauss_Toeplitz_Multiply", (DL_FUNC) &SuperGauss_Toeplitz_Multiply, 2},
+    {"SuperGauss_Toeplitz_Solve", (DL_FUNC) &SuperGauss_Toeplitz_Solve, 2},
+    {"SuperGauss_Toeplitz_Determinant", (DL_FUNC) &SuperGauss_Toeplitz_Determinant, 1},
+    {"SuperGauss_Toeplitz_traceT2", (DL_FUNC) &SuperGauss_Toeplitz_traceT2, 2},
+    {"SuperGauss_Toeplitz_traceT4", (DL_FUNC) &SuperGauss_Toeplitz_traceT4, 3},
+    {"SuperGauss_Toeplitz_hasAcf", (DL_FUNC) &SuperGauss_Toeplitz_hasAcf, 1},
     {NULL, NULL, 0}
 };
 
