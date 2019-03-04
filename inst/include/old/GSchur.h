@@ -102,6 +102,7 @@ class GSchurN {
   double* alpha;
   double* beta;
   vector<int> s;
+  vector<int> cs;
   GSchur2K** gs;
   GSchur2K** gsM;
 
@@ -136,6 +137,7 @@ inline GSchurN::GSchurN(int n_, int base_) {
   alpha = new double[n - 1];
   beta = new double[n - 1];
   s = int2Bin(n - 1, base);
+  cs.resize(s.size());
   Phi = new double[n];
   int jj = base;
   gs = new GSchur2K*[(int)log2(ceil((double)s[0]/base)) + 1];
@@ -145,9 +147,18 @@ inline GSchurN::GSchurN(int n_, int base_) {
     jj <<= 1;
   }
   gsM = new GSchur2K*[s.size()];
-  for(int ii = 0; ii < (int)s.size(); ++ii) {
-    gsM[ii] = new GSchur2K(s[ii]<<1);
+  int nM = 0;
+  for(int ii = (int)s.size()-1; ii >= 0; --ii) {
+    nM += s[ii];
+    cs[ii] = nM;
+    // Rprintf("gsM_new[%i] = %i\n", ii, nM);
+    gsM[ii] = new GSchur2K(nM);
   }
+  // for(int ii = 0; ii < (int)s.size(); ++ii) {
+  //   //   Rprintf("gsM[%i] = %i\n", ii, s[ii]<<1);
+  //   // Rprintf("gsM_old[%i] = %i\n", ii, s[ii]<<1);
+  //   //   gsM[ii] = new GSchur2K(s[ii]<<1);
+  // }
 }
 
 inline GSchurN::~GSchurN() {
@@ -311,25 +322,42 @@ inline void GSchurN::GenStep_Merge() {
     std::copy(gs[layer]->eta_IFFT->out, gs[layer]->eta_IFFT->out + s[0], gsM[0]->eta_IFFT->out);
     std::copy(gs[layer]->xi_IFFT->out, gs[layer]->xi_IFFT->out + s[0], gsM[0]->xi_IFFT->out);
     std::copy(gs[layer]->gamma, gs[layer]->gamma + s[0], gsM[0]->gamma);
+    Rprintf("made it past step 1\n");
     return;
   }
   std::copy(gs[layer]->eta_IFFT->out, gs[layer]->eta_IFFT->out + s[0], gsM[0]->eta_FFT->in);
   std::copy(gs[layer]->xi_IFFT->out, gs[layer]->xi_IFFT->out + s[0], gsM[0]->xi_FFT->in);
   std::copy(gs[layer]->gamma, gs[layer]->gamma + s[0], gsM[0]->gamma);
   int M = s[0];
+  Rprintf("s.size() = %i\n", s.size());
   for(int m = 0; m < (int)s.size()-1; ++m){
+    Rprintf("inside first loop.\n");
+    Rprintf("m = %i\n", m);
     if(m == 0){
+      Rprintf("gsM[0].size() = %i\n", cs[m]);
+      Rprintf("copying from element %i to %i\n", 0, n-1);
       std::copy(alpha, alpha + n - 1, gsM[m]->alpha_FFT->in);
       std::copy(beta, beta + n - 1, gsM[m]->beta_FFT->in);
     }
     else{
-      std::copy(gsM[m - 1]->alpham_IFFT->out + s[m - 1], gsM[m - 1]->alpham_IFFT->out + s[m - 1] + 2 * s[m], gsM[m]->alpha_FFT->in);
-      std::copy(gsM[m - 1]->betam_IFFT->out + s[m - 1], gsM[m - 1]->betam_IFFT->out + s[m - 1] + 2 * s[m], gsM[m]->beta_FFT->in);
+      // old code (works for gsM powers of 2)
+      // std::copy(gsM[m - 1]->alpham_IFFT->out + s[m - 1], gsM[m - 1]->alpham_IFFT->out + s[m - 1] + 2 * s[m], gsM[m]->alpha_FFT->in);
+      // std::copy(gsM[m - 1]->betam_IFFT->out + s[m - 1], gsM[m - 1]->betam_IFFT->out + s[m - 1] + 2 * s[m], gsM[m]->beta_FFT->in);
+      Rprintf("gsM[%i-1].size() = %i\n", m, cs[m-1]);
+      Rprintf("gsM[%i].size() = %i\n", m, cs[m]);
+      Rprintf("copying from element %i to %i\n", s[m-1], s[m-1] + cs[m]);
+      std::copy(gsM[m - 1]->alpham_IFFT->out + s[m - 1], gsM[m - 1]->alpham_IFFT->out + s[m - 1] + cs[m], gsM[m]->alpha_FFT->in);
+      std::copy(gsM[m - 1]->betam_IFFT->out + s[m - 1], gsM[m - 1]->betam_IFFT->out + s[m - 1] + cs[m], gsM[m]->beta_FFT->in);
     }
-    alpha2Beta(gsM[m], s[m]);
+    Rprintf("copied successfully.\n");
+    // old method:
+    // alpha2Beta(gsM[m], s[m]);
+    alpha2Beta(gsM[m], ceil((double)cs[m]/2));
+    Rprintf("alpha2Beta[%i] successfully.\n", m);
 
     layer = (int)log2(ceil((double)s[m + 1]/base));
     GenStep(gsM[m]->alpham_IFFT->out + s[m], gsM[m]->betam_IFFT->out + s[m], s[m + 1], layer);
+    Rprintf("GenStep[%i] successfully.\n", layer);
 
     std::copy(gs[layer]->eta_IFFT->out, gs[layer]->eta_IFFT->out + s[m + 1], gsM[m + 1]->eta_FFT->in);
     std::copy(gs[layer]->xi_IFFT->out, gs[layer]->xi_IFFT->out + s[m + 1], gsM[m + 1]->xi_FFT->in);
@@ -339,7 +367,13 @@ inline void GSchurN::GenStep_Merge() {
 
   }
   M = s[(int)s.size() - 1];
+  Rprintf("made it through first loop\n");
   for(int m = (int)s.size()-2; m >= 0; --m){
+  Rprintf("made it to second loop\n");
+    Rprintf("m = %i\n", m);
+    Rprintf("gsM[%i+1].size() = %i\n", m, cs[m+1]);
+    Rprintf("gsM[%i].size() = %i\n", m, cs[m]);
+    Rprintf("copying from element 0 to %i\n", M);
     if(m == (int)s.size()-2){
       std::copy(gsM[m + 1]->xi_FFT->in, gsM[m + 1]->xi_FFT->in + M, gsM[m]->xi_m_FFT->in);
       std::copy(gsM[m + 1]->eta_FFT->in, gsM[m + 1]->eta_FFT->in + M, gsM[m]->eta_m_FFT->in);
@@ -348,8 +382,12 @@ inline void GSchurN::GenStep_Merge() {
       std::copy(gsM[m + 1]->xi_IFFT->out, gsM[m + 1]->xi_IFFT->out + M, gsM[m]->xi_m_FFT->in);
       std::copy(gsM[m + 1]->eta_IFFT->out, gsM[m + 1]->eta_IFFT->out + M, gsM[m]->eta_m_FFT->in);
     }
-    GSchur_Merge(gsM[m], s[m]);
-    
+    Rprintf("made it through copy\n");
+    // old method
+    // GSchur_Merge(gsM[m], s[m]);
+    GSchur_Merge(gsM[m], ceil((double)cs[m]/2));
+    Rprintf("made it through merge\n");
+
     M += s[m];
   }
 }

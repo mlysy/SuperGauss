@@ -67,7 +67,7 @@ class Toeplitz {
 // constructor
 inline Toeplitz::Toeplitz(int n_) {
   n = n_;
-  Gs = new GSchurN(n, 64); // default base 64
+  Gs = new GSchurN(n, 8); // default base 64
   L1fft = new VectorFFT(2 * n);
   L11fft = new VectorFFT(2 * n);
   L2fft = new VectorFFT(2 * n);

@@ -1,6 +1,14 @@
 library(SuperGauss)
+## require(testthat)
 source("SuperGauss-test-functions.R")
 context("Solve")
+
+## N <- 10
+## d <- 2
+## acf <- acf.get.SGtest(N, type = "exp", dT = .5)
+## Toep <- Toeplitz(acf = acf)
+## X <- matrix(rnorm(N * d), N, d)
+## Y <- solve(Toep, X)
 
 test_that("Toeplitz-matrix inversion", {
   N <- round(abs(rnorm(n = 1, mean = 100, sd = 10)))

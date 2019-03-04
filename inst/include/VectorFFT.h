@@ -7,11 +7,11 @@
 
 // usual header
 #include <Rcpp.h>
-using namespace Rcpp;
+using namespace Rcpp; // REMOVE!
 #include <fftw3.h>
 #include <iostream>
 #include <ctime>
-using namespace std;
+using namespace std; // REMOVE!
 
 
 // defining classes

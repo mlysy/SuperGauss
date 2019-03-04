@@ -4,7 +4,6 @@
 \alias{Choleski}
 \alias{cholZX}
 \alias{cholXZ}
-\alias{cholXZ}
 \title{Choleski multiplication with Toeplitz variance matrices.}
 \usage{
 cholZX(Z, acf)
