@@ -1,3 +1,5 @@
+/// @file VectorFFT.h
+
 ///////////////////////////////////////////////
 // Fast Fourier Transformation and Inverse
 ///////////////////////////////////////////////
@@ -7,7 +9,7 @@
 
 // usual header
 #include <Rcpp.h>
-using namespace Rcpp; // REMOVE!
+using namespace Rcpp; // FIXME: Never put "using namespace" in header file
 #include <fftw3.h>
 #include <iostream>
 #include <ctime>
@@ -17,14 +19,20 @@ using namespace std; // REMOVE!
 // defining classes
 //------------------------------------------------------
 // 1, fast fourier transformation
+
+/// Forward FFT from real to complex.
 class VectorFFT{
-  fftw_plan planback;
+private:
+  fftw_plan planback; ///< FFTW plan.
 public:
-  int n_size;
-  double* in;
-  fftw_complex *out;
+  int n_size; ///< Size of input vector.
+  double* in; ///< Real input vector.
+  fftw_complex *out; ///< Complex output vector.
+  /// Constructor.
   VectorFFT(int);
+  /// Perform the FFT on the input data.
   void fft();
+  /// Destructor.
   ~VectorFFT();
 };
 
@@ -32,6 +40,7 @@ public:
 // 1, fast fourier transformation
 // class VectorFFT
 
+/// @param[in] n Size of the input vector.
 inline VectorFFT::VectorFFT(int n){
   n_size = n;
   in = new double[n];
@@ -47,6 +56,7 @@ inline VectorFFT::~VectorFFT(){
   fftw_destroy_plan(planback);
 }
 
+/// The result gets stored in the object member `out` of type `fftw_complex`, which is a 2-d array.  Elements are accessed via e.g., `out[0][1]`, `out[n-1][0].
 inline void VectorFFT::fft(){
   fftw_execute(planback);
   return;
@@ -94,6 +104,14 @@ inline void VectorIFFT::Ifft(){
 }
 //------------------------------------------------------
 
+/// Product between `fftw_complex` vectors.
+///
+/// Result is `y = alpha * beta`.
+///
+/// @param[out] y Output vector.
+/// @param[in] alpha First input vector.
+/// @param[in] beta Second input vector.
+/// @param[in] n Size of inputs (integer).
 inline void vecConv(fftw_complex* y, fftw_complex* alpha, fftw_complex* beta, int n){
 	for (int ii = 0; ii < n; ++ii){
 		y[ii][0] = alpha[ii][0] * beta[ii][0] - alpha[ii][1] * beta[ii][1];
@@ -102,6 +120,14 @@ inline void vecConv(fftw_complex* y, fftw_complex* alpha, fftw_complex* beta, in
 	return;
 }
 
+/// In-place subtract product between `fftw_complex` vectors.
+///
+/// Result is `y -= alpha * beta`.
+///
+/// @param[out] y Output vector.
+/// @param[in] alpha First input vector.
+/// @param[in] beta Second input vector.
+/// @param[in] n Size of inputs (integer).
 inline void vecConv_Sub(fftw_complex* y, fftw_complex* alpha, fftw_complex* beta, int n){
 	for (int ii = 0; ii < n; ++ii){
 		y[ii][0] -= alpha[ii][0] * beta[ii][0] - alpha[ii][1] * beta[ii][1];
@@ -110,6 +136,14 @@ inline void vecConv_Sub(fftw_complex* y, fftw_complex* alpha, fftw_complex* beta
 	return;
 }
 
+/// In-place sum product between `fftw_complex` vectors.
+///
+/// Result is `y += alpha * beta`.
+///
+/// @param[out] y Output vector.
+/// @param[in] alpha First input vector.
+/// @param[in] beta Second input vector.
+/// @param[in] n Size of inputs (integer).
 inline void vecConv_Add(fftw_complex* y, fftw_complex* alpha, fftw_complex* beta, int n){
 	for (int ii = 0; ii < n; ++ii){
 		y[ii][0] += alpha[ii][0] * beta[ii][0] - alpha[ii][1] * beta[ii][1];
