@@ -6,8 +6,9 @@ doc
 *.o
 *.dll
 *.so
-*.html
-*.pdf
-config.*
 src/.vscode
+vignettes/.build.timestamp
+# fftw-specific
 src/Makevars
+config.log
+config.status
