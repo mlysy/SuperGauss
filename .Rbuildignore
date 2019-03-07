@@ -1,3 +1,5 @@
+^inst/doxygen$
+^vignettes/Makefile$
 ^config\.status$
 ^config\.log$
 ^Meta$

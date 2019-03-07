@@ -9,21 +9,16 @@
 
 // usual header
 #include <Rcpp.h>
-using namespace Rcpp; // FIXME: Never put "using namespace" in header file
 #include <fftw3.h>
 #include <iostream>
-#include <ctime>
+// #include <ctime> 
+using namespace Rcpp; // FIXME: Never put "using namespace" in header file
 using namespace std; // REMOVE!
-
-
-// defining classes
-//------------------------------------------------------
-// 1, fast fourier transformation
 
 /// Forward FFT from real to complex.
 class VectorFFT{
 private:
-  fftw_plan planback; ///< FFTW plan.
+  fftw_plan planfor; ///< FFTW plan.
 public:
   int n_size; ///< Size of input vector.
   double* in; ///< Real input vector.
@@ -36,73 +31,66 @@ public:
   ~VectorFFT();
 };
 
-//------------------------------------------------------
-// 1, fast fourier transformation
-// class VectorFFT
-
 /// @param[in] n Size of the input vector.
 inline VectorFFT::VectorFFT(int n){
   n_size = n;
   in = new double[n];
   out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * n);
   std::fill(in, in + n, 0);
-  planback = fftw_plan_dft_r2c_1d(n, in, out, FFTW_ESTIMATE);
+  planfor = fftw_plan_dft_r2c_1d(n, in, out, FFTW_ESTIMATE);
   return;
 }
 
 inline VectorFFT::~VectorFFT(){
   delete []in;
   fftw_free(out);
-  fftw_destroy_plan(planback);
+  fftw_destroy_plan(planfor);
 }
 
-/// The result gets stored in the object member `out` of type `fftw_complex`, which is a 2-d array.  Elements are accessed via e.g., `out[0][1]`, `out[n-1][0].
+/// The result gets stored in the object member `out` of type `fftw_complex`, which is a 2-d array.  Elements are accessed via e.g., `out[0][1]`, `out[n-1][0]`.
 inline void VectorFFT::fft(){
-  fftw_execute(planback);
+  fftw_execute(planfor);
   return;
 }
-//------------------------------------------------------
 
-//------------------------------------------------------
-
-// 2, inverse fast fourier transformation
+/// Backward FFT from complex to real.
 class VectorIFFT{
-  fftw_plan planfor;
+  fftw_plan planback; ///< FFTW plan.
 public:
-  int n_size;
-  double* out;
-  fftw_complex *in;
+  int n_size; ///< Size of input vector.
+  double* out; ///< Real output vector.
+  fftw_complex *in; ///< Complex input vector.
+  /// Constructor.
   VectorIFFT(int);
+  /// Perform the inverse FFT on the input data.
   void Ifft();
+  /// Destructor.
   ~VectorIFFT();
 };
-//------------------------------------------------------
 
-// 2, inverse fast fourier transformation
-//  class VectorIFFT
-
+/// @param[in] n Size of the input vector.
 inline VectorIFFT::VectorIFFT(int n){
   n_size = n;
   out = new double[n];
   in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * n);
   memset(in, 0, sizeof(fftw_complex) * n);
-  planfor = fftw_plan_dft_c2r_1d(n, in, out, FFTW_ESTIMATE);
+  planback = fftw_plan_dft_c2r_1d(n, in, out, FFTW_ESTIMATE);
 }
 
 inline VectorIFFT::~VectorIFFT(){
   delete []out;
   fftw_free(in);
-  fftw_destroy_plan(planfor);
+  fftw_destroy_plan(planback);
 }
 
+/// The result gets stored in the object member `out` of type `double`, which is a 1-d array.  Elements are accessed via e.g., `out[0]`, `out[n-1]`.
 inline void VectorIFFT::Ifft(){
-  fftw_execute(planfor);
+  fftw_execute(planback);
   for(int ii = 0;ii < n_size; ++ii){
     out[ii] = out[ii]/n_size;
   }
   return;
 }
-//------------------------------------------------------
 
 /// Product between `fftw_complex` vectors.
 ///
