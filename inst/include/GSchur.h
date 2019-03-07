@@ -1,20 +1,17 @@
 /// @file GSchur.h
 
 ///////////////////////////////////////////////
-
 // Generalized Schur Algorithm
-
 ///////////////////////////////////////////////
 
 #ifndef GSchur_h
 #define GSchur_h 1
 
-// !!!FIXME: remove "using namespace" directives from VectorFFT.h!!!
 #include "VectorFFT.h"
 
 /// Convert integer to modulo-binary representation.
 ///
-/// Given an integer `x`, returns an integer vector `s = {2^k0 * base, 2^k1 * base, ..., 2^kT * base, rem}`, where `k0 > ... > kT >= 0`, `rem < base`, and `sum(s) = x`.
+/// Given an integer `x`, returns an integer vector \f$s = {2^{k_0} \times base, 2^{k_1} \times base, ..., 2^{k_T} \times base, rem}\f$, where \f$k_0 > ... > k_T \geq 0\f$, \f$rem < base\f$, and `sum(s) = x`.
 ///
 /// @param[in] x Integer of which the modulo-binary represention is computed.
 /// @param[in] base Integer giving the binary modulus.
@@ -37,32 +34,29 @@ inline vector<int> int2Bin(int x, int base = 1) {
   return s;
 }
 
-// defining classes
-//------------------------------------------------------
-
-// 3, generalized schur algorithm
+/// Generalized Schur Algorithm for N = 2^K.
 class GSchur2K {
  public:
-  VectorFFT* alpha_FFT;
-  VectorFFT* beta_FFT;
-  VectorFFT* eta_FFT;
-  VectorFFT* xi_FFT;
-  VectorFFT* xi_m_FFT;
-  VectorFFT* eta_m_FFT;
-  VectorIFFT* alpham_IFFT;
-  VectorIFFT* betam_IFFT;
-  VectorIFFT* xi_IFFT;
-  VectorIFFT* eta_IFFT;
-  double* gamma;
-  fftw_complex* eta_t;
-  fftw_complex* xi_t;
-
+  VectorFFT* alpha_FFT; ///< Alpha
+  VectorFFT* beta_FFT; ///< Alpha
+  VectorFFT* eta_FFT; ///< Alpha
+  VectorFFT* xi_FFT; ///< Alpha
+  VectorFFT* xi_m_FFT; ///< Alpha
+  VectorFFT* eta_m_FFT; ///< Alpha
+  VectorIFFT* alpham_IFFT; ///< Alpha
+  VectorIFFT* betam_IFFT; ///< Alpha
+  VectorIFFT* xi_IFFT; ///< Alpha
+  VectorIFFT* eta_IFFT; ///< Alpha
+  double* gamma; ///< Alpha
+  fftw_complex* eta_t; ///< Alpha
+  fftw_complex* xi_t; ///< Alpha
+  /// Constructor
   GSchur2K(int);
+  /// Destructor
   ~GSchur2K();
 };
 
-//--------------------------------------------------------------------------------------------------
-// constructor and destructor of class GSchur2K
+/// @param[in] M 
 inline GSchur2K::GSchur2K(int M) {
   alpha_FFT = new VectorFFT(M);
   beta_FFT = new VectorFFT(M);

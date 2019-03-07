@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['n_5fsize',['n_size',['../class_vector_f_f_t.html#aa543559ea92a05f542a10f1ca51f052b',1,'VectorFFT']]]
+  ['fft',['fft',['../class_vector_f_f_t.html#ad606744810e4e03f8f34be3eb78ad318',1,'VectorFFT']]]
 ];

@@ -2,9 +2,9 @@
 
 # for recompiling package
 # first quit R, then setwd() to where setup.R is found. then:
-# pkg.path <- "D:/GitHub/SuperGauss"
+pkg.path <- "D:/GitHub/SuperGauss"
 # pkg.path <- "c:/Users/Jerome/Documents/R/SuperGauss"
-pkg.path <- getwd()
+# pkg.path <- getwd()
 
 #require(Rcpp)
 #require(devtools)
@@ -19,7 +19,7 @@ devtools::build(pkg = pkg.path) # builds a tar.gz file
 devtools::check("SuperGauss")
 
 # restart R before testing changes
-testthat::test_package("SuperGauss")
+testthat::test_package("SuperGauss", reporter = "progress")
 
 # cran check
 
@@ -87,3 +87,12 @@ setwd("D:/GitHub/SuperGauss/tests/testthat")
 require(testthat)
 require(SuperGauss)
 source("SuperGauss-test-functions.R")
+
+
+# rdoxygen ----------------------------------------------------------------
+
+setwd("D:/GitHub/SuperGauss")
+
+rdoxygen::doxy()
+rdoxygen::doxy_vignette()
+devtools::install(build_vignettes = TRUE)

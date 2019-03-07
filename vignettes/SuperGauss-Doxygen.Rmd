@@ -1,0 +1,13 @@
+---
+pagetitle: "SuperGauss C++ library documentation"
+output:
+  rmarkdown::html_vignette
+params:
+  doxygenVignette: true
+vignette: >
+  %\VignetteIndexEntry{SuperGauss C++ library documentation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+<meta http-equiv="refresh" content="0; URL=html/index.html">
