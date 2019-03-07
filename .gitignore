@@ -3,10 +3,7 @@ doc
 *.DS_Store
 *.Rapp.history
 *.Rhistory
-*.o
-*.dll
 *.so
-*.html
 *.pdf
 config.*
 src/.vscode
