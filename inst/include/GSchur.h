@@ -166,12 +166,21 @@ inline GSchurN::~GSchurN() {
 // helper functions applied in GSchur2K and GSchurMerge
 // generate the alpham_IFFT and betam_IFFT, the size is M
 // input of this function is gsr->alpha/beta/eta/xi_FFT->in
+
+/// What is this function doing?
+///
+/// Step1: get alpha_fft, beta_fft, eta_fft, xi_fft;
+///
+/// Step2: 
 inline void GSchurN::alpha2Beta(GSchur2K* gsr, int M) {
+
+  /// Step1
   gsr->alpha_FFT->fft();
   gsr->beta_FFT->fft();
   gsr->eta_FFT->fft();
   gsr->xi_FFT->fft();
 
+  /// Step2
   for (int ii = 0; ii < M; ++ii){
     gsr->eta_t[2 * ii][0] = gsr->eta_FFT->out[2 * ii][0];
     gsr->eta_t[2 * ii][1] = -gsr->eta_FFT->out[2 * ii][1];
@@ -183,13 +192,16 @@ inline void GSchurN::alpha2Beta(GSchur2K* gsr, int M) {
     gsr->xi_t[2 * ii + 1][0] = -gsr->xi_FFT->out[2 * ii + 1][0];
     gsr->xi_t[2 * ii + 1][1] = gsr->xi_FFT->out[2 * ii + 1][1];
   }
-  // ifft
 
+  // ifft
+  /// Step3
   vecConv(gsr->alpham_IFFT->in, gsr->alpha_FFT->out, gsr->eta_FFT->out, 2 * (M / 2 + 1));
   vecConv_Sub(gsr->alpham_IFFT->in, gsr->xi_FFT->out, gsr->beta_FFT->out, 2 * (M / 2 + 1));
 
   vecConv(gsr->betam_IFFT->in, gsr->beta_FFT->out, gsr->eta_t, 2 * (M / 2 + 1));
   vecConv_Sub(gsr->betam_IFFT->in, gsr->xi_t, gsr->alpha_FFT->out, 2 * (M / 2 + 1));
+
+  /// Step4
   gsr->alpham_IFFT->Ifft();
   gsr->betam_IFFT->Ifft();
 }

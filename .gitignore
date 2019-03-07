@@ -3,9 +3,9 @@ doc
 *.DS_Store
 *.Rapp.history
 *.Rhistory
+*.so
 *.o
 *.dll
-*.so
 src/.vscode
 vignettes/.build.timestamp
 # fftw-specific
