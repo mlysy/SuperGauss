@@ -15,20 +15,6 @@
 using namespace Rcpp; // FIXME: Never put "using namespace" in header file
 using namespace std; // REMOVE!
 
-/// Notes: Usage of VectorFFT class
-///
-/// For two polynomials a^(p)(x) = a_0 + a_1 * x + a_2 * x^2 + ... + a_p * x^p and b^(q)(x) = b_0 + b_1 * x + b_2 * x^2 + ... b_q * x^q
-///
-/// Their convolution result c^(p+q)(x) = c_0 + c_1 * x + c_2 * x^2 + ... + c_{p+q} * x^{p+q} = conv(a(x), b(x)) can be computed efficiently using Fast Fourier Transformation in following steps:
-///
-/// 1) Define two length-(p+q) vectors: aa = (a_0, a_1, ..., a_p, 0, ..., 0) and bb = (b_0, b_1, ..., b_q, 0, ..., 0).
-///
-/// 2) Compute their forward-fft: aa_fft = fft(aa) and bb_fft = fft(b), both are 2-d array of complex vector. First array aa_fft[:][0] and bb_fft[:][0] are the real parts and the second array array aa_fft[:][1] and bb_fft[:][1] are the complex parts.
-///
-/// 3) Multiply: cc_fft = aa_fft * bb_fft, where cc_fft is also a 2-d array of complex vector. In c++ it is computed like this: cc_fft[:][0] = aa_fft[:][0] * bb_fft[:][0] - aa_fft[:][1] * bb_fft[:][1], cc_fft[:][1] = aa_fft[:][0] * bb_fft[:][1] + aa_fft[:][1] * bb_fft[:][0]
-///
-/// 4) Backward-fft: ifft(cc_fft) to obtain the length p+q vector cc = (c_0, c_1, ..., c_{p+q})
-
 /// Forward FFT from real to complex.
 class VectorFFT{
 private:
