@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['out',['out',['../class_vector_f_f_t.html#a2d7e776411a65e6cd67ba2e45cf93aa9',1,'VectorFFT::out()'],['../class_vector_i_f_f_t.html#ae949a39a1630c582bc05ebc37c843ba9',1,'VectorIFFT::out()']]]
+  ['n_5fsize',['n_size',['../class_vector_f_f_t.html#aa543559ea92a05f542a10f1ca51f052b',1,'VectorFFT::n_size()'],['../class_vector_i_f_f_t.html#abb0e41396acbd17d757dfdccef57d70e',1,'VectorIFFT::n_size()']]]
 ];

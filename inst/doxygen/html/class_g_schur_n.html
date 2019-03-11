@@ -75,25 +75,126 @@ $(function() {
 <div class="title">GSchurN Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_g_schur_8h_source.html">GSchur.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab64c78a4f0fcd57c86b3701f6554895a"><td class="memItemLeft" align="right" valign="top"><a id="ab64c78a4f0fcd57c86b3701f6554895a"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>GSchurN</b> (int, int)</td></tr>
+<tr class="memitem:ab64c78a4f0fcd57c86b3701f6554895a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#ab64c78a4f0fcd57c86b3701f6554895a">GSchurN</a> (int, int)</td></tr>
+<tr class="memdesc:ab64c78a4f0fcd57c86b3701f6554895a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <a href="#ab64c78a4f0fcd57c86b3701f6554895a">More...</a><br /></td></tr>
 <tr class="separator:ab64c78a4f0fcd57c86b3701f6554895a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2ccc32309c339d30d2e7494de1781ae"><td class="memItemLeft" align="right" valign="top"><a id="ac2ccc32309c339d30d2e7494de1781ae"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Compute</b> (double *)</td></tr>
+<tr class="memitem:a38671cfad33b0b8523503105ae7b7196"><td class="memItemLeft" align="right" valign="top"><a id="a38671cfad33b0b8523503105ae7b7196"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#a38671cfad33b0b8523503105ae7b7196">~GSchurN</a> ()</td></tr>
+<tr class="memdesc:a38671cfad33b0b8523503105ae7b7196"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor. <br /></td></tr>
+<tr class="separator:a38671cfad33b0b8523503105ae7b7196"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2ccc32309c339d30d2e7494de1781ae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#ac2ccc32309c339d30d2e7494de1781ae">Compute</a> (double *)</td></tr>
+<tr class="memdesc:ac2ccc32309c339d30d2e7494de1781ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform the Generalized Schur algorithm on the input data.  <a href="#ac2ccc32309c339d30d2e7494de1781ae">More...</a><br /></td></tr>
 <tr class="separator:ac2ccc32309c339d30d2e7494de1781ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:afa9df5905caf5fd01b4430b524e32d54"><td class="memItemLeft" align="right" valign="top"><a id="afa9df5905caf5fd01b4430b524e32d54"></a>
-double *&#160;</td><td class="memItemRight" valign="bottom"><b>Phi</b></td></tr>
+double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#afa9df5905caf5fd01b4430b524e32d54">Phi</a></td></tr>
+<tr class="memdesc:afa9df5905caf5fd01b4430b524e32d54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Real output vector of the first column of inverse <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix. <br /></td></tr>
 <tr class="separator:afa9df5905caf5fd01b4430b524e32d54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afddb728093982d64e2b4aff5550ef382"><td class="memItemLeft" align="right" valign="top"><a id="afddb728093982d64e2b4aff5550ef382"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>ldV</b></td></tr>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#afddb728093982d64e2b4aff5550ef382">ldV</a></td></tr>
+<tr class="memdesc:afddb728093982d64e2b4aff5550ef382"><td class="mdescLeft">&#160;</td><td class="mdescRight">Real number of the log-determinant of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix. <br /></td></tr>
 <tr class="separator:afddb728093982d64e2b4aff5550ef382"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Generalized Schur Algorithm for arbitrary size N.</p>
+<p>Size of input is not necessarily \(2^K \times b\).</p>
+<p>The implementation of Generalized Schur algorithm for any <code>N</code> contains following steps:</p>
+<p>1) Decompose integer <code>N</code> into the binary form w.r.t modulus <code>b</code> and obtain a vector <code>s</code> s.t. \(s = {2^{k_0} \times b, 2^{k_1} \times b, ..., 2^{k_T} \times b, r}\), where \(k_0 &gt; ... &gt; k_T \geq 0\), \(r &lt; b\), and <code>sum(s) = x</code>. This step is done with function <code>int2Bin</code>. As in GSchur Algorithm, whole size-N transformation \(T_{0,N}\) can be decomposed into binary pieces in following way</p>
+<p class="formulaDsp">
+\[ T_{0,N} = T_{0, s[1]} \circ T_{s[1], s[2]} \circ T_{s[1]+s[2], s[2]} \circ ... \circ T_{s[1]+s[2]+...s[m], r} \]
+</p>
+<p>2) Use doubling procedure to compute the binary pieces \(T_{s[1]+s[2]+..., s[i]}\). This step is done with function <code>GenStep</code> of <code><a class="el" href="class_g_schur_n.html">GSchurN</a></code> class.</p>
+<p>3) Merge the binary pieces in ascending order (for computation efficiency) and finally obtain the size-N transformation \(T_{0,N}\). This step is done with function <code>GenMerge</code> of <code><a class="el" href="class_g_schur_n.html">GSchurN</a></code> class. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ab64c78a4f0fcd57c86b3701f6554895a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab64c78a4f0fcd57c86b3701f6554895a">&#9670;&nbsp;</a></span>GSchurN()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">GSchurN::GSchurN </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>N_</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>b_</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">N_</td><td>Size of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix (Size of Generalized Schur Algorithm is <code>N_</code>-1). </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b_</td><td>Integer for binary modulus. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ac2ccc32309c339d30d2e7494de1781ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2ccc32309c339d30d2e7494de1781ae">&#9670;&nbsp;</a></span>Compute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GSchurN::Compute </td>
+          <td>(</td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>acf</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Perform the Generalized Schur algorithm on the input data. </p>
+<p>Output function</p>
+<p>This function generates the input polynomials \(\alpha_0, \beta_0\) of Generalized Schur algorithm from the first column of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix, run the Merged GSchur algorithm and finally convert the output of GSchur algorithm into the log-determinant and first column of inverse <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">acf</td><td>Input real vector, the first column of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>inst/include/<a class="el" href="_g_schur_8h_source.html">GSchur.h</a></li>
 </ul>

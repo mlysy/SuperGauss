@@ -86,13 +86,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2f857e8fab7f4da6b0bece0bae51f661"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vector_f_f_t.html#a2f857e8fab7f4da6b0bece0bae51f661">VectorFFT</a> (int)</td></tr>
 <tr class="memdesc:a2f857e8fab7f4da6b0bece0bae51f661"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <a href="#a2f857e8fab7f4da6b0bece0bae51f661">More...</a><br /></td></tr>
 <tr class="separator:a2f857e8fab7f4da6b0bece0bae51f661"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad606744810e4e03f8f34be3eb78ad318"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vector_f_f_t.html#ad606744810e4e03f8f34be3eb78ad318">fft</a> ()</td></tr>
-<tr class="memdesc:ad606744810e4e03f8f34be3eb78ad318"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform the FFT on the input data.  <a href="#ad606744810e4e03f8f34be3eb78ad318">More...</a><br /></td></tr>
-<tr class="separator:ad606744810e4e03f8f34be3eb78ad318"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6c5facaa3f3c4b15329730b94faaf7d"><td class="memItemLeft" align="right" valign="top"><a id="ae6c5facaa3f3c4b15329730b94faaf7d"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vector_f_f_t.html#ae6c5facaa3f3c4b15329730b94faaf7d">~VectorFFT</a> ()</td></tr>
 <tr class="memdesc:ae6c5facaa3f3c4b15329730b94faaf7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor. <br /></td></tr>
 <tr class="separator:ae6c5facaa3f3c4b15329730b94faaf7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad606744810e4e03f8f34be3eb78ad318"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vector_f_f_t.html#ad606744810e4e03f8f34be3eb78ad318">fft</a> ()</td></tr>
+<tr class="memdesc:ad606744810e4e03f8f34be3eb78ad318"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform the FFT on the input data.  <a href="#ad606744810e4e03f8f34be3eb78ad318">More...</a><br /></td></tr>
+<tr class="separator:ad606744810e4e03f8f34be3eb78ad318"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -104,7 +104,9 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vector_f_f_t.html#afaf759c9951b2879e9b5437b97e7ad56">in</a></td></tr>
 <tr class="memdesc:afaf759c9951b2879e9b5437b97e7ad56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Real input vector. <br /></td></tr>
 <tr class="separator:afaf759c9951b2879e9b5437b97e7ad56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d7e776411a65e6cd67ba2e45cf93aa9"><td class="memItemLeft" align="right" valign="top">fftw_complex *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vector_f_f_t.html#a2d7e776411a65e6cd67ba2e45cf93aa9">out</a></td></tr>
+<tr class="memitem:a2d7e776411a65e6cd67ba2e45cf93aa9"><td class="memItemLeft" align="right" valign="top"><a id="a2d7e776411a65e6cd67ba2e45cf93aa9"></a>
+fftw_complex *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vector_f_f_t.html#a2d7e776411a65e6cd67ba2e45cf93aa9">out</a></td></tr>
+<tr class="memdesc:a2d7e776411a65e6cd67ba2e45cf93aa9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Complex output vector. <br /></td></tr>
 <tr class="separator:a2d7e776411a65e6cd67ba2e45cf93aa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -170,22 +172,6 @@ double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <p>Perform the FFT on the input data. </p>
 <p>The result gets stored in the object member <code>out</code> of type <code>fftw_complex</code>, which is a 2-d array. Elements are accessed via e.g., <code>out[0][1]</code>, <code>out[n-1][0]</code>. </p>
-
-</div>
-</div>
-<h2 class="groupheader">Member Data Documentation</h2>
-<a id="a2d7e776411a65e6cd67ba2e45cf93aa9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2d7e776411a65e6cd67ba2e45cf93aa9">&#9670;&nbsp;</a></span>out</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">fftw_complex* VectorFFT::out</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Complex output vector. </p>
 
 </div>
 </div>

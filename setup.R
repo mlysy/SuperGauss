@@ -93,6 +93,7 @@ source("SuperGauss-test-functions.R")
 
 setwd("D:/GitHub/SuperGauss")
 pkg.path <- getwd()
+pkg.path
 
 # regenerates Rcpp interface (i.e., RcppExports)
 Rcpp::compileAttributes(pkgdir = pkg.path)
@@ -102,10 +103,11 @@ devtools::install(pkg = pkg.path, args = "--clean") # installs the package
 # devtools::build(pkg = pkg.path) # builds a tar.gz file
 
 # restart to test
-testthat::test_package("SuperGauss")
+testthat::test_package("SuperGauss", reporter = "progress")
 
 setwd("D:/GitHub/SuperGauss")
 
 rdoxygen::doxy()
 rdoxygen::doxy_vignette()
 devtools::install(build_vignettes = TRUE)
+devtools::build()

@@ -85,19 +85,18 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur2_k.html">GSchur2K</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generalized Schur Algorithm for N = 2^K.  <a href="class_g_schur2_k.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html">GSchurN</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a026b7878985289b72a090523ad014086"><td class="memItemLeft" align="right" valign="top">vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_g_schur_8h.html#a026b7878985289b72a090523ad014086">int2Bin</a> (int x, int base=1)</td></tr>
-<tr class="separator:a026b7878985289b72a090523ad014086"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81a20468d740406b7a09aeb8d759e31a"><td class="memItemLeft" align="right" valign="top">vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_g_schur_8h.html#a81a20468d740406b7a09aeb8d759e31a">int2Bin</a> (int x, int b=1)</td></tr>
+<tr class="separator:a81a20468d740406b7a09aeb8d759e31a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a026b7878985289b72a090523ad014086"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a026b7878985289b72a090523ad014086">&#9670;&nbsp;</a></span>int2Bin()</h2>
+<a id="a81a20468d740406b7a09aeb8d759e31a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81a20468d740406b7a09aeb8d759e31a">&#9670;&nbsp;</a></span>int2Bin()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -115,7 +114,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>base</em> = <code>1</code>&#160;</td>
+          <td class="paramname"><em>b</em> = <code>1</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -130,11 +129,11 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Convert integer to modulo-binary representation.</p>
-<p>Given an integer <code>x</code>, returns an integer vector \(s = {2^{k_0} \times base, 2^{k_1} \times base, ..., 2^{k_T} \times base, rem}\), where \(k_0 &gt; ... &gt; k_T \geq 0\), \(rem &lt; base\), and <code>sum(s) = x</code>.</p>
+<p>Given an integer <code>x</code>, returns an integer vector \(s = {2^{k_0} \times b, 2^{k_1} \times b, ..., 2^{k_T} \times b, r}\), where \(k_0 &gt; ... &gt; k_T \geq 0\), \(r &lt; b\), and <code>sum(s) = x</code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>Integer of which the modulo-binary represention is computed. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">base</td><td>Integer giving the binary modulus. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>Integer giving the binary modulus. </td></tr>
   </table>
   </dd>
 </dl>
