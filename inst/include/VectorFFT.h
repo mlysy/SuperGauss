@@ -11,9 +11,8 @@
 #include <Rcpp.h>
 #include <fftw3.h>
 #include <iostream>
-// #include <ctime> 
-using namespace Rcpp; // FIXME: Never put "using namespace" in header file
-using namespace std; // REMOVE!
+// using namespace Rcpp; // FIXME: Never put "using namespace" in header file
+// using namespace std; // REMOVE!
 
 /// Forward FFT from real to complex.
 class VectorFFT{
@@ -23,12 +22,13 @@ public:
   int n_size; ///< Size of input vector.
   double* in; ///< Real input vector.
   fftw_complex *out; ///< Complex output vector.
+  
   /// Constructor.
   VectorFFT(int);
-  /// Perform the FFT on the input data.
-  void fft();
   /// Destructor.
   ~VectorFFT();
+  /// Perform the FFT on the input data.
+  void fft();
 };
 
 /// @param[in] n Size of the input vector.
@@ -96,9 +96,9 @@ inline void VectorIFFT::Ifft(){
 ///
 /// Result is `y = alpha * beta`.
 ///
-/// @param[out] y Output vector.
-/// @param[in] alpha First input vector.
-/// @param[in] beta Second input vector.
+/// @param[out] y Output complex vector, 2-d array.
+/// @param[in] alpha First input complex vector, 2-d array.
+/// @param[in] beta Second input complex vector, 2-d array.
 /// @param[in] n Size of inputs (integer).
 inline void vecConv(fftw_complex* y, fftw_complex* alpha, fftw_complex* beta, int n){
 	for (int ii = 0; ii < n; ++ii){
@@ -112,9 +112,9 @@ inline void vecConv(fftw_complex* y, fftw_complex* alpha, fftw_complex* beta, in
 ///
 /// Result is `y -= alpha * beta`.
 ///
-/// @param[out] y Output vector.
-/// @param[in] alpha First input vector.
-/// @param[in] beta Second input vector.
+/// @param[out] y Output complex vector, 2-d array.
+/// @param[in] alpha First input complex vector, 2-d array.
+/// @param[in] beta Second input complex vector, 2-d array.
 /// @param[in] n Size of inputs (integer).
 inline void vecConv_Sub(fftw_complex* y, fftw_complex* alpha, fftw_complex* beta, int n){
 	for (int ii = 0; ii < n; ++ii){
@@ -128,9 +128,9 @@ inline void vecConv_Sub(fftw_complex* y, fftw_complex* alpha, fftw_complex* beta
 ///
 /// Result is `y += alpha * beta`.
 ///
-/// @param[out] y Output vector.
-/// @param[in] alpha First input vector.
-/// @param[in] beta Second input vector.
+/// @param[out] y Output complex vector, 2-d array.
+/// @param[in] alpha First input complex vector, 2-d array.
+/// @param[in] beta Second input complex vector, 2-d array.
 /// @param[in] n Size of inputs (integer).
 inline void vecConv_Add(fftw_complex* y, fftw_complex* alpha, fftw_complex* beta, int n){
 	for (int ii = 0; ii < n; ++ii){
@@ -139,5 +139,19 @@ inline void vecConv_Add(fftw_complex* y, fftw_complex* alpha, fftw_complex* beta
 	}
 	return;
 }
+
+/// Steps for polynomial convolution: For two polynomials `a(x) = a_0 + a_1 * x + ... a_p * x^p` and  `b(x) = b_0 + b_1 * x + ... b_q * x^q`
+///
+/// 1) generate two VectorFFT classes: a_FFT = new VectorFFT(p+q), b_FFT = new VectorFFT(p+q) and one VectorIFFT class: c_IFFT = new VectorIFFT(p+q)
+///
+/// 2) fill the VectorFFT->in: std::copy(a, a+p, a_FFT->in), std::copy(b, b+q, b_FFT->in)
+///
+/// 3) FFT: a_FFT->fft(), b_FFT->fft()
+///
+/// 4) multiplication between VectorFFT->out: vecConv(c_FFT->out, a_FFT->out, b_FFT->out, p+q)
+///
+/// 5) IFFT: c_IFFT->ifft()
+///
+/// Then results `c(x) = c_0 + c_1 * x + ... + c_p+q * x^p+q = a(x) * b(x)` is in c_IFFT->out.
 
 # endif
