@@ -1,3 +1,4 @@
+^\.vscode$
 ^inst/doxygen$
 ^vignettes/Makefile$
 ^config\.status$
