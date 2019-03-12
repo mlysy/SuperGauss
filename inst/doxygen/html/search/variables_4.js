@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['in',['in',['../class_vector_f_f_t.html#afaf759c9951b2879e9b5437b97e7ad56',1,'VectorFFT::in()'],['../class_vector_i_f_f_t.html#a02e5e14b2776509e5c41d93c1e371a0b',1,'VectorIFFT::in()']]]
+  ['has_5facf',['has_acf',['../class_toeplitz.html#aeb87c92d750910779e40ddd79873a25a',1,'Toeplitz']]],
+  ['has_5fmult',['has_mult',['../class_toeplitz.html#a725d50fdf5d71f3df2065828b4d8151c',1,'Toeplitz']]],
+  ['has_5fsolve',['has_solve',['../class_toeplitz.html#add437ae0ab19a14eb5bf092b3365946d',1,'Toeplitz']]]
 ];

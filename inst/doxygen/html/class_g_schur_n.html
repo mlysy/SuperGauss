@@ -70,6 +70,8 @@ $(function() {
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="class_g_schur_n-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">GSchurN Class Reference</div>  </div>
@@ -93,18 +95,53 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:afa9df5905caf5fd01b4430b524e32d54"><td class="memItemLeft" align="right" valign="top"><a id="afa9df5905caf5fd01b4430b524e32d54"></a>
-double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#afa9df5905caf5fd01b4430b524e32d54">Phi</a></td></tr>
-<tr class="memdesc:afa9df5905caf5fd01b4430b524e32d54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Real output vector of the first column of inverse <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix. <br /></td></tr>
+<tr class="memitem:afa9df5905caf5fd01b4430b524e32d54"><td class="memItemLeft" align="right" valign="top">double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#afa9df5905caf5fd01b4430b524e32d54">Phi</a></td></tr>
 <tr class="separator:afa9df5905caf5fd01b4430b524e32d54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afddb728093982d64e2b4aff5550ef382"><td class="memItemLeft" align="right" valign="top"><a id="afddb728093982d64e2b4aff5550ef382"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#afddb728093982d64e2b4aff5550ef382">ldV</a></td></tr>
-<tr class="memdesc:afddb728093982d64e2b4aff5550ef382"><td class="mdescLeft">&#160;</td><td class="mdescRight">Real number of the log-determinant of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix. <br /></td></tr>
+<tr class="memdesc:afddb728093982d64e2b4aff5550ef382"><td class="mdescLeft">&#160;</td><td class="mdescRight">Real number. Log-determinant of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix. <br /></td></tr>
 <tr class="separator:afddb728093982d64e2b4aff5550ef382"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a192ecc09c0e94e0d39110000debdb300"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#a192ecc09c0e94e0d39110000debdb300">alpha2Beta</a> (<a class="el" href="class_g_schur2_k.html">GSchur2K</a> *, int)</td></tr>
+<tr class="separator:a192ecc09c0e94e0d39110000debdb300"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a7433159fc0feb8f41b5df61753052c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#a9a7433159fc0feb8f41b5df61753052c">eta2Xi</a> (<a class="el" href="class_g_schur2_k.html">GSchur2K</a> *, int)</td></tr>
+<tr class="separator:a9a7433159fc0feb8f41b5df61753052c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a439bb5b45ee144979d9c67e863b2b3f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#a439bb5b45ee144979d9c67e863b2b3f7">ProgStep</a> (double *, double *, int)</td></tr>
+<tr class="memdesc:a439bb5b45ee144979d9c67e863b2b3f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Progressive Schur Algorithm for arbitrary size.  <a href="#a439bb5b45ee144979d9c67e863b2b3f7">More...</a><br /></td></tr>
+<tr class="separator:a439bb5b45ee144979d9c67e863b2b3f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9898e529b7fdbcde7bca7356c84a44d9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#a9898e529b7fdbcde7bca7356c84a44d9">GenStep</a> (double *, double *, int, int)</td></tr>
+<tr class="memdesc:a9898e529b7fdbcde7bca7356c84a44d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merge the binary pieces \(T_{a,b}\) to get \(T_{0,N}\).  <a href="#a9898e529b7fdbcde7bca7356c84a44d9">More...</a><br /></td></tr>
+<tr class="separator:a9898e529b7fdbcde7bca7356c84a44d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1496d10cfe09d7a477dba0489bff807e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#a1496d10cfe09d7a477dba0489bff807e">GenMerge</a> ()</td></tr>
+<tr class="separator:a1496d10cfe09d7a477dba0489bff807e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:ade7c4189ef9d51e356db8bc45c9d069f"><td class="memItemLeft" align="right" valign="top"><a id="ade7c4189ef9d51e356db8bc45c9d069f"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#ade7c4189ef9d51e356db8bc45c9d069f">N</a></td></tr>
+<tr class="memdesc:ade7c4189ef9d51e356db8bc45c9d069f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of input vector. <br /></td></tr>
+<tr class="separator:ade7c4189ef9d51e356db8bc45c9d069f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45844fcaefecf57dcc1cd4c763fb28ea"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#a45844fcaefecf57dcc1cd4c763fb28ea">b</a></td></tr>
+<tr class="separator:a45844fcaefecf57dcc1cd4c763fb28ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f0774035f7b4476bbbf02b7d063f03e"><td class="memItemLeft" align="right" valign="top"><a id="a3f0774035f7b4476bbbf02b7d063f03e"></a>
+double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#a3f0774035f7b4476bbbf02b7d063f03e">alpha</a></td></tr>
+<tr class="memdesc:a3f0774035f7b4476bbbf02b7d063f03e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Input polynomial in form of length-<code>N</code> vector. <br /></td></tr>
+<tr class="separator:a3f0774035f7b4476bbbf02b7d063f03e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a495f9bbe8fc486e30e65f0c983ad7192"><td class="memItemLeft" align="right" valign="top"><a id="a495f9bbe8fc486e30e65f0c983ad7192"></a>
+double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#a495f9bbe8fc486e30e65f0c983ad7192">beta</a></td></tr>
+<tr class="memdesc:a495f9bbe8fc486e30e65f0c983ad7192"><td class="mdescLeft">&#160;</td><td class="mdescRight">Input polynomial in form of length-<code>N</code> vector. <br /></td></tr>
+<tr class="separator:a495f9bbe8fc486e30e65f0c983ad7192"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28c0f579435584e9e24b77c7e21b9f05"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#a28c0f579435584e9e24b77c7e21b9f05">s</a></td></tr>
+<tr class="separator:a28c0f579435584e9e24b77c7e21b9f05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add44ce543e5e951388f4a769df1e8e57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_g_schur2_k.html">GSchur2K</a> **&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#add44ce543e5e951388f4a769df1e8e57">gs</a></td></tr>
+<tr class="separator:add44ce543e5e951388f4a769df1e8e57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64218fbeac94ea42b7b78188bc43c18c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_g_schur2_k.html">GSchur2K</a> **&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html#a64218fbeac94ea42b7b78188bc43c18c">gsM</a></td></tr>
+<tr class="separator:a64218fbeac94ea42b7b78188bc43c18c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Generalized Schur Algorithm for arbitrary size N.</p>
-<p>Size of input is not necessarily \(2^K \times b\).</p>
 <p>The implementation of Generalized Schur algorithm for any <code>N</code> contains following steps:</p>
 <p>1) Decompose integer <code>N</code> into the binary form w.r.t modulus <code>b</code> and obtain a vector <code>s</code> s.t. \(s = {2^{k_0} \times b, 2^{k_1} \times b, ..., 2^{k_T} \times b, r}\), where \(k_0 &gt; ... &gt; k_T \geq 0\), \(r &lt; b\), and <code>sum(s) = x</code>. This step is done with function <code>int2Bin</code>. As in GSchur Algorithm, whole size-N transformation \(T_{0,N}\) can be decomposed into binary pieces in following way</p>
 <p class="formulaDsp">
@@ -150,7 +187,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 <p>Constructor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">N_</td><td>Size of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix (Size of Generalized Schur Algorithm is <code>N_</code>-1). </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">N_</td><td>Size of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix (Size of Generalized Schur Algorithm is <code>N_-1</code>). </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">b_</td><td>Integer for binary modulus. </td></tr>
   </table>
   </dd>
@@ -159,6 +196,56 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a192ecc09c0e94e0d39110000debdb300"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a192ecc09c0e94e0d39110000debdb300">&#9670;&nbsp;</a></span>alpha2Beta()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GSchurN::alpha2Beta </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_g_schur2_k.html">GSchur2K</a> *&#160;</td>
+          <td class="paramname"><em>gsr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Progress function of Generalized Schur Algorithm that computes \( \{\alpha_{n,n} \beta_{n,n} \} \) from \( \alpha_{0,n}, \beta_{0,n}, \eta_{n,n}, \xi_{n,n} \), corresponds to Step (5) in Algorithm (1)</p>
+<p>For given length-N polynomials \(\alpha_{0,n}(x), \beta_{0,n}(x), \eta_{0,n}(x), \xi_{0,n}(x)\), compute length-N polynomials \( \alpha_{n,n}, \beta_{n,n} \) defined as </p><p class="formulaDsp">
+\[ \alpha_n = (\alpha_0 \eta_n - \beta_0 \xi_n) / x^n, \beta_n = (\beta_0 \tilde\eta_n - \alpha_0 \tilde\xi_n) / x^n \]
+</p>
+<p> where \( \tilde\eta_n = x^n \eta_n(1/x) \)</p>
+<p>Trick for computation efficiency: by negating the odd parts of the conjugation of fft( \(\tilde\eta_n, 0, 0, ...\)), we can directly get fft( \(0, \tilde\eta_n, 0, ...\)).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">gsr</td><td><a class="el" href="class_g_schur2_k.html">GSchur2K</a> class with contains \(\alpha_{0,n}(x), \beta_{0,n}(x), \eta_{0,n}(x), \xi_{0,n}(x)\) respectively in <code>gsr-&gt;alpha_0_FFT-&gt;in</code>, <code>gsr-&gt;beta_0_FFT-&gt;in</code>, <code>gsr-&gt;eta_0_FFT-&gt;in</code>, <code>gsr-&gt;xi_0_FFT-&gt;in</code>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Size of inputs (integer) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Output complex vectors for \(\alpha_{n,n} and \beta_{n,n} \) stored in <code>gsr-&gt;betam_IFF-&gt;out</code> and <code>gsr-&gt;betam_IFF-&gt;out</code> </dd></dl>
+
+</div>
+</div>
 <a id="ac2ccc32309c339d30d2e7494de1781ae"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac2ccc32309c339d30d2e7494de1781ae">&#9670;&nbsp;</a></span>Compute()</h2>
 
@@ -184,7 +271,6 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 </div><div class="memdoc">
 
 <p>Perform the Generalized Schur algorithm on the input data. </p>
-<p>Output function</p>
 <p>This function generates the input polynomials \(\alpha_0, \beta_0\) of Generalized Schur algorithm from the first column of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix, run the Merged GSchur algorithm and finally convert the output of GSchur algorithm into the log-determinant and first column of inverse <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -192,6 +278,303 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a9a7433159fc0feb8f41b5df61753052c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a7433159fc0feb8f41b5df61753052c">&#9670;&nbsp;</a></span>eta2Xi()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GSchurN::eta2Xi </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_g_schur2_k.html">GSchur2K</a> *&#160;</td>
+          <td class="paramname"><em>gsr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Progress function of Generalized Schur Algorithm that computes \( \{\eta_{0,2n} \xi_{0,2n} \} \) from \( \eta_{0,n}, \xi_{0,n}, \eta_{n,n}, \xi_{n,n} \), corresponds to Step (8) in Algorithm (1)</p>
+<p>For given length-N polynomials \(\eta_{n,n}(x), \xi_{n,n}(x), \eta_n(x), \xi_n(x)\), compute 2 length-(N) polynomials \( \eta_{2n}, \xi_{2n} \) defined as </p><p class="formulaDsp">
+\[ \xi_{2n} = \tilde\eta_n \xi_{n,n} + \xi_n \eta_{n,n}, \eta_{2n} = \tilde\xi_n \xi_{n,n} + \eta_n \eta_{n,n} \]
+</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">gsr</td><td><a class="el" href="class_g_schur2_k.html">GSchur2K</a> class with contains \(\eta_{n,n}(x), \xi_{n,n}(x), \eta_n(x), \xi_n(x)\) respectively in <code>gsr-&gt;xi_0_FFT-&gt;in</code>, <code>gsr-&gt;eta_0_FFT-&gt;in</code>, <code>gsr-&gt;xi_n_FFT-&gt;in</code>, <code>gsr-&gt;eta_n_FFT-&gt;in</code>, <code>gsr-&gt;t_eta_0</code>, <code>gsr-&gt;t_xi_0</code>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Size of inputs (integer). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Output complex vectors for \( \eta_{2n}, \xi_{2n} \) stored in <code>gsr-&gt;xi_0_IFFT-&gt;out</code> and <code>gsr-&gt;eta_0_IFFT-&gt;out</code>. </dd></dl>
+
+</div>
+</div>
+<a id="a1496d10cfe09d7a477dba0489bff807e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1496d10cfe09d7a477dba0489bff807e">&#9670;&nbsp;</a></span>GenMerge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GSchurN::GenMerge </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>polynomials \( \{ \eta_{0,N}, \xi_{0,N}, \gamma_{0,N}\} \) stored in <code>gsM[0]-&gt;eta_0_IFFT-&gt;out</code>, <code>gsM[0]-&gt;xi_0_IFFT-&gt;out</code>, <code>gsM[0]-&gt;gamma</code>. </dd></dl>
+
+</div>
+</div>
+<a id="a9898e529b7fdbcde7bca7356c84a44d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9898e529b7fdbcde7bca7356c84a44d9">&#9670;&nbsp;</a></span>GenStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GSchurN::GenStep </td>
+          <td>(</td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>alpha0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>beta0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>si</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Merge the binary pieces \(T_{a,b}\) to get \(T_{0,N}\). </p>
+<p>Compute the binary pieces \(T_{a,b}\) from <code>s</code>. Size of such pieces is power of 2 times modulus <code>b</code>.</p>
+<p>This function implements the recursive doubling procedure in Generalized Schur Algorithm. It corresponds to the Step (4) - (9) in Algorithm 1. For an input size <code>si</code>, function use memory gs[0], ..., gs[layer] to compute polynomials \( \eta_{0,s[i]}, xi_{0,s[i]} and \gamma_{s[i]} \) from \( \alpha_{0,s[i]}, \beta_{0,s[i]}\). Size <code>si</code> is an element of vector <code>s</code>, which records the binary decomposition of <code>N</code>. As a result <code>si</code> is either \(\leq b\) (where layer = 0) or \(= 2^{layer} \times b\).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">alpha0</td><td>First input real vector. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">beta0</td><td>Second input real vector. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">si</td><td>Length of inputs (integer). </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">layer</td><td>Index of address for computation, i.e. computation happens in gs[0,1,..., layer] </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>polynomials \( \{ \eta_{0,s_i}, \xi_{0,s_i}, \gamma_{0,s_i}\} \) stored in <code>gs[layer]-&gt;eta_0_IFFT-&gt;out</code>, <code>gs[layer]-&gt;xi_0_IFFT-&gt;out</code>, <code>gs[layer]-&gt;gamma</code>. </dd></dl>
+
+</div>
+</div>
+<a id="a439bb5b45ee144979d9c67e863b2b3f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a439bb5b45ee144979d9c67e863b2b3f7">&#9670;&nbsp;</a></span>ProgStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GSchurN::ProgStep </td>
+          <td>(</td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>alpha0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>beta0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Progressive Schur Algorithm for arbitrary size. </p>
+<p>It is an \(O(n^2)\) algorithm. Numerical experiments shows that for \(N\leq 64\) PSchur Algorithm is faster than GSchur algorithm. Thus we choose binary modulus to be <code>64</code> in implementation, i.e. computation of pieces smaller than <code>64</code> is done with PSchur and the merging of such pieces are done with GSchur.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">alpha0</td><td>Input real vector. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">beta0</td><td>Input real vector. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Size of inputs (integer). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a45844fcaefecf57dcc1cd4c763fb28ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45844fcaefecf57dcc1cd4c763fb28ea">&#9670;&nbsp;</a></span>b</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int GSchurN::b</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Integer giving binary modulus. Binary pieces of size smaller than <code>b</code> are computed using Progressive Schur Algorithm. </p>
+
+</div>
+</div>
+<a id="add44ce543e5e951388f4a769df1e8e57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add44ce543e5e951388f4a769df1e8e57">&#9670;&nbsp;</a></span>gs</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_g_schur2_k.html">GSchur2K</a>** GSchurN::gs</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Vector of <code><a class="el" href="class_g_schur2_k.html">GSchur2K</a></code> for the binary pieces \( T_{0, s[1]} &lt; ,T_{s[1], s[2]},...\). Because of the doubling procedure, the computation of \( T_{, 2^k\times b}\) requires <code><a class="el" href="class_g_schur2_k.html">GSchur2K</a></code> of size \((b, 2\times b, ..., 2^k\times b)\). As a result the length of vector <code>gs</code> is determined by the largest element (also the first element) of vector <code>s</code>. </p>
+
+</div>
+</div>
+<a id="a64218fbeac94ea42b7b78188bc43c18c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64218fbeac94ea42b7b78188bc43c18c">&#9670;&nbsp;</a></span>gsM</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_g_schur2_k.html">GSchur2K</a>** GSchurN::gsM</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Vector of <a class="el" href="class_g_schur2_k.html">GSchur2K</a> for merging the binary pieces \( &lt; T_{0, s[1]} ,T_{s[1], s[2]},...\). The length of vector <code>gsM</code> is determined by the length of vector <code>s</code>. </p>
+
+</div>
+</div>
+<a id="afa9df5905caf5fd01b4430b524e32d54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa9df5905caf5fd01b4430b524e32d54">&#9670;&nbsp;</a></span>Phi</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double* GSchurN::Phi</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Real output vector. The first column of inverse <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix. </p>
+
+</div>
+</div>
+<a id="a28c0f579435584e9e24b77c7e21b9f05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28c0f579435584e9e24b77c7e21b9f05">&#9670;&nbsp;</a></span>s</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; GSchurN::s</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Vector that records the binary decomposition of <code>N</code>. \(s = {2^{k_0} \times b, 2^{k_1} \times b, ..., &lt; 2^{k_T} \times b, r}\). </p>
 
 </div>
 </div>

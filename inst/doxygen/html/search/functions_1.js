@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['fft',['fft',['../class_vector_f_f_t.html#ad606744810e4e03f8f34be3eb78ad318',1,'VectorFFT']]]
+  ['compute',['Compute',['../class_g_schur_n.html#ac2ccc32309c339d30d2e7494de1781ae',1,'GSchurN']]]
 ];

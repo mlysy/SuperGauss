@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['toeplitz',['Toeplitz',['../class_toeplitz.html#a48da88cdb757229835495bdc7dea4877',1,'Toeplitz']]],
-  ['tracederiv',['traceDeriv',['../class_toeplitz.html#adb7e676e4ba7a1e36e7e9520c8d5e5df',1,'Toeplitz']]],
-  ['traceprod',['traceProd',['../class_toeplitz.html#a09c300d737c8f6f558397408d35b0743',1,'Toeplitz']]]
+  ['mult_5fsetup',['mult_setup',['../class_toeplitz.html#a628c985e8aef539ef18d262bb4e419ac',1,'Toeplitz']]],
+  ['multvec',['multVec',['../class_toeplitz.html#abcd6b86a53034fab864fbc1ad5f1a490',1,'Toeplitz']]]
 ];

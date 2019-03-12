@@ -69,6 +69,8 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="class_toeplitz-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">Toeplitz Class Reference</div>  </div>
@@ -87,15 +89,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aa09b729a779b107d0604b1acc295ca5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor. <br /></td></tr>
 <tr class="separator:aa09b729a779b107d0604b1acc295ca5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57ecbca0b022ccef82f64ad4c3e1cd6d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a57ecbca0b022ccef82f64ad4c3e1cd6d">setAcf</a> (double *acfIn)</td></tr>
-<tr class="memdesc:a57ecbca0b022ccef82f64ad4c3e1cd6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <a href="#a57ecbca0b022ccef82f64ad4c3e1cd6d">More...</a><br /></td></tr>
+<tr class="memdesc:a57ecbca0b022ccef82f64ad4c3e1cd6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setup ACF, the first column of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix.  <a href="#a57ecbca0b022ccef82f64ad4c3e1cd6d">More...</a><br /></td></tr>
 <tr class="separator:a57ecbca0b022ccef82f64ad4c3e1cd6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99cdbc2647f36c84e056b944f0d69013"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a99cdbc2647f36c84e056b944f0d69013">getAcf</a> (double *acfOut)</td></tr>
+<tr class="memdesc:a99cdbc2647f36c84e056b944f0d69013"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return ACF.  <a href="#a99cdbc2647f36c84e056b944f0d69013">More...</a><br /></td></tr>
 <tr class="separator:a99cdbc2647f36c84e056b944f0d69013"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aca2502d4c84bfb4181423125bd901e86"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#aca2502d4c84bfb4181423125bd901e86">size</a> ()</td></tr>
-<tr class="memdesc:aca2502d4c84bfb4181423125bd901e86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the size of acf.  <a href="#aca2502d4c84bfb4181423125bd901e86">More...</a><br /></td></tr>
+<tr class="memitem:aca2502d4c84bfb4181423125bd901e86"><td class="memItemLeft" align="right" valign="top"><a id="aca2502d4c84bfb4181423125bd901e86"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#aca2502d4c84bfb4181423125bd901e86">size</a> ()</td></tr>
+<tr class="memdesc:aca2502d4c84bfb4181423125bd901e86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the size of ACF. <br /></td></tr>
 <tr class="separator:aca2502d4c84bfb4181423125bd901e86"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6c46397725172c0949acb6cfb5006564"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a6c46397725172c0949acb6cfb5006564">hasAcf</a> ()</td></tr>
-<tr class="memdesc:a6c46397725172c0949acb6cfb5006564"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether the acf is input or not.  <a href="#a6c46397725172c0949acb6cfb5006564">More...</a><br /></td></tr>
+<tr class="memitem:a6c46397725172c0949acb6cfb5006564"><td class="memItemLeft" align="right" valign="top"><a id="a6c46397725172c0949acb6cfb5006564"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a6c46397725172c0949acb6cfb5006564">hasAcf</a> ()</td></tr>
+<tr class="memdesc:a6c46397725172c0949acb6cfb5006564"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exam whether ACF exists. <br /></td></tr>
 <tr class="separator:a6c46397725172c0949acb6cfb5006564"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abcd6b86a53034fab864fbc1ad5f1a490"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#abcd6b86a53034fab864fbc1ad5f1a490">multVec</a> (double *yOut, double *xIn)</td></tr>
 <tr class="memdesc:abcd6b86a53034fab864fbc1ad5f1a490"><td class="mdescLeft">&#160;</td><td class="mdescRight">Multiplication function.  <a href="#abcd6b86a53034fab864fbc1ad5f1a490">More...</a><br /></td></tr>
@@ -107,33 +112,102 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a886204228cb84d084faa6ce7b6a52ba8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determinant function.  <a href="#a886204228cb84d084faa6ce7b6a52ba8">More...</a><br /></td></tr>
 <tr class="separator:a886204228cb84d084faa6ce7b6a52ba8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09c300d737c8f6f558397408d35b0743"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a09c300d737c8f6f558397408d35b0743">traceProd</a> (double *)</td></tr>
-<tr class="memdesc:a09c300d737c8f6f558397408d35b0743"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trace function, returns \( \text{tr}(T^{-1} V)\).  <a href="#a09c300d737c8f6f558397408d35b0743">More...</a><br /></td></tr>
+<tr class="memdesc:a09c300d737c8f6f558397408d35b0743"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trace function for derivative of log-determinant.  <a href="#a09c300d737c8f6f558397408d35b0743">More...</a><br /></td></tr>
 <tr class="separator:a09c300d737c8f6f558397408d35b0743"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb7e676e4ba7a1e36e7e9520c8d5e5df"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#adb7e676e4ba7a1e36e7e9520c8d5e5df">traceDeriv</a> (double *, double *)</td></tr>
-<tr class="memdesc:adb7e676e4ba7a1e36e7e9520c8d5e5df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trace function, returns \( \text{tr}(T^{-1} V_1 T^{-1} V_2)\).  <a href="#adb7e676e4ba7a1e36e7e9520c8d5e5df">More...</a><br /></td></tr>
+<tr class="memdesc:adb7e676e4ba7a1e36e7e9520c8d5e5df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trace function for second derivative of log-determinant.  <a href="#adb7e676e4ba7a1e36e7e9520c8d5e5df">More...</a><br /></td></tr>
 <tr class="separator:adb7e676e4ba7a1e36e7e9520c8d5e5df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aabb2e02591374aea09d90c0ef820ec33"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#aabb2e02591374aea09d90c0ef820ec33">getPhi</a> (double *phiOut)</td></tr>
-<tr class="memdesc:aabb2e02591374aea09d90c0ef820ec33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract the return value of GSchur algorithm \(\rho\).  <a href="#aabb2e02591374aea09d90c0ef820ec33">More...</a><br /></td></tr>
+<tr class="memdesc:aabb2e02591374aea09d90c0ef820ec33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Obtain the result of GSchur algorithm.  <a href="#aabb2e02591374aea09d90c0ef820ec33">More...</a><br /></td></tr>
 <tr class="separator:aabb2e02591374aea09d90c0ef820ec33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:af5522e831242e39b7eb5b3d25e4e65ea"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#af5522e831242e39b7eb5b3d25e4e65ea">all_zeros</a> (double *, int)</td></tr>
+<tr class="memdesc:af5522e831242e39b7eb5b3d25e4e65ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether vector is all-zero.  <a href="#af5522e831242e39b7eb5b3d25e4e65ea">More...</a><br /></td></tr>
+<tr class="separator:af5522e831242e39b7eb5b3d25e4e65ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00dcee80e892f159e7cd5cfc54c50c4b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a00dcee80e892f159e7cd5cfc54c50c4b">trace_LU</a> (double *, double *, int)</td></tr>
+<tr class="memdesc:a00dcee80e892f159e7cd5cfc54c50c4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the trace of product of lower and upper triangular matrices.  <a href="#a00dcee80e892f159e7cd5cfc54c50c4b">More...</a><br /></td></tr>
+<tr class="separator:a00dcee80e892f159e7cd5cfc54c50c4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a628c985e8aef539ef18d262bb4e419ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a628c985e8aef539ef18d262bb4e419ac">mult_setup</a> ()</td></tr>
+<tr class="memdesc:a628c985e8aef539ef18d262bb4e419ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare for multiplication.  <a href="#a628c985e8aef539ef18d262bb4e419ac">More...</a><br /></td></tr>
+<tr class="separator:a628c985e8aef539ef18d262bb4e419ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a643250c46283eef01756c2c6ca8c286b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a643250c46283eef01756c2c6ca8c286b">solve_setup</a> ()</td></tr>
+<tr class="memdesc:a643250c46283eef01756c2c6ca8c286b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare for inversion.  <a href="#a643250c46283eef01756c2c6ca8c286b">More...</a><br /></td></tr>
+<tr class="separator:a643250c46283eef01756c2c6ca8c286b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a1be6c2616c6d5afb823235f9d709b213"><td class="memItemLeft" align="right" valign="top"><a id="a1be6c2616c6d5afb823235f9d709b213"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a1be6c2616c6d5afb823235f9d709b213">n</a></td></tr>
+<tr class="memdesc:a1be6c2616c6d5afb823235f9d709b213"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integer indicating the size of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix. <br /></td></tr>
+<tr class="separator:a1be6c2616c6d5afb823235f9d709b213"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1c1b89f902e1f4bcf7f22222c0f06c0"><td class="memItemLeft" align="right" valign="top"><a id="af1c1b89f902e1f4bcf7f22222c0f06c0"></a>
+<a class="el" href="class_vector_f_f_t.html">VectorFFT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#af1c1b89f902e1f4bcf7f22222c0f06c0">L1fft</a></td></tr>
+<tr class="memdesc:af1c1b89f902e1f4bcf7f22222c0f06c0"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_vector_f_f_t.html" title="Forward FFT from real to complex.">VectorFFT</a> space for matrix \(L_1\) for inversion. <br /></td></tr>
+<tr class="separator:af1c1b89f902e1f4bcf7f22222c0f06c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cf6af209f7a025668e82c3db251e36e"><td class="memItemLeft" align="right" valign="top"><a id="a4cf6af209f7a025668e82c3db251e36e"></a>
+<a class="el" href="class_vector_f_f_t.html">VectorFFT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a4cf6af209f7a025668e82c3db251e36e">L11fft</a></td></tr>
+<tr class="memdesc:a4cf6af209f7a025668e82c3db251e36e"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_vector_f_f_t.html" title="Forward FFT from real to complex.">VectorFFT</a> space for matrix \(L_1&#39;\) for inversion. <br /></td></tr>
+<tr class="separator:a4cf6af209f7a025668e82c3db251e36e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35cc35cc4340c46423919cb13c1f303f"><td class="memItemLeft" align="right" valign="top"><a id="a35cc35cc4340c46423919cb13c1f303f"></a>
+<a class="el" href="class_vector_f_f_t.html">VectorFFT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a35cc35cc4340c46423919cb13c1f303f">L2fft</a></td></tr>
+<tr class="memdesc:a35cc35cc4340c46423919cb13c1f303f"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_vector_f_f_t.html" title="Forward FFT from real to complex.">VectorFFT</a> space for matrix \(L_2\) for inversion. <br /></td></tr>
+<tr class="separator:a35cc35cc4340c46423919cb13c1f303f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0456f1e2cee16c46fdf93b85541ea527"><td class="memItemLeft" align="right" valign="top"><a id="a0456f1e2cee16c46fdf93b85541ea527"></a>
+<a class="el" href="class_vector_f_f_t.html">VectorFFT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a0456f1e2cee16c46fdf93b85541ea527">L22fft</a></td></tr>
+<tr class="memdesc:a0456f1e2cee16c46fdf93b85541ea527"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_vector_f_f_t.html" title="Forward FFT from real to complex.">VectorFFT</a> space for matrix \(L_2&#39;\) for inversion. <br /></td></tr>
+<tr class="separator:a0456f1e2cee16c46fdf93b85541ea527"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a30c6c3e44d2926b66147b252d543b9"><td class="memItemLeft" align="right" valign="top"><a id="a1a30c6c3e44d2926b66147b252d543b9"></a>
+<a class="el" href="class_vector_f_f_t.html">VectorFFT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a1a30c6c3e44d2926b66147b252d543b9">xfft</a></td></tr>
+<tr class="memdesc:a1a30c6c3e44d2926b66147b252d543b9"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_vector_f_f_t.html" title="Forward FFT from real to complex.">VectorFFT</a> space for vector x. <br /></td></tr>
+<tr class="separator:a1a30c6c3e44d2926b66147b252d543b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac0a5d15fe0bb6aea4e2403519d9c34d"><td class="memItemLeft" align="right" valign="top"><a id="aac0a5d15fe0bb6aea4e2403519d9c34d"></a>
+<a class="el" href="class_vector_f_f_t.html">VectorFFT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#aac0a5d15fe0bb6aea4e2403519d9c34d">Lxfft</a></td></tr>
+<tr class="memdesc:aac0a5d15fe0bb6aea4e2403519d9c34d"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_vector_f_f_t.html" title="Forward FFT from real to complex.">VectorFFT</a> space for vector \(L_1&#39; x\). <br /></td></tr>
+<tr class="separator:aac0a5d15fe0bb6aea4e2403519d9c34d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae36efae0d9efb6d192bfc492024c395b"><td class="memItemLeft" align="right" valign="top"><a id="ae36efae0d9efb6d192bfc492024c395b"></a>
+<a class="el" href="class_vector_f_f_t.html">VectorFFT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#ae36efae0d9efb6d192bfc492024c395b">U1fft</a></td></tr>
+<tr class="memdesc:ae36efae0d9efb6d192bfc492024c395b"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_vector_f_f_t.html" title="Forward FFT from real to complex.">VectorFFT</a> space for matrix \(U_1\). <br /></td></tr>
+<tr class="separator:ae36efae0d9efb6d192bfc492024c395b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a441058e5fe54ecfa0f9d118977877067"><td class="memItemLeft" align="right" valign="top"><a id="a441058e5fe54ecfa0f9d118977877067"></a>
+<a class="el" href="class_vector_f_f_t.html">VectorFFT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a441058e5fe54ecfa0f9d118977877067">U2fft</a></td></tr>
+<tr class="memdesc:a441058e5fe54ecfa0f9d118977877067"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_vector_f_f_t.html" title="Forward FFT from real to complex.">VectorFFT</a> space for matrix \(U_2\). <br /></td></tr>
+<tr class="separator:a441058e5fe54ecfa0f9d118977877067"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0090caa876bb11858ec8fe1ce2b4b966"><td class="memItemLeft" align="right" valign="top"><a id="a0090caa876bb11858ec8fe1ce2b4b966"></a>
+<a class="el" href="class_vector_f_f_t.html">VectorFFT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a0090caa876bb11858ec8fe1ce2b4b966">Toepfft</a></td></tr>
+<tr class="memdesc:a0090caa876bb11858ec8fe1ce2b4b966"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_vector_f_f_t.html" title="Forward FFT from real to complex.">VectorFFT</a> space for matrix \(T\). <br /></td></tr>
+<tr class="separator:a0090caa876bb11858ec8fe1ce2b4b966"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a905ae95624134c0d03ba5ba7bbbc9480"><td class="memItemLeft" align="right" valign="top"><a id="a905ae95624134c0d03ba5ba7bbbc9480"></a>
+<a class="el" href="class_vector_i_f_f_t.html">VectorIFFT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a905ae95624134c0d03ba5ba7bbbc9480">Invfft</a></td></tr>
+<tr class="memdesc:a905ae95624134c0d03ba5ba7bbbc9480"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_vector_i_f_f_t.html" title="Backward FFT from complex to real.">VectorIFFT</a> space for multiple usage. <br /></td></tr>
+<tr class="separator:a905ae95624134c0d03ba5ba7bbbc9480"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e2b504ad9f10138fe661a3c342f5cc9"><td class="memItemLeft" align="right" valign="top"><a id="a5e2b504ad9f10138fe661a3c342f5cc9"></a>
+double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a5e2b504ad9f10138fe661a3c342f5cc9">phi2</a></td></tr>
+<tr class="memdesc:a5e2b504ad9f10138fe661a3c342f5cc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector for second derivative of log-determinant. <br /></td></tr>
+<tr class="separator:a5e2b504ad9f10138fe661a3c342f5cc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4702c68bf89a1ad2d55f8d6a53361ddf"><td class="memItemLeft" align="right" valign="top"><a id="a4702c68bf89a1ad2d55f8d6a53361ddf"></a>
+double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a4702c68bf89a1ad2d55f8d6a53361ddf">temVec</a></td></tr>
+<tr class="memdesc:a4702c68bf89a1ad2d55f8d6a53361ddf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector for second derivative of log-determinant. <br /></td></tr>
+<tr class="separator:a4702c68bf89a1ad2d55f8d6a53361ddf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb87c92d750910779e40ddd79873a25a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#aeb87c92d750910779e40ddd79873a25a">has_acf</a></td></tr>
+<tr class="separator:aeb87c92d750910779e40ddd79873a25a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a725d50fdf5d71f3df2065828b4d8151c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a725d50fdf5d71f3df2065828b4d8151c">has_mult</a></td></tr>
+<tr class="separator:a725d50fdf5d71f3df2065828b4d8151c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add437ae0ab19a14eb5bf092b3365946d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#add437ae0ab19a14eb5bf092b3365946d">has_solve</a></td></tr>
+<tr class="separator:add437ae0ab19a14eb5bf092b3365946d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3d3c24ea509e2000e9bd9855038a79a"><td class="memItemLeft" align="right" valign="top"><a id="ae3d3c24ea509e2000e9bd9855038a79a"></a>
+<a class="el" href="class_g_schur_n.html">GSchurN</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#ae3d3c24ea509e2000e9bd9855038a79a">Gs</a></td></tr>
+<tr class="memdesc:ae3d3c24ea509e2000e9bd9855038a79a"><td class="mdescLeft">&#160;</td><td class="mdescRight">GSchur Class. <br /></td></tr>
+<tr class="separator:ae3d3c24ea509e2000e9bd9855038a79a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bcf5f6c69fc8f6fa488adc5f3e78bd7"><td class="memItemLeft" align="right" valign="top"><a id="a7bcf5f6c69fc8f6fa488adc5f3e78bd7"></a>
+double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_toeplitz.html#a7bcf5f6c69fc8f6fa488adc5f3e78bd7">acf</a></td></tr>
+<tr class="memdesc:a7bcf5f6c69fc8f6fa488adc5f3e78bd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector of input, the first column of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix. <br /></td></tr>
+<tr class="separator:a7bcf5f6c69fc8f6fa488adc5f3e78bd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Class for Toeplitz-related computation</p>
-<p>Generate the memory for computation including multiplying, solving, determinant, first and second order derivative of the log-determinant:</p><ul>
-<li>Multiplication between <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix \(T \times x\) and vectors is obtained with circulant embeding.</li>
-<li>Multiplication between inverse <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix and vector \(T^{-1} \times x\) involves the Gohberg-Semencul formula which decomposes inverse <a class="el" href="class_toeplitz.html">Toeplitz</a> into sum of products of lower and upper triangular <a class="el" href="class_toeplitz.html">Toeplitz</a> matrices: \( T^{-1} = \frac{1}{\rho_0} [L_1&#39;L_1 - L_2&#39; L_2] \), where \(L_1, L_2\) are lower-trangular <a class="el" href="class_toeplitz.html">Toeplitz</a> matrices and \(\rho_0\) is the first element of GSchur Algorithm output: length-N vector \(\rho\).</li>
-<li>Determinant of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix is the direct result of GSchur algorithm.</li>
-<li>First order derivative of log-determinant: <p class="formulaDsp">
-\[ \frac{\partial \log\mid T^{-1}\mid}{\partial \theta} = \text{tr} (T^{-1} V), \text{ where } V = \frac{\partial T}{\partial \theta} \]
-</p>
- V is also <a class="el" href="class_toeplitz.html">Toeplitz</a> since it is the derivative of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix, and has displacement rank 2 : \(V = \frac{1}{t_0} [U_1 U_1&#39; - U_2 U_2&#39;]\), where \(U_1\) is a upper triangular <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix. Thus <p class="formulaDsp">
-\begin{eqnarray*} \text{tr} (T^{-1} V) &amp;=&amp; \frac{1}{\rho_0 t_0} \text{tr} \{ [L_1&#39;L_1 - L_2&#39; L_2][U_1 U_1&#39; - U_2 U_2&#39;] \} \\ &amp;=&amp; \frac{1}{\rho_0 t_0} (\text{tr} \{ U_1&#39;L_1 L_1&#39; U_1 \} + ...) \\ &amp;=&amp; \frac{1}{\rho_0 t_0} (\text{tr} \{ A_1 A_1&#39; \} + ...) \end{eqnarray*}
-</p>
- where \(A = U_1&#39;L_1\) is the product of two lower triangular <a class="el" href="class_toeplitz.html">Toeplitz</a> matrices and is also a lower triangular <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix, making computing \(\text{tr} \{ A_1 A_1&#39; \}\) efficient.</li>
-<li>Second order derivative of log-determinant: <p class="formulaDsp">
-\[ \frac{\partial^2 \log\mid T^{-1}\mid}{\partial \theta_1 \partial \theta_2} = \text{tr} (T^{-1} V_0) - \text{tr} (T^{-1} V_1 T^{-1} V_2), \text{ where } V_0 = \frac{\partial^2 T}{\partial \theta_1 \partial \theta_2}, V_1 = \frac{\partial T}{\partial \theta_1}, V_2 = \frac{\partial T}{\partial \theta_2} \]
-</p>
- \(V_0, V_1, V_2\) are <a class="el" href="class_toeplitz.html">Toeplitz</a> matrices. Computation of \(\text{tr} (T^{-1} V_1 T^{-1} V_2)\) is non-trival and details are in paper. </li>
-</ul>
+<div class="textblock"><p>Class for Toeplitz-related computation.</p>
+<p>Generate the memory for <a class="el" href="class_toeplitz.html">Toeplitz</a> computation including multiplication, inversion, determinant, first and second order derivative of the log-determinant. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a48da88cdb757229835495bdc7dea4877"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a48da88cdb757229835495bdc7dea4877">&#9670;&nbsp;</a></span>Toeplitz()</h2>
@@ -160,10 +234,9 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Constructor. </p>
-<p>Constructor.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">n_</td><td>Size of GSchur algorithm, equals the dimension of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix minus 1. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">n_</td><td>Size of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix. </td></tr>
   </table>
   </dd>
 </dl>
@@ -171,6 +244,52 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="af5522e831242e39b7eb5b3d25e4e65ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5522e831242e39b7eb5b3d25e4e65ea">&#9670;&nbsp;</a></span>all_zeros()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Toeplitz::all_zeros </td>
+          <td>(</td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>acf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check whether vector is all-zero. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">acf</td><td>Real input vector. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Integer for length of input vector. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Boolen indicating whether vector is all zero or not. </dd></dl>
+
+</div>
+</div>
 <a id="a99cdbc2647f36c84e056b944f0d69013"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a99cdbc2647f36c84e056b944f0d69013">&#9670;&nbsp;</a></span>getAcf()</h2>
 
@@ -194,7 +313,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get the ACF that gets input.</p>
+
+<p>Return ACF. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">acfOut</td><td>Real vector of ACF. </td></tr>
@@ -228,43 +348,14 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Extract the return value of GSchur algorithm \(\rho\). </p>
-<p>Get the return of GSchur algorithm</p>
-<p>GSchur algorithm returns the first column of inverse <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix \(\rho\).</p>
+<p>Obtain the result of GSchur algorithm. </p>
+<p>GSchur algorithm returns the first column of inverse <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix: \(\rho\).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">phiOut</td><td>Real vector </td></tr>
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<a id="a6c46397725172c0949acb6cfb5006564"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6c46397725172c0949acb6cfb5006564">&#9670;&nbsp;</a></span>hasAcf()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool Toeplitz::hasAcf </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Check whether the acf is input or not. </p>
-<p>Exam whether ACF is modified or not. </p>
 
 </div>
 </div>
@@ -293,6 +384,34 @@ Public Member Functions</h2></td></tr>
 
 <p>Determinant function. </p>
 <p>Log-determinant of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix. </p>
+
+</div>
+</div>
+<a id="a628c985e8aef539ef18d262bb4e419ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a628c985e8aef539ef18d262bb4e419ac">&#9670;&nbsp;</a></span>mult_setup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Toeplitz::mult_setup </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prepare for multiplication. </p>
+<p>Preparation of computing \(T \times x\), including pasting, generating FFT(acf) and change the flag <code>has_mult</code>. </p>
 
 </div>
 </div>
@@ -331,7 +450,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Multiplication function. </p>
-<p>Multiplication between <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix and vector.</p>
+<p>Product \( T \times x\) is computed efficiently by extending <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix \(T\) into a circulant matrix, whose multiplication with vector can be done with Fast Fourier Transformation (FFT) in \(O(n \log n) \) steps.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">yOut</td><td>Real vector of result. </td></tr>
@@ -366,9 +485,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Destructor. </p>
-<p>Setup the acf, the first column of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix.</p>
-<p>Setup ACF, the first column of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix.</p>
+<p>Setup ACF, the first column of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">acfIn</td><td>Real vector of ACF. </td></tr>
@@ -378,8 +495,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aca2502d4c84bfb4181423125bd901e86"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aca2502d4c84bfb4181423125bd901e86">&#9670;&nbsp;</a></span>size()</h2>
+<a id="a643250c46283eef01756c2c6ca8c286b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a643250c46283eef01756c2c6ca8c286b">&#9670;&nbsp;</a></span>solve_setup()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -388,7 +505,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int Toeplitz::size </td>
+          <td class="memname">void Toeplitz::solve_setup </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -396,13 +513,13 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Return the size of acf. </p>
-<p>Return the dimension of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix. </p>
+<p>Prepare for inversion. </p>
+<p>Preparation of computing \(T^{-1} \times x\), including GSchur algorithm implementation and generating FFT for Gohberg-Semencul formula. </p>
 
 </div>
 </div>
@@ -441,11 +558,64 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Inversion function. </p>
-<p>Multiplication between inverse <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix and vector.</p>
+<p>Multiplication between inverse <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix and vector: \(T^{-1} \times x\) involves the Gohberg-Semencul formula which decomposes inverse <a class="el" href="class_toeplitz.html">Toeplitz</a> into sum of products of lower and upper triangular <a class="el" href="class_toeplitz.html">Toeplitz</a> matrices: \( T^{-1} = \frac{1}{\rho_0} [L_1&#39;L_1 - L_2&#39; L_2] \), where \(L_1, L_2\) are lower-trangular <a class="el" href="class_toeplitz.html">Toeplitz</a> matrices and \(\rho_0\) is the first element of GSchur Algorithm output: length-N vector \(\rho\).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">yOut</td><td>Real vector of result. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">xIn</td><td>Real vector for product. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a00dcee80e892f159e7cd5cfc54c50c4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00dcee80e892f159e7cd5cfc54c50c4b">&#9670;&nbsp;</a></span>trace_LU()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Toeplitz::trace_LU </td>
+          <td>(</td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>acf1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>acf2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the trace of product of lower and upper triangular matrices. </p>
+<p>Compute \(\text{tr}(L U)\), where \(L\) is a lower triangular <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix and \(U\) is a upper triangular <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix. It is an \(O(n)\) algorithm.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">acf1</td><td>Real vector of length <code>n</code>, first column of \(L\). </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">acf2</td><td>Real vector of length <code>n</code>, first row of \(U\). </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Integer indicating the length of input. </td></tr>
   </table>
   </dd>
 </dl>
@@ -486,10 +656,12 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Trace function, returns \( \text{tr}(T^{-1} V_1 T^{-1} V_2)\). </p>
-<p>Trace function for second derivative of log-determinant.</p>
-<p>Computes \( \text{tr} (T^{-1} V_1 T^{-1} V_2) \), where \(V_1, V_2\) are two <a class="el" href="class_toeplitz.html">Toeplitz</a> matrices.</p>
-<p>If the first element of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix \(V_2\): \(V_2[1,1]\) is very small(criteria is <code>0.0001</code>) in this implementation, we use following steps to stabilize the algorithm:</p>
+<p>Trace function for second derivative of log-determinant. </p>
+<p>Second order derivative of log-determinant is: </p><p class="formulaDsp">
+\[ \frac{\partial^2 \log\mid T^{-1}\mid}{\partial \theta_1 \partial \theta_2} = \text{tr} (T^{-1} V_0) - \text{tr} (T^{-1} V_1 T^{-1} V_2), \text{ where } V_0 = \frac{\partial^2 T}{\partial \theta_1 \partial \theta_2}, V_1 = \frac{\partial T}{\partial \theta_1}, V_2 = \frac{\partial T}{\partial \theta_2} \]
+</p>
+<p> \(V_0, V_1, V_2\) are <a class="el" href="class_toeplitz.html">Toeplitz</a> matrices. Computation of \(\text{tr} (T^{-1} V_1 T^{-1} V_2)\) is non-trival and details are in paper.</p>
+<p>If the first element of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix \(V_2\): \(V_2[1,1]\) is very small(criteria is <code>0.0001</code> in coding), we use following steps to stabilize the algorithm:</p>
 <p class="formulaDsp">
 \[ \text{tr}(T^{-1} V_1 T^{-1} V_2) = \text{tr}(T^{-1} V_1 T^{-1} (V_2+I)) - \text{tr}(T^{-1} V_1 T^{-1}) \]
 </p>
@@ -501,6 +673,7 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>Real number of trace. </dd></dl>
 
 </div>
 </div>
@@ -528,11 +701,15 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Trace function, returns \( \text{tr}(T^{-1} V)\). </p>
-<p>Trace function for derivative of log-determinant.</p>
-<p>Computes \( \text{tr} (T^{-1} V) \), where \(V\) is a <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix.</p>
-<p>If the first element of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix \(V\): \(V[1,1]\) is very small(criteria is <code>0.0001</code>) in this implementation, we use following steps to stabilize the algorithm:</p>
-<p class="formulaDsp">
+<p>Trace function for derivative of log-determinant. </p>
+<p>First order derivative of log-determinant is: </p><p class="formulaDsp">
+\[ \frac{\partial \log\mid T^{-1}\mid}{\partial \theta} = \text{tr} (T^{-1} V), \text{ where } V = \frac{\partial T}{\partial \theta} \]
+</p>
+<p> V is also <a class="el" href="class_toeplitz.html">Toeplitz</a> since it is the derivative of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix, and has displacement rank 2 : \(V = \frac{1}{t_0} [U_1 U_1&#39; - U_2 U_2&#39;]\), where \(U_1\) is a upper triangular <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix. Thus </p><p class="formulaDsp">
+\begin{eqnarray*} \text{tr} (T^{-1} V) &amp;=&amp; \frac{1}{\rho_0 t_0} \text{tr} \{ [L_1&#39;L_1 - L_2&#39; L_2][U_1 U_1&#39; - U_2 U_2&#39;] \} \\ &amp;=&amp; \frac{1}{\rho_0 t_0} (\text{tr} \{ U_1&#39;L_1 L_1&#39; U_1 \} + ...) \\ &amp;=&amp; \frac{1}{\rho_0 t_0} (\text{tr} \{ A_1 A_1&#39; \} + ...) \end{eqnarray*}
+</p>
+<p> where \(A = U_1&#39;L_1\) is the product of two lower triangular <a class="el" href="class_toeplitz.html">Toeplitz</a> matrices and is also a lower triangular <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix, making computing \(\text{tr} \{ A_1 A_1&#39; \}\) efficient.</p>
+<p>If the first element of <a class="el" href="class_toeplitz.html">Toeplitz</a> matrix \(V\): \(V[1,1]\) is very small(criteria is <code>0.0001</code> in coding), we use following steps to stabilize the algorithm: </p><p class="formulaDsp">
 \[ \text{tr}(T^{-1} V) = \text{tr}(T^{-1} (V+I)) - \text{tr}(T^{-1}) \]
 </p>
 <p> where \(I\) is an identity matrix.</p>
@@ -542,6 +719,77 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>Real number of trace. </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="aeb87c92d750910779e40ddd79873a25a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb87c92d750910779e40ddd79873a25a">&#9670;&nbsp;</a></span>has_acf</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Toeplitz::has_acf</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Boolen, flag indicating whether input argument <code>acf</code> has been modified. </p>
+
+</div>
+</div>
+<a id="a725d50fdf5d71f3df2065828b4d8151c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a725d50fdf5d71f3df2065828b4d8151c">&#9670;&nbsp;</a></span>has_mult</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Toeplitz::has_mult</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Boolen, flag indicating whether multiplication-related FFT has been done. </p>
+
+</div>
+</div>
+<a id="add437ae0ab19a14eb5bf092b3365946d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add437ae0ab19a14eb5bf092b3365946d">&#9670;&nbsp;</a></span>has_solve</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Toeplitz::has_solve</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Boolen, flag indicating whether inversion-related FFT has been done. </p>
 
 </div>
 </div>

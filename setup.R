@@ -89,7 +89,7 @@ require(SuperGauss)
 source("SuperGauss-test-functions.R")
 
 
-# new ---------------------------------------------------------------------
+# Yun ---------------------------------------------------------------------
 
 setwd("D:/GitHub/SuperGauss")
 pkg.path <- getwd()
