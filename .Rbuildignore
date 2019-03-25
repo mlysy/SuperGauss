@@ -5,6 +5,6 @@
 ^config\.log$
 ^Meta$
 ^doc$
-^todo\.md$
+^TODO\.md$
 ^README\.md$
 ^tests/dontrun$
