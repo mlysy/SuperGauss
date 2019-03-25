@@ -2,9 +2,9 @@
 
 # for recompiling package
 # first quit R, then setwd() to where setup.R is found. then:
-pkg.path <- "D:/GitHub/SuperGauss"
+# pkg.path <- "D:/GitHub/SuperGauss"
 # pkg.path <- "c:/Users/Jerome/Documents/R/SuperGauss"
-# pkg.path <- getwd()
+pkg.path <- getwd()
 
 #require(Rcpp)
 #require(devtools)
@@ -19,7 +19,7 @@ devtools::build(pkg = pkg.path) # builds a tar.gz file
 devtools::check("SuperGauss")
 
 # restart R before testing changes
-testthat::test_package("SuperGauss", reporter = "progress")
+testthat::test_package("SuperGauss")
 
 # cran check
 
@@ -89,10 +89,25 @@ require(SuperGauss)
 source("SuperGauss-test-functions.R")
 
 
-# rdoxygen ----------------------------------------------------------------
+# Yun ---------------------------------------------------------------------
+
+setwd("D:/GitHub/SuperGauss")
+pkg.path <- getwd()
+pkg.path
+
+# regenerates Rcpp interface (i.e., RcppExports)
+Rcpp::compileAttributes(pkgdir = pkg.path)
+pkgbuild::compile_dll(path = pkg.path)
+devtools::document(pkg = pkg.path)
+devtools::install(pkg = pkg.path, args = "--clean") # installs the package
+# devtools::build(pkg = pkg.path) # builds a tar.gz file
+
+# restart to test
+testthat::test_package("SuperGauss", reporter = "progress")
 
 setwd("D:/GitHub/SuperGauss")
 
 rdoxygen::doxy()
 rdoxygen::doxy_vignette()
 devtools::install(build_vignettes = TRUE)
+devtools::build()

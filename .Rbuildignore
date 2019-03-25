@@ -5,7 +5,6 @@
 ^config\.log$
 ^Meta$
 ^doc$
-^setup\.R$
 ^todo\.md$
 ^README\.md$
 ^tests/dontrun$
