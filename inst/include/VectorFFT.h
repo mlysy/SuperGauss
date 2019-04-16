@@ -11,6 +11,7 @@
 #include <Rcpp.h>
 #include <fftw3.h>
 #include <iostream>
+#include <ctime>
 // using namespace Rcpp;
 // using namespace std;
 
@@ -164,5 +165,12 @@ inline void vecConv_Add(fftw_complex* y, fftw_complex* alpha,
 ///
 /// Then results `c(x) = c_0 + c_1 * x + ... + c_p+q * x^p+q = a(x) * b(x)` is
 /// in c_IFFT->out.
+///
+/// Note 1: for two length-n polynomials a_n(x) and b_n(x), their VectorFFT is
+/// of size 2*n. 
+///
+/// Note 2: In fftw, if c_FFT is of length 2*n and it is the FFT of
+/// real vector, computation of its IFFT only requires its first 2*(N/2+1)
+/// terms, not all of the 2*n terms.
 
 #endif

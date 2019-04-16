@@ -253,6 +253,7 @@ inline void Toeplitz::solveVec(double* yOut, double* xIn) {
   if (!has_solve) {
     solve_setup();
   }
+
   if (n > 1) {
     // GSchur algorithm only supports N > 1 case.
     std::copy(xIn, xIn + n, xfft->in);

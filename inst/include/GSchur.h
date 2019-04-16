@@ -167,7 +167,7 @@ class GSchurN {
   /// Compute the binary pieces \f$T_{a,b}\f$ from `s`. Size of such pieces is
   /// power of 2 times modulus `b`.
   void GenStep(double*, double*, int, int);
-  ///< Merge the binary pieces \f$T_{a,b}\f$ to get \f$T_{0,N}\f$
+  /// Merge the binary pieces \f$T_{a,b}\f$ to get \f$T_{0,N}\f$
   void GenMerge();
 
  public:
@@ -203,22 +203,24 @@ inline GSchurN::GSchurN(int N_, int b_) {
   // Necessary memory for \f$T_{,2^{k_0} \times b}\f$ is \f${b, 2\times b,
   // 4\times b, ..., 2^{k_0}\times b}\f$
   gs = new GSchur2K*[k0 + 1];
-  gs[0] = new GSchur2K(gs_size << 1);
+  gs[0] = new GSchur2K(2 * gs_size);
   for (int ii = 0; ii < k0; ++ii) {
-    gs[ii + 1] = new GSchur2K(gs_size << 1);
+    gs[ii + 1] = new GSchur2K(2 * gs_size);
     gs_size <<= 1;
   }
-  // Necessary memory for \f$T_{0,N}\f$ is \f${r, r+2^{k_m} \times b, r+2^{k_m}
-  // \times b+2^{k_{m-1}} \times b, ..., r+2^{k_m} \times b+2^{k_{m-1}} \times b
-  // + ... + 2^{k_0} \times b}\f$ (actually in reverse order in code
-  // implementation)
+
+  /// Necessary memory for \f$T_{0,N}\f$ is \f${r, r+2^{k_m} \times b, r+2^{k_m}
+  /// \times b+2^{k_{m-1}} \times b, ..., r+2^{k_m} \times b+2^{k_{m-1}} \times b
+  /// + ... + 2^{k_0} \times b}\f$ (actually in reverse order in code
+  /// implementation)
+  // gs_size = N - 1;
   gsM = new GSchur2K*[s.size()];
   for (int ii = 0; ii < s.size(); ++ii) {
-    gsM[ii] = new GSchur2K(
-        // Instead we are using \f${2\times r, 2\times 2^{k_m} \times b, 2\times
-        // b+2^{k_{m-1}} \times b, ..., 2\times 2^{k_0} \times b}\f$ here, which
-        // is wasteful. TODO.
-        s[ii] << 1);
+    // Instead we are using \f${2\times r, 2\times 2^{k_m} \times b, 2\times
+    // b+2^{k_{m-1}} \times b, ..., 2\times 2^{k_0} \times b}\f$ here, which
+    // is wasteful. TODO.
+    gsM[ii] = new GSchur2K(2 * s[ii]);
+    // gs_size -= s[ii];
   }
 }
 
@@ -435,9 +437,10 @@ inline void GSchurN::GenStep(double* alpha0, double* beta0, int si, int layer) {
 /// in `gsM[0]->eta_0_IFFT->out`, `gsM[0]->xi_0_IFFT->out`, `gsM[0]->gamma`.
 inline void GSchurN::GenMerge() {
   int layer = log2(ceil((double)s[0] / b));
+
   GenStep(alpha, beta, s[0], layer);
 
-  // When vector `s` has only one element, merging step is no more necessary.
+  // When vector `s` has only one element, there is no merging step.
   // Directly pass the results to output.
   if (s.size() == 1) {
     std::copy(gs[layer]->eta_0_IFFT->out, gs[layer]->eta_0_IFFT->out + s[0],
@@ -454,12 +457,17 @@ inline void GSchurN::GenMerge() {
   std::copy(gs[layer]->xi_0_IFFT->out, gs[layer]->xi_0_IFFT->out + s[0],
             gsM[0]->xi_0_FFT->in);
   std::copy(gs[layer]->gamma, gs[layer]->gamma + s[0], gsM[0]->gamma);
+  
   int n = s[0];
   for (int m = 0; m < s.size() - 1; ++m) {
     if (m == 0) {
+      // First paste alpha_{0,N} and beta_{0,N} into gsM[0]->alpha and
+      // gsM[0]->beta, length is N
       std::copy(alpha, alpha + N - 1, gsM[m]->alpha_0_FFT->in);
       std::copy(beta, beta + N - 1, gsM[m]->beta_0_FFT->in);
     } else {
+      // For m > 0, paste alpha_{n,n} and beta_{n,n} into gsM[m]->alpha and
+      // gsM[m]->beta, length is 2*s[m]
       std::copy(gsM[m - 1]->alpha_n_IFFT->out + s[m - 1],
                 gsM[m - 1]->alpha_n_IFFT->out + s[m - 1] + 2 * s[m],
                 gsM[m]->alpha_0_FFT->in);
@@ -467,9 +475,15 @@ inline void GSchurN::GenMerge() {
                 gsM[m - 1]->beta_n_IFFT->out + s[m - 1] + 2 * s[m],
                 gsM[m]->beta_0_FFT->in);
     }
+    // alpha2Beta uses gsM[m]->alpha_0_FFT, beta_0_FFT, eta_0_FFT and xi_0_FFT
+    // to compute alpha_n_IFFT and beta_n_IFFT
     alpha2Beta(gsM[m], s[m]);
+    // produce alpha_n_IFFT->out [s[m]+(1:s[m])]
+    // actually just need size N instead of 2*s[0] for m = 0;
 
     layer = log2(ceil((double)s[m + 1] / b));
+    // Computation of GenStep happens inside gs[0,1,...,layer].
+    // We just need alpha_n_IFFT->out [s[m]+(1:s[m+1])]
     GenStep(gsM[m]->alpha_n_IFFT->out + s[m], gsM[m]->beta_n_IFFT->out + s[m],
             s[m + 1], layer);
 
@@ -498,6 +512,7 @@ inline void GSchurN::GenMerge() {
 
     n += s[m];
   }
+
 }
 
 /// This function generates the input polynomials \f$\alpha_0, \beta_0\f$ of
