@@ -64,3 +64,54 @@
     ```
 
 - [x] **Optimize code for `Snorm.grad` and `Snorm.hess`** *(Martin)*.  Perhaps fewer for-loops, fewer `apply`s, etc.
+
+- [ ] Separate C++ `Toeplitz` class from `GSchur` class, and `NormalToeplitz` class.  The point is that `Toeplitz` is templated on either `GSchur` or `LTZ`.
+
+    As for `NormalToeplitz`, here's a potential class design:
+	
+	```c
+	class NormalToeplitz {
+	  public:
+	  /// Constructor.
+	  NormalToeplitz(const int N);
+	  /// Log-Density.
+	  /// TODO: should we use std::vector<double> instead? 
+	  /// is there a speed difference?
+	  double logdens(const double* z, const double* acf);
+	  /// Full gradient.
+	  /// The outputs `dldz` and `dldacf` are each the length of `z`.
+	  void grad(double* dldz, double* dldacf,
+	            const double* z, const double* acf);
+      /// Gradient with respect to theta.
+	  /// The output `dldt` is the same length as `theta`.
+	  void grad(double* dldt,
+	            const double* z, const double* dzdt, 
+				const double* acf, const double* dacfdt);
+      /// Hessian with respect to theta.
+	  /// Makes no sense to have full hessian since it scales as `O(N^2)`.
+	  /// Names!
+	  void hess(double* d2ldt,
+	            const double* z, const double* dzdt, const double* d2zdt, 
+				const double* acf, const double* dacfdt, const double* d2acfdt);
+	};
+	```
+
+
+- [ ] Implement gradient in Stan.  We will need to talk to the Stan development team about this.  Here are some of the links I found for help:
+
+    - [Full reference](https://arxiv.org/abs/1509.07164)
+	- [Simple example]( https://github.com/stan-dev/math/wiki/Adding-a-new-function-with-known-gradients).  What this is missing however is memory allocation, i.e., you do not want to allocate memory every time Stan computes the gradient!
+	
+	My suggestion is to write to the stan developers via the [Stan forum](https://discourse.mc-stan.org/).  We can tell them that our C++ code works something like this:
+	
+	```c
+	#include <NormalToepliz.h>
+	
+	// Create an object once that does all memory allocation
+	NormalToeplitz nt(N); // int N = size of problem
+	
+	// Compute loglikelihood
+	double ll = nt.loglik(z, acf);
+	// Compute loglikelihood and gradient wrt z and acf simultaneously
+	nt.lgrad(ll, dldz, dldacf);
+	```
