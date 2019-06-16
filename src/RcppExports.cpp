@@ -59,13 +59,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // Toeplitz_constructor
-SEXP Toeplitz_constructor(int n);
-RcppExport SEXP _SuperGauss_Toeplitz_constructor(SEXP nSEXP) {
+SEXP Toeplitz_constructor(int n, int b);
+RcppExport SEXP _SuperGauss_Toeplitz_constructor(SEXP nSEXP, SEXP bSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(Toeplitz_constructor(n));
+    Rcpp::traits::input_parameter< int >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(Toeplitz_constructor(n, b));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -179,7 +180,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SuperGauss_DurbinLevinson_ZX", (DL_FUNC) &_SuperGauss_DurbinLevinson_ZX, 2},
     {"_SuperGauss_DurbinLevinson_Eigen", (DL_FUNC) &_SuperGauss_DurbinLevinson_Eigen, 4},
     {"_SuperGauss_DurbinLevinson_Base", (DL_FUNC) &_SuperGauss_DurbinLevinson_Base, 4},
-    {"_SuperGauss_Toeplitz_constructor", (DL_FUNC) &_SuperGauss_Toeplitz_constructor, 1},
+    {"_SuperGauss_Toeplitz_constructor", (DL_FUNC) &_SuperGauss_Toeplitz_constructor, 2},
     {"_SuperGauss_Toeplitz_setAcf", (DL_FUNC) &_SuperGauss_Toeplitz_setAcf, 2},
     {"_SuperGauss_Toeplitz_getAcf", (DL_FUNC) &_SuperGauss_Toeplitz_getAcf, 1},
     {"_SuperGauss_Toeplitz_getPhi", (DL_FUNC) &_SuperGauss_Toeplitz_getPhi, 1},

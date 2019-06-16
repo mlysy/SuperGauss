@@ -98,8 +98,7 @@ pkg.path <- getwd()
 Rcpp::compileAttributes(pkgdir = pkg.path)
 pkgbuild::compile_dll(path = pkg.path)
 devtools::document(pkg = pkg.path)
-devtools::install(pkg = pkg.path, args = "--clean", 
-                  upgrade = "never") # installs the package
+devtools::install(pkg = pkg.path, args = "--clean") # installs the package
 # devtools::build(pkg = pkg.path) # builds a tar.gz file
 
 # restart to test

@@ -16,6 +16,7 @@
 /// log-determinant.
 class Toeplitz {
   int n;               ///< Integer indicating the size of Toeplitz matrix.
+  int b;
   VectorFFT* L1fft;    ///< VectorFFT space for matrix \f$L_1\f$ for inversion.
   VectorFFT* L11fft;   ///< VectorFFT space for matrix \f$L_1'\f$ for inversion.
   VectorFFT* L2fft;    ///< VectorFFT space for matrix \f$L_2\f$ for inversion.
@@ -48,7 +49,7 @@ class Toeplitz {
 
  public:
   /// Constructor.
-  Toeplitz(int n_);
+  Toeplitz(int n_, int b_);
   /// Destructor.
   ~Toeplitz();
   /// Setup ACF, the first column of Toeplitz matrix.
@@ -74,8 +75,9 @@ class Toeplitz {
 };
 
 /// @param[in] n_ Size of Toeplitz matrix.
-inline Toeplitz::Toeplitz(int n_) {
+inline Toeplitz::Toeplitz(int n_, int b_) {
   n = n_;
+  b = b_;
   acf = new double[n];
   phi2 = new double[n];
   temVec = new double[n];
@@ -83,7 +85,7 @@ inline Toeplitz::Toeplitz(int n_) {
 
   // GSchur algorithm only supports N > 1 case.
   if (n_ > 1) {
-    Gs = new GSchurN(n, 64);  // default binary modulus 64
+    Gs = new GSchurN(n, b);  // default binary modulus 64
     L1fft = new VectorFFT(2 * n);
     L11fft = new VectorFFT(2 * n);
     L2fft = new VectorFFT(2 * n);
@@ -250,9 +252,9 @@ inline void Toeplitz::solve_setup() {
 /// @param[out] yOut Real vector of result.
 /// @param[in] xIn Real vector for product.
 inline void Toeplitz::solveVec(double* yOut, double* xIn) {
-  if (!has_solve) {
+  // if (!has_solve) {
     solve_setup();
-  }
+  // }
 
   if (n > 1) {
     // GSchur algorithm only supports N > 1 case.

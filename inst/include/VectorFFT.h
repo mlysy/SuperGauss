@@ -150,18 +150,24 @@ inline void vecConv_Add(fftw_complex* y, fftw_complex* alpha,
 /// Steps for polynomial convolution: For two polynomials `a(x) = a_0 + a_1 * x
 /// + ... a_p * x^p` and  `b(x) = b_0 + b_1 * x + ... b_q * x^q`
 ///
-/// 1) generate two VectorFFT classes: a_FFT = new VectorFFT(p+q), b_FFT = new
-/// VectorFFT(p+q) and one VectorIFFT class: c_IFFT = new VectorIFFT(p+q)
+/// 1) generate two VectorFFT classes and one VectorIFFT class: 
+///		a_FFT = new VectorFFT(p+q); 
+///		b_FFT = new VectorFFT(p+q);
+///		c_IFFT = new VectorIFFT(p+q);
 ///
-/// 2) fill the VectorFFT->in: std::copy(a, a+p, a_FFT->in), std::copy(b, b+q,
-/// b_FFT->in)
+/// 2) copy the input polynomials:
+///		std::copy(a, a+p, a_FFT->in); 
+///		std::copy(b, b+q, b_FFT->in);
 ///
-/// 3) FFT: a_FFT->fft(), b_FFT->fft()
+/// 3) FFT: 
+///		a_FFT->fft();
+///		b_FFT->fft();
 ///
-/// 4) multiplication between VectorFFT->out: vecConv(c_FFT->out, a_FFT->out,
-/// b_FFT->out, p+q)
+/// 4) multiplication: 
+///		vecConv(c_FFT->out, a_FFT->out, b_FFT->out, p+q);
 ///
-/// 5) IFFT: c_IFFT->ifft()
+/// 5) Inverse FFT: 
+///		c_IFFT->ifft();
 ///
 /// Then results `c(x) = c_0 + c_1 * x + ... + c_p+q * x^p+q = a(x) * b(x)` is
 /// in c_IFFT->out.
@@ -172,5 +178,17 @@ inline void vecConv_Add(fftw_complex* y, fftw_complex* alpha,
 /// Note 2: In fftw, if c_FFT is of length 2*n and it is the FFT of
 /// real vector, computation of its IFFT only requires its first 2*(N/2+1)
 /// terms, not all of the 2*n terms.
+
+
+/*
+// Function for printing the vectors
+void printVector(double* x, int n) {
+	for (int ii = 0; ii < n; ++ii) {
+		cout << x[ii] << " ";
+	}
+	cout << endl;
+	return;
+}
+*/
 
 #endif

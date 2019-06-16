@@ -5,8 +5,8 @@ using namespace Rcpp;
 // R wapper functions to Toeplitz methods using XPtr
 
 //[[Rcpp::export(".Toeplitz_constructor")]]
-SEXP Toeplitz_constructor(int n) {
-  Toeplitz *Toep = new Toeplitz(n);
+SEXP Toeplitz_constructor(int n, int b) {
+  Toeplitz *Toep = new Toeplitz(n, b);
   XPtr<Toeplitz> Toep_ptr(Toep, true);
   return Toep_ptr;
 }

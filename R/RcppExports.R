@@ -17,8 +17,8 @@ DurbinLevinson_Base <- function(X, Y, acf, calcMode = 1L) {
     .Call(`_SuperGauss_DurbinLevinson_Base`, X, Y, acf, calcMode)
 }
 
-.Toeplitz_constructor <- function(n) {
-    .Call(`_SuperGauss_Toeplitz_constructor`, n)
+.Toeplitz_constructor <- function(n, b) {
+    .Call(`_SuperGauss_Toeplitz_constructor`, n, b)
 }
 
 .Toeplitz_setAcf <- function(Toep_ptr, acf) {
