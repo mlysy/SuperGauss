@@ -37,33 +37,26 @@
 #' @export
 .Toeplitz <- setRefClass("Toeplitz",
                          fields = list(cpp_ptr = "externalptr",
-                                       size = "numeric",
-                                       base = "numeric"))
+                                       size = "numeric"))
 .Toeplitz$lock("cpp_ptr") # locked fields
 .Toeplitz$lock("size")
-.Toeplitz$lock("base")
 # internal constructor
-.Toeplitz$methods(initialize = function(n, b) {
-  cpp_ptr <<- .Toeplitz_constructor(n, b)
+.Toeplitz$methods(initialize = function(n) {
+  cpp_ptr <<- .Toeplitz_constructor(n)
   size <<- n
-  base <<- b
 })
 
 # exported constructor
 #' @rdname Toeplitz-class
 #' @param n Size of the Toeplitz matrix.
-#' @param b Base.
 #' @param acf Autocorrelation vector of Toeplitz matrix.
 #' @return A \code{Toeplitz} object.
 #' @export
-Toeplitz <- function(n, acf, b) {
-  if(missing(b)){
-    b <- 64
-  }
+Toeplitz <- function(n, acf) {
   if(missing(n)){
     n <- length(acf)
   }
-  Tz <- .Toeplitz$new(n, b)
+  Tz <- .Toeplitz$new(n)
   if(!missing(acf)) {
     Tz$setAcf(acf)
   }

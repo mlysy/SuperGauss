@@ -58,15 +58,39 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Toeplitz_constructor
-SEXP Toeplitz_constructor(int n, int b);
-RcppExport SEXP _SuperGauss_Toeplitz_constructor(SEXP nSEXP, SEXP bSEXP) {
+// PCG_constructor
+SEXP PCG_constructor(int n);
+RcppExport SEXP _SuperGauss_PCG_constructor(SEXP nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    Rcpp::traits::input_parameter< int >::type b(bSEXP);
-    rcpp_result_gen = Rcpp::wrap(Toeplitz_constructor(n, b));
+    rcpp_result_gen = Rcpp::wrap(PCG_constructor(n));
+    return rcpp_result_gen;
+END_RCPP
+}
+// PCG_Solve
+NumericVector PCG_Solve(SEXP PCG_ptr, NumericVector acf, NumericVector y, double tol);
+RcppExport SEXP _SuperGauss_PCG_Solve(SEXP PCG_ptrSEXP, SEXP acfSEXP, SEXP ySEXP, SEXP tolSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type PCG_ptr(PCG_ptrSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type acf(acfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    rcpp_result_gen = Rcpp::wrap(PCG_Solve(PCG_ptr, acf, y, tol));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Toeplitz_constructor
+SEXP Toeplitz_constructor(int n);
+RcppExport SEXP _SuperGauss_Toeplitz_constructor(SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(Toeplitz_constructor(n));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -180,7 +204,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SuperGauss_DurbinLevinson_ZX", (DL_FUNC) &_SuperGauss_DurbinLevinson_ZX, 2},
     {"_SuperGauss_DurbinLevinson_Eigen", (DL_FUNC) &_SuperGauss_DurbinLevinson_Eigen, 4},
     {"_SuperGauss_DurbinLevinson_Base", (DL_FUNC) &_SuperGauss_DurbinLevinson_Base, 4},
-    {"_SuperGauss_Toeplitz_constructor", (DL_FUNC) &_SuperGauss_Toeplitz_constructor, 2},
+    {"_SuperGauss_PCG_constructor", (DL_FUNC) &_SuperGauss_PCG_constructor, 1},
+    {"_SuperGauss_PCG_Solve", (DL_FUNC) &_SuperGauss_PCG_Solve, 4},
+    {"_SuperGauss_Toeplitz_constructor", (DL_FUNC) &_SuperGauss_Toeplitz_constructor, 1},
     {"_SuperGauss_Toeplitz_setAcf", (DL_FUNC) &_SuperGauss_Toeplitz_setAcf, 2},
     {"_SuperGauss_Toeplitz_getAcf", (DL_FUNC) &_SuperGauss_Toeplitz_getAcf, 1},
     {"_SuperGauss_Toeplitz_getPhi", (DL_FUNC) &_SuperGauss_Toeplitz_getPhi, 1},

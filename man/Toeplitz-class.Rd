@@ -23,14 +23,12 @@
 \alias{Toeplitz}
 \title{Constructor and methods for Toeplitz matrix objects.}
 \usage{
-Toeplitz(n, acf, b)
+Toeplitz(n, acf)
 }
 \arguments{
 \item{n}{Size of the Toeplitz matrix.}
 
 \item{acf}{Autocorrelation vector of Toeplitz matrix.}
-
-\item{b}{Base.}
 }
 \value{
 A \code{Toeplitz} object.
