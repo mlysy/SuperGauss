@@ -71,28 +71,49 @@
 	
 	```c
 	class NormalToeplitz {
+	  private:
+	  Toeplitz *Tz_; ///> Internal pointer to Toeplitz matrix.
+	                 ///> Always postfix internal variables with "_"
 	  public:
 	  /// Constructor.
-	  NormalToeplitz(const int N);
+	  NormalToeplitz(int N);
+	  /// Perhaps also need a ctor which doesn't allocate the Toeplitz memory internally?
+	  /// Make sure that all methods take `N` is taken from `Tz_`, 
+	  /// i.e., don't use private `N_` because external memory version won't know what this is.
+	  NormalToeplitz(void);
 	  /// Log-Density.
 	  /// TODO: should we use std::vector<double> instead? 
 	  /// is there a speed difference?
-	  double logdens(const double* z, const double* acf);
+	  double logdens(const double* z, const double* acf) {
+	    Tz_->setAcf(acf);
+	    return logdens(z, Tz_);
+	  }
+	  /// this is the preferred form for R, 
+	  /// because we don't want to reallocate memory for every call.
+	  /// note that `Tz` can't be `const` because we potentially modify its internal structure.
+	  double logdens(const double* z, Toeplitz* Tz);
 	  /// Full gradient.
 	  /// The outputs `dldz` and `dldacf` are each the length of `z`.
 	  void grad(double* dldz, double* dldacf,
 	            const double* z, const double* acf);
-      /// Gradient with respect to theta.
+	  /// Gradient with respect to theta.
 	  /// The output `dldt` is the same length as `theta`.
 	  void grad(double* dldt,
-	            const double* z, const double* dzdt, 
-				const double* acf, const double* dacfdt);
-      /// Hessian with respect to theta.
+	           const double* z, const double* dzdt, 
+	           const double* acf, const double* dacfdt);
+	  /// Same thing with Toeplitz input
+	  void grad(double* dldt,
+	           const double* z, const double* dzdt, 
+	           Toeplitz* Tz, const double* dacfdt);
+	  /// Hessian with respect to theta.
 	  /// Makes no sense to have full hessian since it scales as `O(N^2)`.
 	  /// Names!
 	  void hess(double* d2ldt,
 	            const double* z, const double* dzdt, const double* d2zdt, 
-				const double* acf, const double* dacfdt, const double* d2acfdt);
+	            const double* acf, const double* dacfdt, const double* d2acfdt);
+	  void hess(double* d2ldt,
+	            const double* z, const double* dzdt, const double* d2zdt, 
+	            Toeplitz* Tz, const double* dacfdt, const double* d2acfdt);
 	};
 	```
 
