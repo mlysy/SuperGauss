@@ -172,13 +172,13 @@ fi[]dnl
 ## pick up compiler that will be used by R CMD INSTALL/SHLIB
 if test -n "${R_HOME}"; then
   CC=`${R_HOME}/bin/R CMD config CC`
-  CPP=`${R_HOME}/bin/R CMD config CPP`
+  # CPP=`${R_HOME}/bin/R CMD config CPP`
   CFLAGS=`${R_HOME}/bin/R CMD config CFLAGS`
   CXX=`${R_HOME}/bin/R CMD config CXX`
   CXXFLAGS=`${R_HOME}/bin/R CMD config CXXFLAGS`
 fi
 
-AC_PROG_CPP
+# AC_PROG_CPP
 AC_PROG_CC
 
 if test `uname` = "Darwin" ; then
