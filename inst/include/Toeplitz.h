@@ -140,6 +140,8 @@ inline Toeplitz::~Toeplitz() {
 inline void Toeplitz::setAcf(double* acfIn) {
   std::copy(acfIn, acfIn + n, acf);
   has_acf = true;
+  has_mult = false;
+  has_solve = false;
   return;
 }
 

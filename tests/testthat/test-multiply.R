@@ -17,7 +17,9 @@ test_that("Toeplitz-Matrix multiplication", {
     acf <- acf.get.SGtest(N, type, dT)
     Toep$setAcf(acf)
     acf.mat <- toeplitz(acf)
-    expect_equal(Toep %*% X, acf.mat %*% X, tolerance = 1e-6)
+    y1 <- Toep %*% X
+    y2 <- acf.mat %*% X
+    expect_equal(y1, y2, tolerance = 1e-6)
   }
 })
 
@@ -36,6 +38,8 @@ test_that("Matrix-Toeplitz multiplication", {
     acf <- acf.get.SGtest(N, type, dT)
     Toep$setAcf(acf)
     acf.mat <- toeplitz(acf)
-    expect_equal(X %*% Toep, X %*% acf.mat, tolerance = 1e-6)
+    y1 <- X %*% Toep
+    y2 <- X %*% acf.mat
+    expect_equal(y1, y2, tolerance = 1e-6)
   }
 })

@@ -66,15 +66,15 @@ acf.get.SGtest <- function(N, type, dT, incr = TRUE){
   lambda <- 3.3
   H <- 0.4
   nu <- 3
-  if(type == "exp2"){
+  ## type <- match.arg(type,
+  ##                   choices = c("exp", "exp2", "fbm", "matern", "zero", "rnd"))
+  if(type == "exp2") {
     acf <- exp2.acf.SGtest(lambda, dT, N, incr)
-  }
-  if(type == "exp"){
+  } else if(type == "exp") {
     acf <- exp.acf.SGtest(lambda, dT, N, incr)
-  }
-  if(type == "fbm"){
+  } else if(type == "fbm") {
     acf <- fbm.acf.SGtest(H, dT, N)
-  }else{
+  } else {
     acf <- matern.acf.SGtest(lambda, nu, dT, N, incr)
   }
   acf
