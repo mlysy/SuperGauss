@@ -57,10 +57,6 @@ DurbinLevinson_Base <- function(X, Y, acf, calcMode = 1L) {
     .Call(`_SuperGauss_Toeplitz_getAcf`, Toep_ptr)
 }
 
-.Toeplitz_getPhi <- function(Toep_ptr) {
-    .Call(`_SuperGauss_Toeplitz_getPhi`, Toep_ptr)
-}
-
 .Toeplitz_Multiply <- function(Toep_ptr, X) {
     .Call(`_SuperGauss_Toeplitz_Multiply`, Toep_ptr, X)
 }
@@ -71,14 +67,6 @@ DurbinLevinson_Base <- function(X, Y, acf, calcMode = 1L) {
 
 .Toeplitz_Determinant <- function(Toep_ptr) {
     .Call(`_SuperGauss_Toeplitz_Determinant`, Toep_ptr)
-}
-
-.Toeplitz_traceT2 <- function(Toep_ptr, acf2) {
-    .Call(`_SuperGauss_Toeplitz_traceT2`, Toep_ptr, acf2)
-}
-
-.Toeplitz_traceT4 <- function(Toep_ptr, acf2, acf3) {
-    .Call(`_SuperGauss_Toeplitz_traceT4`, Toep_ptr, acf2, acf3)
 }
 
 .Toeplitz_hasAcf <- function(Toep_ptr) {

@@ -18,6 +18,25 @@ Imports:
 LinkingTo: Rcpp, RcppEigen
 Suggests: knitr, rmarkdown, testthat, mvtnorm, numDeriv
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Encoding: UTF-8
 SystemRequirements: fftw3 (>= 3.1.2)
+Collate: 
+    'Choleski.R'
+    'Toeplitz.R'
+    'NormalToeplitz.R'
+    'PCG.R'
+    'RcppExports.R'
+    'Snorm-grad.R'
+    'Snorm-hess.R'
+    'SuperGauss.R'
+    'Toep-mult.R'
+    'acf2incr.R'
+    'acf2msd.R'
+    'dSnorm.R'
+    'fbm-msd.R'
+    'format.R'
+    'matern-acf.R'
+    'msd2acf.R'
+    'pex-acf.R'
+    'rSnorm.R'

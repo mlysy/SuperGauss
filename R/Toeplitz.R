@@ -79,31 +79,31 @@ Toeplitz <- function(n, acf) {
   .Toeplitz_getAcf(cpp_ptr)
 })
 
-# traceT2
-.Toeplitz$methods(traceT2 = function(acf2) {
-  if(!.Toeplitz_hasAcf(cpp_ptr)) {
-    stop("setAcf has not been called yet")
-  }
-  if(length(acf2) != size) {
-    stop("acf2 has wrong length.")
-  }
-  .Toeplitz_traceT2(cpp_ptr, acf2)
-})
+## # traceT2
+## .Toeplitz$methods(traceT2 = function(acf2) {
+##   if(!.Toeplitz_hasAcf(cpp_ptr)) {
+##     stop("setAcf has not been called yet")
+##   }
+##   if(length(acf2) != size) {
+##     stop("acf2 has wrong length.")
+##   }
+##   .Toeplitz_traceT2(cpp_ptr, acf2)
+## })
 
-# traceT4
-# TODO: fix this so that small1 is inside C++ code
-.Toeplitz$methods(traceT4 = function(acf2, acf3) {
-  if(!.Toeplitz_hasAcf(cpp_ptr)) {
-    stop("setAcf has not been called yet")
-  }
-  if(length(acf2) != size) {
-    stop("acf2 has wrong length.")
-  }
-  if(length(acf3) != size) {
-    stop("acf3 has wrong length.")
-  }
-  .Toeplitz_traceT4(cpp_ptr, acf2, acf3)
-})
+## # traceT4
+## # TODO: fix this so that small1 is inside C++ code
+## .Toeplitz$methods(traceT4 = function(acf2, acf3) {
+##   if(!.Toeplitz_hasAcf(cpp_ptr)) {
+##     stop("setAcf has not been called yet")
+##   }
+##   if(length(acf2) != size) {
+##     stop("acf2 has wrong length.")
+##   }
+##   if(length(acf3) != size) {
+##     stop("acf3 has wrong length.")
+##   }
+##   .Toeplitz_traceT4(cpp_ptr, acf2, acf3)
+## })
 
 ## .traceT4 <- function(acf, acf2, acf3) {
 ##   N <- acf$size

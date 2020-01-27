@@ -31,7 +31,7 @@ NumericVector NormalToeplitz_hess(SEXP Nt_ptr,
 	NumericVector z, NumericVector dzdt, NumericVector d2zdt,
 	NumericVector acf, NumericVector dacfdt, NumericVector d2acfdt) {
 	XPtr<NormalToeplitz> Nt(Nt_ptr);
-	NumericVector d2ldt(Nt->dim(), Nt->dim());
+	NumericMatrix d2ldt(Nt->dim(), Nt->dim());
 	Nt->hess(REAL(d2ldt), REAL(z), REAL(dzdt), REAL(d2zdt), 
 		REAL(acf), REAL(dacfdt), REAL(d2acfdt));
 	return d2ldt;

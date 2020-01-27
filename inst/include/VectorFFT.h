@@ -102,7 +102,7 @@ inline double* VectorFFT::get_ptr_x_() {
 	return x_;
 }
 /// Return the pointer of y_
-fftw_complex* VectorFFT::get_ptr_y_() {
+inline fftw_complex* VectorFFT::get_ptr_y_() {
 	return y_;
 }
 
