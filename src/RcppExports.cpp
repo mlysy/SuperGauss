@@ -58,6 +58,76 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// NormalToeplitz_constructor
+SEXP NormalToeplitz_constructor(int n_, int p_);
+RcppExport SEXP _SuperGauss_NormalToeplitz_constructor(SEXP n_SEXP, SEXP p_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n_(n_SEXP);
+    Rcpp::traits::input_parameter< int >::type p_(p_SEXP);
+    rcpp_result_gen = Rcpp::wrap(NormalToeplitz_constructor(n_, p_));
+    return rcpp_result_gen;
+END_RCPP
+}
+// NormalToeplitz_logdens
+double NormalToeplitz_logdens(SEXP Nt_ptr, NumericVector z, NumericVector acf);
+RcppExport SEXP _SuperGauss_NormalToeplitz_logdens(SEXP Nt_ptrSEXP, SEXP zSEXP, SEXP acfSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type Nt_ptr(Nt_ptrSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type z(zSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type acf(acfSEXP);
+    rcpp_result_gen = Rcpp::wrap(NormalToeplitz_logdens(Nt_ptr, z, acf));
+    return rcpp_result_gen;
+END_RCPP
+}
+// NormalToeplitz_grad
+NumericVector NormalToeplitz_grad(SEXP Nt_ptr, NumericVector z, NumericVector dzdt, NumericVector acf, NumericVector dacfdt);
+RcppExport SEXP _SuperGauss_NormalToeplitz_grad(SEXP Nt_ptrSEXP, SEXP zSEXP, SEXP dzdtSEXP, SEXP acfSEXP, SEXP dacfdtSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type Nt_ptr(Nt_ptrSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type z(zSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type dzdt(dzdtSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type acf(acfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type dacfdt(dacfdtSEXP);
+    rcpp_result_gen = Rcpp::wrap(NormalToeplitz_grad(Nt_ptr, z, dzdt, acf, dacfdt));
+    return rcpp_result_gen;
+END_RCPP
+}
+// NormalToeplitz_hess
+NumericVector NormalToeplitz_hess(SEXP Nt_ptr, NumericVector z, NumericVector dzdt, NumericVector d2zdt, NumericVector acf, NumericVector dacfdt, NumericVector d2acfdt);
+RcppExport SEXP _SuperGauss_NormalToeplitz_hess(SEXP Nt_ptrSEXP, SEXP zSEXP, SEXP dzdtSEXP, SEXP d2zdtSEXP, SEXP acfSEXP, SEXP dacfdtSEXP, SEXP d2acfdtSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type Nt_ptr(Nt_ptrSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type z(zSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type dzdt(dzdtSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type d2zdt(d2zdtSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type acf(acfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type dacfdt(dacfdtSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type d2acfdt(d2acfdtSEXP);
+    rcpp_result_gen = Rcpp::wrap(NormalToeplitz_hess(Nt_ptr, z, dzdt, d2zdt, acf, dacfdt, d2acfdt));
+    return rcpp_result_gen;
+END_RCPP
+}
+// NormalToeplitz_grad_full
+List NormalToeplitz_grad_full(SEXP Nt_ptr, NumericVector z, NumericVector acf);
+RcppExport SEXP _SuperGauss_NormalToeplitz_grad_full(SEXP Nt_ptrSEXP, SEXP zSEXP, SEXP acfSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type Nt_ptr(Nt_ptrSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type z(zSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type acf(acfSEXP);
+    rcpp_result_gen = Rcpp::wrap(NormalToeplitz_grad_full(Nt_ptr, z, acf));
+    return rcpp_result_gen;
+END_RCPP
+}
 // PCG_constructor
 SEXP PCG_constructor(int n);
 RcppExport SEXP _SuperGauss_PCG_constructor(SEXP nSEXP) {
@@ -204,6 +274,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SuperGauss_DurbinLevinson_ZX", (DL_FUNC) &_SuperGauss_DurbinLevinson_ZX, 2},
     {"_SuperGauss_DurbinLevinson_Eigen", (DL_FUNC) &_SuperGauss_DurbinLevinson_Eigen, 4},
     {"_SuperGauss_DurbinLevinson_Base", (DL_FUNC) &_SuperGauss_DurbinLevinson_Base, 4},
+    {"_SuperGauss_NormalToeplitz_constructor", (DL_FUNC) &_SuperGauss_NormalToeplitz_constructor, 2},
+    {"_SuperGauss_NormalToeplitz_logdens", (DL_FUNC) &_SuperGauss_NormalToeplitz_logdens, 3},
+    {"_SuperGauss_NormalToeplitz_grad", (DL_FUNC) &_SuperGauss_NormalToeplitz_grad, 5},
+    {"_SuperGauss_NormalToeplitz_hess", (DL_FUNC) &_SuperGauss_NormalToeplitz_hess, 7},
+    {"_SuperGauss_NormalToeplitz_grad_full", (DL_FUNC) &_SuperGauss_NormalToeplitz_grad_full, 3},
     {"_SuperGauss_PCG_constructor", (DL_FUNC) &_SuperGauss_PCG_constructor, 1},
     {"_SuperGauss_PCG_Solve", (DL_FUNC) &_SuperGauss_PCG_Solve, 4},
     {"_SuperGauss_Toeplitz_constructor", (DL_FUNC) &_SuperGauss_Toeplitz_constructor, 1},
