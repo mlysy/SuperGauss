@@ -3,7 +3,7 @@
 #ifndef PCG_h
 #define PCG_h 1
 
-#include "VF.h"
+#include "VectorFFT.h"
 
 double crossprod(double* a, double* b, int n) {
 	double pd = 0;
@@ -17,8 +17,8 @@ class PCG {
 private:
 	int N; // size
 	double* pchan; // storage of pre conditional
-	VF* tf; // Toeplitz fft, size 2*N
-	VF* cf; // circulant fft, size N
+	VectorFFT* tf; // Toeplitz fft, size 2*N
+	VectorFFT* cf; // circulant fft, size N
 	double* x;
 	std::complex<double>* fx;
 	double* x2;
@@ -46,8 +46,8 @@ public:
 inline PCG::PCG(int n) {
 	N = n;
 	pchan = new double[n];
-	tf = new VF(2 * n);
-	cf = new VF(n);
+	tf = new VectorFFT(2 * n);
+	cf = new VectorFFT(n);
 	x = new double[2 * N];
 	fx = new std::complex<double>[N];
 	x2 = new double[2 * N];

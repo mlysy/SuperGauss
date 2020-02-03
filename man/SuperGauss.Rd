@@ -3,6 +3,7 @@
 \docType{package}
 \name{SuperGauss}
 \alias{SuperGauss}
+\alias{SuperGauss-package}
 \title{Superfast inference for stationary Gaussian time series.}
 \description{
 Superfast inference for stationary Gaussian time series.

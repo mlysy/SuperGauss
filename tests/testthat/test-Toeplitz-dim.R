@@ -1,5 +1,6 @@
 library(SuperGauss)
-source("SuperGauss-test-functions.R")
+source("test-functions.R")
+
 context("Dimensions")
 
 test_that("dim/nrow/ncol", {
@@ -10,14 +11,14 @@ test_that("dim/nrow/ncol", {
     cp <- case.par[ii, ]
     N <- cp$N
     pre <- cp$pre
-    acf <- acf.get.SGtest(N, "fbm", runif(1))
+    acf <- test_acf_func(N, "fbm")
     if(pre) {
-      Toep <- Toeplitz(n = N)
+      Tz <- Toeplitz(n = N)
     } else {
-      Toep <- Toeplitz(acf = acf)
+      Tz <- Toeplitz(acf = acf)
     }
-    expect_equal(nrow(Toep), N)
-    expect_equal(ncol(Toep), N)
-    expect_equal(dim(Toep), c(N,N))
+    expect_equal(nrow(Tz), N)
+    expect_equal(ncol(Tz), N)
+    expect_equal(dim(Tz), c(N,N))
   }
 })

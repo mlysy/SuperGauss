@@ -8,7 +8,7 @@
 #define NormalToeplitz_h 1
 
 #include "Toeplitz.h"
-# define logPI 0.49714987269L // log of PI value
+# define log2Pi 1.83787706641L // log of 2 PI value
 
 /// Compute \f$\text{tr}(L U)\f$, where \f$L\f$ is a lower triangular Toeplitz
 /// matrix and \f$U\f$ is a upper triangular Toeplitz matrix. It is an
@@ -153,6 +153,10 @@ inline int NormalToeplitz::dim() {
 
 inline double NormalToeplitz::trace_deriv(double* acf0) {
 	double trace;
+	if(!acf0[0]) {
+		return 0.0;
+	}
+
 	if (n > 1) { // GSchur algorithm only supports N > 1 case.
 		if (!has_solve) {
 			solve_setup();
@@ -197,6 +201,10 @@ inline double NormalToeplitz::trace_deriv(double* acf0) {
 
 /// Function for another trace computation
 inline double NormalToeplitz::trace_hess(double* acf1, double* acf2) {
+	if(!(acf2[0] * acf1[0])) {
+		return 0.0;
+	}
+
 	double trace2 = 1;
 	if (n > 1) {
 		// GSchur algorithm only supports N > 1 case.
@@ -275,7 +283,7 @@ inline double NormalToeplitz::logdens(double* z, double* acf) {
 	setAcf(acf); // Tz = Toeplitz(acf)
 	solve(vec1, z); // vec1 = Tz^{-1} * z
 	ldens = vecProd(z, vec1, n); // ldens = t(z) * Tz^{-1} * z
-	ldens += logDet() + n * logPI;
+	ldens += logDet() + n * log2Pi;
 	ldens *= -0.5;
 	return ldens;
 }
@@ -419,7 +427,7 @@ inline double NormalToeplitz::logdens(double* z, Toeplitz* Tz) {
 	// acf is already stored in Tz
 	Tz->solveVec(vec1, z); // vec1 = Tz^{-1} * z
 	ldens = vecProd(z, vec1, N_); // ldens = t(z) * Tz^{-1} * z
-	ldens += Tz->logDet() + N_ * logPI;
+	ldens += Tz->logDet() + N_ * log2Pi;
 	ldens *= -0.5;
 	return ldens;
 }

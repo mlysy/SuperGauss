@@ -14,7 +14,7 @@
 .NormalToeplitz$lock("npara")
 # internal constructor
 .NormalToeplitz$methods(initialize = function(n, p) {
-  cpp_ptr <<- .Toeplitz_constructor(n, p)
+  cpp_ptr <<- .NormalToeplitz_constructor(n, p)
   size <<- n
   npara <<- p
 })
@@ -23,7 +23,6 @@
 #' @rdname NormalToeplitz-class
 #' @param n Size of the Toeplitz matrix.
 #' @param p Number of unknown parameters.
-#' @param hasToep Flag indicating whether Toeplitz member is pre-generated.
 #' @return A \code{NormalToeplitz} object.
 #' @export
 NormalToeplitz <- function(n, p) {
@@ -41,11 +40,11 @@ NormalToeplitz <- function(n, p) {
 ##   .NormalToeplitz_logdens(x$cpp_ptr, y, z)
 ## })
 .NormalToeplitz$methods(logdens = function(z, acf) {
-  if(length(acf) != size) {
-    stop("acf has wrong length.")
-  }
   if(length(z) != size) {
     stop("z has wrong length.")
+  }
+  if(length(acf) != size) {
+    stop("acf has wrong length.")
   }
   .NormalToeplitz_logdens(cpp_ptr, z, acf)
 })
@@ -58,14 +57,14 @@ NormalToeplitz <- function(n, p) {
 ##   .NormalToeplitz_grad(x$cpp_ptr, z, dzdt, y, dacfdt)
 ## })
 .NormalToeplitz$methods(grad = function(z, dz, acf, dacf) {
-  if(length(acf) != size) {
-    stop("acf has wrong length.")
-  }
   if(length(z) != size) {
     stop("z has wrong length.")
   }
   if(!all(dim(dz) == c(size, npara))) {
     stop("dz has wrong dimensions.")
+  }
+  if(length(acf) != size) {
+    stop("acf has wrong length.")
   }
   if(!all(dim(dacf) == c(size, npara))) {
     stop("dacf has wrong dimensions.")
@@ -81,9 +80,28 @@ NormalToeplitz <- function(n, p) {
 ##   .NormalToeplitz_hess(x$cpp_ptr, z, dzdt, d2zdt, y, dacfdt, d2acfdt)
 ## })
 .NormalToeplitz$methods(hess = function(z, dz, d2z, acf, dacf, d2acf) {
-  # FIXME: argument checking???
+
+  if(length(z) != size) {
+    stop("z has wrong length.")
+  }
+  if(!all(dim(dz) == c(size, npara))) {
+    stop("dz has wrong dimensions.")
+  }
+  if(!all(dim(d2z) == c(size, npara, npara))) {
+    stop("d2z has wrong dimensions.")
+  }
+  if(length(acf) != size) {
+    stop("acf has wrong length.")
+  }
+  if(!all(dim(dacf) == c(size, npara))) {
+    stop("dacf has wrong dimensions.")
+  }
+  if(!all(dim(d2acf) == c(size, npara, npara))) {
+    stop("d2acf has wrong dimensions.")
+  }
   .NormalToeplitz_hess(cpp_ptr, z, dz, d2z, acf, dacf, d2acf)
 })
+
 
 # Full gradient of log-density
 ## #' @export
@@ -91,6 +109,17 @@ NormalToeplitz <- function(n, p) {
 ##           function(x, z, y) {
 ##   .NormalToeplitz_grad_full(x$cpp_ptr, z, y)
 ## })
+.NormalToeplitz$methods(grad_full = function(z, acf) {
+  
+  if(length(z) != size) {
+    stop("z has wrong length.")
+  }
+  if(length(acf) != size) {
+    stop("acf has wrong length.")
+  }
+  
+  .NormalToeplitz_grad_full(cpp_ptr, z, acf)
+})
 
 #' # Overloaded Log-density function
 #' #' @export

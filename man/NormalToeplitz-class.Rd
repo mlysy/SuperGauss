@@ -13,8 +13,6 @@ NormalToeplitz(n, p)
 \item{n}{Size of the Toeplitz matrix.}
 
 \item{p}{Number of unknown parameters.}
-
-\item{hasToep}{Flag indicating whether Toeplitz member is pre-generated.}
 }
 \value{
 A \code{NormalToeplitz} object.
