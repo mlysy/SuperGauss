@@ -2,8 +2,6 @@
 
 export(NormalToeplitz)
 export(PCG)
-export(Snorm.grad)
-export(Snorm.hess)
 export(Toeplitz)
 export(acf2incr)
 export(acf2msd)

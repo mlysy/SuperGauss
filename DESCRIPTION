@@ -27,8 +27,6 @@ Collate:
     'NormalToeplitz.R'
     'PCG.R'
     'RcppExports.R'
-    'Snorm-grad.R'
-    'Snorm-hess.R'
     'SuperGauss.R'
     'Toep-mult.R'
     'acf2incr.R'
