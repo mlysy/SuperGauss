@@ -1,6 +1,7 @@
 library(SuperGauss)
 source("test-functions.R")
-context("Multiply")
+
+context("Toeplitz - Product.")
 
 nrep <- 10
 test_that("Toeplitz-Matrix multiplication", {

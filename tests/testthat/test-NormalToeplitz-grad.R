@@ -2,7 +2,7 @@ library(SuperGauss)
 library(numDeriv)
 source("test-functions.R")
 
-context("Density")
+context("NormalToeplitz - Gradient.")
 nrep <- 10
 
 test_that("The GSchur algorithm returns the correct density", {

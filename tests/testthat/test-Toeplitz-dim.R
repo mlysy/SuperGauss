@@ -1,7 +1,7 @@
 library(SuperGauss)
 source("test-functions.R")
 
-context("Dimensions")
+context("Toeplitz - Dimensions.")
 
 test_that("dim/nrow/ncol", {
   case.par <- expand.grid(N = round(abs(rnorm(n = 10, mean = 50, sd = 10))),

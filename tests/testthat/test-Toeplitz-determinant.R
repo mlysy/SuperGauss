@@ -1,7 +1,7 @@
 library(SuperGauss)
 source("test-functions.R")
 
-context("Determinant")
+context("Toeplitz - Determinant.")
 
 ## Test the determinant using Ammar-Gragg's GSchur algorithm.
 

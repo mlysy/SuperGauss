@@ -153,13 +153,17 @@ inline int NormalToeplitz::dim() {
 
 inline double NormalToeplitz::trace_deriv(double* acf0) {
 	double trace;
-	if(!acf0[0]) {
-		return 0.0;
-	}
 
 	if (n > 1) { // GSchur algorithm only supports N > 1 case.
 		if (!has_solve) {
 			solve_setup();
+		}
+
+		// check first term to avoid singularity
+		bool sng = false;
+		if (fabs(acf0[0]) < 0.0001) {
+			sng = true;
+			acf0[0] += 1;
 		}
 
 		std::copy(acf0, acf0 + n, U1);
@@ -190,6 +194,16 @@ inline double NormalToeplitz::trace_deriv(double* acf0) {
 		// trace
 		trace /= Gs->delta[0];
 		trace /= acf0[0];
+
+		if (sng) {
+			double t0 = 0.0;
+			for (int ii = 0; ii < n; ii++) {
+				t0 += (n - 2 * ii) * Gs->delta[ii] * Gs->delta[ii];
+			}
+			trace -= t0 / Gs->delta[0];
+			acf0[0] -= 1;
+
+		}
 	}
 
 	else {
@@ -201,15 +215,17 @@ inline double NormalToeplitz::trace_deriv(double* acf0) {
 
 /// Function for another trace computation
 inline double NormalToeplitz::trace_hess(double* acf1, double* acf2) {
-	if(!(acf2[0] * acf1[0])) {
-		return 0.0;
-	}
-
-	double trace2 = 1;
+	double trace2;
 	if (n > 1) {
 		// GSchur algorithm only supports N > 1 case.
 		if (!has_solve) {
 			solve_setup();
+		}
+
+		bool sng = false;
+		if (fabs(acf2[0]) < 0.0001) {
+			sng = true;
+			acf2[0] += 1;
 		}
 		
 		// we store the negative derivative of delta in vector phi, where phi = solve(acf) * toep(acf1) * delta
@@ -264,6 +280,20 @@ inline double NormalToeplitz::trace_hess(double* acf1, double* acf2) {
 
 		trace2 += 2 * (k1 - k2);
 		trace2 /= Gs->delta[0];
+
+		if (sng) {
+			double t0 = 0.0;
+			for (int ii = 0; ii < n; ii++) {
+				t0 += (n - 2 * ii) * Gs->delta[ii] * phi[ii];
+			}
+			trace2 -= 2 * t0 / Gs->delta[0];
+			t0 = 0.0;
+			for (int ii = 0; ii < n; ii++) {
+				t0 += (n - 2 * ii) * Gs->delta[ii] * Gs->delta[ii];
+			}
+			trace2 += t0 * phi[0] / Gs->delta[0] / Gs->delta[0];
+			acf2[0] -= 1;
+		}
 		
 	}
 	else {

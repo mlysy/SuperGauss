@@ -2,7 +2,7 @@ library(SuperGauss)
 library(numDeriv)
 source("test-functions.R")
 
-context("Density")
+context("NormalToeplitz - Hessian matrix.")
 
 nrep <- 10
 test_that("The GSchur algorithm returns the correct density", {
@@ -39,7 +39,7 @@ test_that("The GSchur algorithm returns the correct density", {
     hmat1 <- matrix(c(h11, h12, h21, h22), 2, 2)
     hmat2 <- Nt$hess(z = X - f, dz = dz, d2z = d2z, acf = acf, dacf = dacf, d2acf = d2acf)
     
-    expect_equal(hmat1, hmat2)
+    expect_equal(max(abs(hmat1 - hmat2)), 0, tolerance = 1e-4)
   })
 })
 

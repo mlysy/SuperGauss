@@ -2,7 +2,7 @@ library(SuperGauss)
 library(mvtnorm)
 source("test-functions.R")
 
-context("Density")
+context("Toeplitz - Density function.")
 
 nrep <- 10
 test_that("The GSchur algorithm returns the correct density", {

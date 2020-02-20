@@ -1,7 +1,7 @@
 library(SuperGauss)
 source("test-functions.R")
 
-context("Density")
+context("NormalToeplitz - Full gradient for Auto-Diff algorithms.")
 
 nrep <- 10
 test_that("The GSchur algorithm returns the correct density", {

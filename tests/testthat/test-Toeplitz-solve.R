@@ -1,6 +1,7 @@
 library(SuperGauss)
 source("test-functions.R")
-context("Solve")
+
+context("Toeplitz - Solve.")
 
 nrep <- 10
 test_that("Toeplitz-matrix inversion", {

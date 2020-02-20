@@ -1,7 +1,7 @@
 library(SuperGauss)
 source("test-functions.R")
 
-context("PCG-Solve")
+context("Solve Toeplitz systems using PCG algorithm.")
 
 nrep <- 10
 test_that("PCG-method inversion", {
@@ -19,7 +19,7 @@ test_that("PCG-method inversion", {
       Tmat <- toeplitz(acf)
       Z <- solve(Tmat, X)
       if(cp$b) {
-        expect_equal(max(abs((Tmat %*% P1$solve(acf, X, ntol) - X) / Z)), 0 , tolerance = 1e-6)
+        expect_equal(max(abs((Tmat %*% P1$solve(acf, X, ntol) - X) / Z)), 0, tolerance = 1e-6)
       } else {
         expect_equal(max(abs((P1$solve(acf, X, ntol)- Z) / Z)), 0, tolerance = 1e-6)
       }

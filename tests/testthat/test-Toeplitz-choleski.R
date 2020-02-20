@@ -1,7 +1,7 @@
 library(SuperGauss)
 source("test-functions.R")
 
-context("Cholesky Decomposition")
+context("Cholesky Decomposition using Levinson's algorithm.")
 
 ## Test the Cholesky decomposition results using Levinson's algorithm.
 
