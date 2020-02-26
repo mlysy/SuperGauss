@@ -1,21 +1,21 @@
-#' @title Constructor and methods for Toeplitz matrix objects.
+#' Constructor and methods for Toeplitz matrix objects.
 #'
-#' @description The \code{Toeplitz} class contains efficient methods for linear algebra with symmetric positive definite (i.e., variance) Toeplitz matrices.
+#' The `Toeplitz` class contains efficient methods for linear algebra with symmetric positive definite (i.e., variance) Toeplitz matrices.
 #'
 #' @aliases setAcf getAcf traceT2 traceT4 show.Toeplitz %*% determinant solve %*%,ANY,Toeplitz-method %*%,Toeplitz,ANY-method determinant,Toeplitz-method dim,Toeplitz-method ncol,Toeplitz-method nrow,Toeplitz-method show,Toeplitz-method solve,Toeplitz-method
 #' @section Methods:
-#' If \code{Toep} is a \code{Toeplitz} object with first row/column given by \code{acf}, then:
+#' If `Toep` is a `Toeplitz` object with first row/column given by `acf`, then:
 #' \describe{
-#' \item{\code{Toep$setAcf(acf)}}{Sets the autocorrelation of the matrix.}
-#' \item{\code{Toep$getAcf()}}{Gets the autocorrelation of the matrix.}
-#' \item{\code{nrow(Toep)}, \code{ncol(Toep)}, \code{dim(Toep)}}{Selected dimension(s) of the matrix.}
-#' \item{\code{Toep \%*\% X}, \code{X \%*\% Toep}}{Toeplitz-Matrix and Matrix-Toeplitz multiplication.  Also works if \code{X} is a vector.}
-#' \item{\code{solve(Toep, X)}, \code{solve(Toep)}}{Solves Toeplitz systems of equations.  When second argument is missing, returns the inverse of the Toeplitz matrix.}
-#' \item{\code{determinant(Toep)}}{Log-determinant of the Toeplitz matrix, i.e., same thing as \code{log(det(toeplitz(acf)))}.}
-#' \item{\code{Toep$traceT2(acf2)}}{If \code{T1 == toeplitz(acf)} and \code{T2 == toeplitz(acf2)}, computes the trace of \code{solve(T1, T2)}.  This is used in the computation of the gradient of Gaussian likelihoods with Toeplitz variance matrix.}
-#' \item{\code{Toep$traceT4(acf2, acf3)}}{If \code{T1 == toeplitz(acf)}, \code{T2 == toeplitz(acf2)}, and \code{T3 == toeplitz(acf3)}, computes the trace of \code{solve(T1, T2) \%*\% solve(T1, T3)}.  This is used in the computation of the Hessian of Gaussian likelihoods with Toeplitz variance matrix.}
+#' \item{`Toep$setAcf(acf)`}{Sets the autocorrelation of the matrix.}
+#' \item{`Toep$getAcf()`}{Gets the autocorrelation of the matrix.}
+#' \item{`nrow(Toep)`, `ncol(Toep)`, `dim(Toep)`}{Selected dimension(s) of the matrix.}
+#' \item{`Toep \%*\% X`, `X \%*\% Toep`}{Toeplitz-Matrix and Matrix-Toeplitz multiplication.  Also works if `X` is a vector.}
+#' \item{`solve(Toep, X)`, `solve(Toep)`}{Solves Toeplitz systems of equations.  When second argument is missing, returns the inverse of the Toeplitz matrix.}
+#' \item{`determinant(Toep)`}{Log-determinant of the Toeplitz matrix, i.e., same thing as `log(det(toeplitz(acf)))`.}
+#' \item{`Toep$traceT2(acf2)`}{If `T1 == toeplitz(acf)` and `T2 == toeplitz(acf2)`, computes the trace of `solve(T1, T2)`.  This is used in the computation of the gradient of Gaussian likelihoods with Toeplitz variance matrix.}
+#' \item{`Toep$traceT4(acf2, acf3)`}{If `T1 == toeplitz(acf)`, `T2 == toeplitz(acf2)`, and `T3 == toeplitz(acf3)`, computes the trace of `solve(T1, T2) \%*\% solve(T1, T3)`.  This is used in the computation of the Hessian of Gaussian likelihoods with Toeplitz variance matrix.}
 #' }
-#' @details It is assumed that the autocorrelation of the \code{Toeplitz} object defines a valid (i.e., positive definite) variance matrix.  The multiplication algorithms still work when this is not the case but the other algorithms do not (return values typically contain \code{NaN}s).
+#' @details It is assumed that the autocorrelation of the `Toeplitz` object defines a valid (i.e., positive definite) variance matrix.  The multiplication algorithms still work when this is not the case but the other algorithms do not (return values typically contain `NaN`s).
 #' @examples
 #' # construction
 #' acf <- exp(-(1:5))
@@ -50,7 +50,7 @@
 #' @rdname Toeplitz-class
 #' @param n Size of the Toeplitz matrix.
 #' @param acf Autocorrelation vector of Toeplitz matrix.
-#' @return A \code{Toeplitz} object.
+#' @return A `Toeplitz` object.
 #' @export
 Toeplitz <- function(n, acf) {
   if(missing(n)){
@@ -62,7 +62,6 @@ Toeplitz <- function(n, acf) {
   }
   Tz
 }
-
 
 #--- custom methods ------------------------------------------------------------
 
@@ -97,19 +96,19 @@ setMethod("show", "Toeplitz", function(object) {
 
 # ncol
 #' @export
-setMethod("ncol", "Toeplitz", function(x){
+setMethod("ncol", "Toeplitz", function(x) {
   x$size
 })
 
 # nrow
 #' @export
-setMethod("nrow", "Toeplitz", function(x){
+setMethod("nrow", "Toeplitz", function(x) {
   x$size
 })
 
 # dim
 #' @export
-setMethod("dim", "Toeplitz", function(x){
+setMethod("dim", "Toeplitz", function(x) {
   rep(x$size, 2)
 })
 
@@ -178,3 +177,44 @@ setMethod("solve", "Toeplitz", function(a, b, ...) {
 # now make methods display arguments
 .DollarNames.Toeplitz <- function(x, pattern)
     grep(pattern, getRefClass(class(x))$methods(), value=TRUE)
+
+
+#--- new method ----------------------------------------------------------------
+
+
+## #' @exportClass Toeplitz_cpp
+## Rcpp::setRcppClass("Toeplitz_cpp", "Toeplitz_cpp", module = "Toeplitz")
+
+## #' new Toeplitz Class
+## #'
+## #' @export
+## .Toeplitz_R <- setRefClass("Toeplitz_R",
+##                            contains = "Toeplitz_cpp",
+##                            fields = list(size = "integer"),
+##                            methods = list(
+##                              initialize = function(n) {
+##                                callSuper(n)
+##                                size <<- n
+##                              },
+##                              setAcf = function(acf) {
+##                                if(length(acf) != size) {
+##                                  stop("acf has wrong length.")
+##                                }
+##                                callSuper(acf)
+##                              }
+##                            ))
+
+## #' New exported constructor
+## #'
+## #' @export
+## Toeplitz_R <- function(n, acf) {
+##   if(missing(n)){
+##     n <- length(acf)
+##   }
+##   Tz <- .Toeplitz_R$new(n)
+##   if(!missing(acf)) {
+##     Tz$setAcf(acf)
+##   }
+##   Tz
+## }
+

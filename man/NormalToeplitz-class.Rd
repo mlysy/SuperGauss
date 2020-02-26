@@ -5,7 +5,7 @@
 \alias{NormalToeplitz-class}
 \alias{.NormalToeplitz}
 \alias{NormalToeplitz}
-\title{Constructor and methods for NormalToeplitz objects.}
+\title{Constructor and methods for \code{NormalToeplitz} objects.}
 \usage{
 NormalToeplitz(n, p)
 }
@@ -18,9 +18,9 @@ NormalToeplitz(n, p)
 A \code{NormalToeplitz} object.
 }
 \description{
-
+Constructor and methods for \code{NormalToeplitz} objects.
 }
 \details{
-It is assumed that the autocorrelation of the \code{Toeplitz} object defines a valid (i.e., positive definite) variance matrix.  The multiplication algorithms still work when this is not the case but the other algorithms do not (return values typically contain \code{NaN}s).
+It is assumed that the autocorrelation of the \code{\link{Toeplitz}} object defines a valid (i.e., positive definite) variance matrix.  The multiplication algorithms still work when this is not the case but the other algorithms do not (return values typically contain \code{NaN}s).
 }
 
