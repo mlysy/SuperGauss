@@ -8,151 +8,138 @@
 #define VectorFFT_h 1
 
 // usual header
-#include <Rcpp.h>
 #include <complex>
 #include <fftw3.h>
-#include <iostream>
+// #include <Rcpp.h>
+// #include <iostream>
 
-/// Forward FFT from real to complex.
+/// FFT for real to complex and corresponding iFFT for complex to real.
+///
+/// @brief Allocates memory for the corresponding `fftw` operations within the object, copies memory in and out each time the FFT and iFFT members are called.
 class VectorFFT {
 private:
-	fftw_plan planfor;  ///< plan for forward FFT.
-	fftw_plan planback;  ///< plan for backward FFT.
-
-	double* x_;
-	fftw_complex* y_;
-	int nr;
+  typedef std::complex<double> complexd; ///< Typedef for complex double
+  fftw_plan planfwd_;  ///< Plan for forward FFT.
+  fftw_plan planback_;  ///< Plan for backward FFT.
+  fftw_complex* y_; ///< Where to compute FFT.
+  double* x_; ///< Where to compute iFFT.
+  int n_; ///< Size of input vector.
+  int npad_; ///< Padded size of input.
 public:
-	int n_;         ///< Size of input vector.
-
-	/// Constructor.
-	VectorFFT(int);
-	/// Destructor.
-	~VectorFFT();
-	/// Perform the FFT on the input data.
-	void fft(std::complex<double>*, double*);
-	/// Perform the inverse FFT on the input data.
-	void ifft(double*, std::complex<double>*);
-	/// Return the pointer of x_
-	double* get_ptr_x_();
-	/// Return the pointer of y_
-	fftw_complex* get_ptr_y_();
-
+  /// Constructor.
+  VectorFFT(int n);
+  /// Destructor.
+  ~VectorFFT();
+  /// Perform the FFT on the input data.
+  void fft(std::complex<double>* y, const double* x);
+  /// Perform the inverse FFT on the input data.
+  void ifft(double* x, const std::complex<double>* y);
+  /// Get size of FFT.
+  int size() {return n_;}
 };
 
-/// @param[in] n Size of the input vector.
+/// @param[in] n Size of FFT/iFFT to be computed.
 inline VectorFFT::VectorFFT(int n) {
-	n_ = n;
-	nr = ceil((double)(n + 1) / 2);
-	x_ = new double[n];
-	std::fill(x_, x_ + n, 0);
-	y_ = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * n);
-	planfor = fftw_plan_dft_r2c_1d(n, x_, y_, FFTW_ESTIMATE);
-	planback = fftw_plan_dft_c2r_1d(n, y_, x_, FFTW_ESTIMATE);
-	return;
+  n_ = n;
+  npad_ = ceil((double)(n + 1) / 2);
+  x_ = new double[n];
+  std::fill(x_, x_ + n, 0);
+  y_ = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * n);
+  planfwd_ = fftw_plan_dft_r2c_1d(n, x_, y_, FFTW_ESTIMATE);
+  planback_ = fftw_plan_dft_c2r_1d(n, y_, x_, FFTW_ESTIMATE);
+  return;
 }
 
 inline VectorFFT::~VectorFFT() {
-	delete[] x_;
-	fftw_free(y_);
-	fftw_destroy_plan(planfor);
-	fftw_destroy_plan(planback);
+  delete[] x_;
+  fftw_free(y_);
+  fftw_destroy_plan(planfwd_);
+  fftw_destroy_plan(planback_);
 }
 
-/// The result gets stored in the object member `out` of type `fftw_complex`,
-/// which is a 2-d array.  Elements are accessed via e.g., `out[0][1]`,
-/// `out[n-1][0]`.
+/// Calculates `y = FFT(x)`.
 ///
-/// y = fft(x)
-///
-/// @param[out] y Output complex vector.
-/// @param[in] x Input real vector.
-/// @param[in] nn Integer, indicating the size of input.
-inline void VectorFFT::fft(std::complex<double>* y, double* x) {
-	std::copy(x, x + n_, x_);
-	fftw_execute(planfor);
-	for (int ii = 0; ii < nr; ++ii) {
-		y[ii] = std::complex<double>(y_[ii][0], y_[ii][1]);
-	}
-	return;
+/// @param[out] y Complex vector output.
+/// @param[in] x  Real vector input.
+inline void VectorFFT::fft(std::complex<double>* y,
+			   const double* x) {
+  std::copy(x, x + n_, x_);
+  fftw_execute(planfwd_);
+  for (int ii = 0; ii < npad_; ++ii) {
+    y[ii] = complexd(y_[ii][0], y_[ii][1]);
+  }
+  return;
 }
 
-/// The result gets stored in the object member `out` of type `double`, which is
-/// a 1-d array.  Elements are accessed via e.g., `out[0]`, `out[n-1]`.
+/// Calculates `x = iFFT(y)`.
 ///
-/// y = ifft(x)
-///
-/// @param[out] y Output real vector.
-/// @param[in] x Input complex vector.
-inline void VectorFFT::ifft(double* y, std::complex<double>* x) {
-	for (int ii = 0; ii < nr; ++ii) {
-		y_[ii][0] = real(x[ii]);
-		y_[ii][1] = imag(x[ii]);
-	}
+/// @param[out] x Real vector output.
+/// @param[in] y Complex vector input.
+inline void VectorFFT::ifft(double* x, const std::complex<double>* y) {
+  for (int ii = 0; ii < npad_; ++ii) {
+    y_[ii][0] = real(y[ii]);
+    y_[ii][1] = imag(y[ii]);
+  }
 
-	fftw_execute(planback);
-	for (int ii = 0; ii < n_; ++ii) {
-		y[ii] = x_[ii] / n_;
-	}
-	return;
+  fftw_execute(planback_);
+  for (int ii = 0; ii < n_; ++ii) {
+    x[ii] = x_[ii] / n_;
+  }
+  return;
 }
 
-/// Return the pointer of x_
-inline double* VectorFFT::get_ptr_x_() {
-	return x_;
-}
-/// Return the pointer of y_
-inline fftw_complex* VectorFFT::get_ptr_y_() {
-	return y_;
-}
-
-
-/// Product between `complex<double>` vectors.
+/// Elementwise product between `std::complex<double>` arrays.
 ///
-/// Result is `z = x * y`.
+/// Result is `z[i] = x[i] * y[i]`.
 ///
-/// @param[out] z Output complex vector, 2-d array.
-/// @param[in] x First input complex vector, 2-d array.
-/// @param[in] y Second input complex vector, 2-d array.
-/// @param[in] n Size of inputs (integer).
-inline void Complex_Mult(std::complex<double>* z, std::complex<double>* x, std::complex<double>* y,
-	int n) {
-	for (int ii = 0; ii < n; ++ii) {
-		z[ii] = x[ii] * y[ii];
-	}
-	return;
+/// @param[out] z Output complex array.
+/// @param[in] x First input complex array.
+/// @param[in] y Second input complex array.
+/// @param[in] n Length of each array.
+inline void Complex_Mult(std::complex<double>* z,
+			 const std::complex<double>* x,
+			 const std::complex<double>* y,
+			 int n) {
+  for (int ii = 0; ii < n; ++ii) {
+    z[ii] = x[ii] * y[ii];
+  }
+  return;
 }
 
-/// In-place subtract product between `complex<double>` vectors.
+/// Elementwise subtract-product between `std::complex<double>` vectors.
 ///
-/// Result is `z -= x * y`.
+/// Result is `z[i] -= x[i] * y[i]`.
 ///
-/// @param[out] z Output complex vector, 2-d array.
-/// @param[in] x First input complex vector, 2-d array.
-/// @param[in] y Second input complex vector, 2-d array.
-/// @param[in] n Size of inputs (integer).
-inline void Complex_Mult_Minus(std::complex<double>* z, std::complex<double>* x,
-	std::complex<double>* y, int n) {
-	for (int ii = 0; ii < n; ++ii) {
-		z[ii] -= x[ii] * y[ii];
-	}
-	return;
+/// @param[out] z Output complex array.
+/// @param[in] x First input complex array.
+/// @param[in] y Second input complex array.
+/// @param[in] n Length of each array.
+inline void Complex_Mult_Minus(std::complex<double>* z,
+			       const std::complex<double>* x,
+			       const std::complex<double>* y,
+			       int n) {
+  for (int ii = 0; ii < n; ++ii) {
+    z[ii] -= x[ii] * y[ii];
+  }
+  return;
 }
 
-/// In-place sum product between `complex<double>` vectors.
+/// Elementwise add-product between `std::complex<double>` arrays.
 ///
-/// Result is `z += x * y`.
+/// Result is `z[i] += x[i] * y[i]`.
 ///
-/// @param[out] z Output complex vector, 2-d array.
-/// @param[in] x First input complex vector, 2-d array.
-/// @param[in] y Second input complex vector, 2-d array.
-/// @param[in] n Size of inputs (integer).
-inline void Complex_Mult_Plus(std::complex<double>* z, std::complex<double>* x,
-	std::complex<double>* y, int n) {
-	for (int ii = 0; ii < n; ++ii) {
-		z[ii] += x[ii] * y[ii];
-	}
-	return;
+/// @param[out] z Output complex array.
+/// @param[in] x First input complex array.
+/// @param[in] y Second input complex array.
+/// @param[in] n Length of each array.
+inline void Complex_Mult_Plus(std::complex<double>* z,
+			      const std::complex<double>* x,
+			      const std::complex<double>* y,
+			      int n) {
+  for (int ii = 0; ii < n; ++ii) {
+    z[ii] += x[ii] * y[ii];
+  }
+  return;
 }
 
 /// Steps for polynomial convolution: For two polynomials `a(x) = a_0 + a_1 * x
