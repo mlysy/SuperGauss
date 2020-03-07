@@ -5,7 +5,7 @@ context("Toeplitz - Solve.")
 
 nrep <- 10
 test_that("Toeplitz-matrix inversion", {
-  replicate(n = nrep, expr = {  
+  replicate(n = nrep, expr = {
     N <- round(abs(rnorm(n = 1, mean = 100, sd = 10)))
     d <- round(abs(rnorm(n = 1, mean = 10, sd = 3)))
     Toep <- Toeplitz(N)
@@ -21,7 +21,7 @@ test_that("Toeplitz-matrix inversion", {
       if(cp$b) {
         expect_equal(Tmat %*% solve(Toep, X), X, tolerance = 1e-5)
       } else {
-        expect_equal(Toep %*% solve(Toep), diag(N), tolerance = 1e-5)
+        expect_equal(Tmat %*% solve(Toep), diag(N), tolerance = 1e-5)
       }
     }
   })
