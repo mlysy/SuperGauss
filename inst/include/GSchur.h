@@ -181,14 +181,14 @@ private:
   /// Merge pieces of Schur algorithm contained in `gsb_`.
   void merge_step();
 public:
-  double* delta;  ///< The first column of `Toeplitz(acf)^{-1}`.
-  double ldV;   ///< The log-determinant `log(|Toeplitz(acf)|)`.
+  // double* delta;  ///< The first column of `Toeplitz(acf)^{-1}`.
+  // double ldV;   ///< The log-determinant `log(|Toeplitz(acf)|)`.
   /// Constructor.
   GSchurN(int N, int bmod);
   /// Destructor.
   ~GSchurN();
   /// Perform the Generalized Schur algorithm on the input data.
-  void compute(const double* acf);
+  void compute(double* delta, double& ldV, const double* acf);
 };
 
 /// @param[in] N Size of Toeplitz matrix (input to GSchur algorithm is `N-1`).
@@ -198,7 +198,7 @@ inline GSchurN::GSchurN(int N, int bmod = 64) {
   bmod_ = bmod;
   alpha_ = new double[N_ - 1];
   beta_ = new double[N_ - 1];
-  delta = new double[N_];
+  // delta = new double[N_];
   /// sbin_ = (s_1, s_2, ..., s_k)
   sbin_ = int2bin(N_ - 1, bmod_);
   nbin_ = sbin_.size();
@@ -227,7 +227,7 @@ inline GSchurN::GSchurN(int N, int bmod = 64) {
 inline GSchurN::~GSchurN() {
   delete[] alpha_;
   delete[] beta_;
-  delete[] delta;
+  // delete[] delta;
   for (int ii = 0; ii <= log2(ceil((double)sbin_[nbin_ - 1] / bmod_)); ++ii) {
     delete gsb_[ii];
   }
@@ -457,8 +457,10 @@ inline void GSchurN::merge_step() {
 
 /// First generates the input polynomials `alpha0` and `beta0` from the first column `acf` of a symmetric positive-definite Toeplitz matrix `Tz = Toeplitz(acf)`, then applies the Generalized Schur algorithm to each piece in the binary-module representation, and finally merges these pieces to produce the first column of `Tz^{-1}` and calculate the log-determinant of `Tz`. 
 ///
-/// @param[in] acf The first column of the Toeplitz matrix.
-inline void GSchurN::compute(const double* acf) {
+/// @param[out] delta The first column of `Tz^{-1}`.
+/// @param[out] ldV The log-determinant of `Tz`.
+/// @param[in] acf The first column of `Tz`.
+inline void GSchurN::compute(double* delta, double& ldV, const double* acf) {
   // generate alpha0 and beta0 from acf.
   for (int ii = 0; ii < N_ - 1; ++ii) {
     alpha_[ii] = -1 * acf[ii + 1];

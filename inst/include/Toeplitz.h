@@ -37,9 +37,11 @@ protected:
   double* acf_;    ///< First column of the Toeplitz matrix.
   double* tzcirc_; ///< Storage for Toeplitz circulant embedding.
   dcomplex* tzcirc_fft_; ///< FFT of Toeplitz circulant embedding.
+  double* delta_; ///< Storage for first column of the inverse-Toeplitz matrix.
+  double logdet_; ///< Storage for log-determinant of Toeplitz matrix.
+  double traceinv_;///< Trace of inverse-Toeplitz.
   GSchurN* gs_;     ///< Object to compute GSchur algorithm.
   VectorFFT* vfft_;   ///< Object for fft computations.
-  double traceinv_;///< Trace of inverse-Toeplitz.
   bool has_acf_;    ///< Boolean flag indicating whether input argument `acf_` has been modified.
   bool has_mult_;   ///< Boolean flag indicating whether multiplication-related FFT has been done.
   bool has_solve_;  ///< Boolean flag indicating whether inversion-related FFT has been done.
@@ -109,17 +111,18 @@ inline Toeplitz::Toeplitz(int N) {
     // GSchur algorithm only supports N > 1
     gs_ = new GSchurN(N_);
     vfft_ = new VectorFFT(2 * N_);
-    tzcirc_ = new double[2 * N_]; /// storage for circulant embedding
+    tzcirc_ = new double[2 * N_];
     tzcirc_fft_ = new dcomplex[2 * N_];
+    delta_ = new double[N_];
     L1_fft_ = new dcomplex[2 * N_];
     tL1_fft_ = new dcomplex[2 * N_];
     L2_fft_ = new dcomplex[2 * N_];
     tL2_fft_ = new dcomplex[2 * N_];
-    vec1_ = new double[2 * N_]; /// storage for x
+    vec1_ = new double[2 * N_];
     vec1_fft_ = new dcomplex[2 * N_];
-    vec2_ = new double[2 * N_]; /// storage for y
+    vec2_ = new double[2 * N_];
     vec2_fft_ = new dcomplex[2 * N_];
-    vec3_ = new double[2 * N_]; /// storage for temporary vector
+    vec3_ = new double[2 * N_];
     vec3_fft_ = new dcomplex[2 * N_];
     vec4_ = new double[2 * N_];
     vec4_fft_ = new dcomplex[2 * N_];
@@ -241,24 +244,24 @@ inline void Toeplitz::solve_setup() {
   has_solve_ = true;
   if (N_ > 1) {
     // GSchur algorithm only supports N > 1 case.
-    gs_->compute(acf_);
+    gs_->compute(delta_, logdet_, acf_);
     /// tL1_fft_ stores the fft of the first column of the circulant embedding of upper triangular Toeplitz matrix L_1'
-    z_[0] = gs_->delta[0];
+    z_[0] = delta_[0];
     std::fill(z_ + 1, z_ + N_ + 1, 0);
-    std::copy(gs_->delta + 1, gs_->delta + N_, z_ + N_ + 1);
+    std::copy(delta_ + 1, delta_ + N_, z_ + N_ + 1);
     std::reverse(z_ + N_ + 1, z_ + 2 * N_);
     vfft_->fft(tL1_fft_, z_);
     /// L1_fft_ stores the fft of the first column of the circulant embedding of lower triangular Toeplitz matrix L_1
-    std::copy(gs_->delta, gs_->delta + N_, z_);
+    std::copy(delta_, delta_ + N_, z_);
     std::fill(z_ + N_, z_ + 2 * N_, 0);
     vfft_->fft(L1_fft_, z_); 
     /// tL2_fft_ stores the fft of the first column of the circulant embedding of upper triangular Toeplitz matrix L_2'
     std::fill(z_, z_ + N_ + 1, 0);
-    std::copy(gs_->delta + 1, gs_->delta + N_, z_ + N_ + 1);
+    std::copy(delta_ + 1, delta_ + N_, z_ + N_ + 1);
     vfft_->fft(tL2_fft_, z_);	
     /// L2_fft_ stores the fft of the first column of the circulant embedding of lower triangular Toeplitz matrix L_2
     std::fill(z_, z_ + 2 * N_, 0);
-    std::copy(gs_->delta + 1, gs_->delta + N_, z_ + 1);
+    std::copy(delta_ + 1, delta_ + N_, z_ + 1);
     std::reverse(z_ + 1, z_ + N_);
     vfft_->fft(L2_fft_, z_);
   }
@@ -306,7 +309,7 @@ inline void Toeplitz::solve(double* y, const double* x) {
     vfft_->ifft(x_, x_fft_);
     // y = (z_ - x_) / delta[1] = 1/delta[1] * (L1 * L1' * x_ - L2 * L2' * x_)
     for (int ii = 0; ii < N_; ++ii) {
-      y[ii] = (z_[ii] - x_[ii]) / gs_->delta[0];
+      y[ii] = (z_[ii] - x_[ii]) / delta_[0];
     }
   } else {
     // N = 1 case.
@@ -320,7 +323,7 @@ inline double Toeplitz::logDet() {
   if (!has_solve_) solve_setup();
   if (N_ > 1) {
     // GSchur algorithm only supports N > 1 case.
-    return gs_->ldV;
+    return logdet_;
   } else {
     // N = 1 case.
     return log(acf_[0]);
@@ -332,9 +335,9 @@ inline double Toeplitz::trace_inv() {
     if (!has_solve_) solve_setup();
     traceinv_ = 0.0;
     for (int ii = 0; ii < N_; ii++) {
-      traceinv_ += (N_ - 2 * ii) * gs_->delta[ii] * gs_->delta[ii];
+      traceinv_ += (N_ - 2 * ii) * delta_[ii] * delta_[ii];
     }
-    traceinv_ /= gs_->delta[0];
+    traceinv_ /= delta_[0];
     has_trace_ = true;
   }
   return traceinv_;
@@ -449,15 +452,15 @@ inline double Toeplitz::trace_deriv(const double* acf0) {
     vfft_->ifft(y_, y_fft_);
     trace += trace_LU(y_, y_, N_);
     // trace
-    trace /= gs_->delta[0];
+    trace /= delta_[0];
     trace /= acf00;
     if (sng) {
       trace -= trace_inv();
       // double t0 = 0.0;
       // for (int ii = 0; ii < N_; ii++) {
-      // 	t0 += (N_ - 2 * ii) * gs_->delta[ii] * gs_->delta[ii];
+      // 	t0 += (N_ - 2 * ii) * delta_[ii] * delta_[ii];
       // }
-      // trace -= t0 / gs_->delta[0];
+      // trace -= t0 / delta_[0];
       // acf0[0] -= 1;
 
     }
@@ -497,7 +500,7 @@ inline double Toeplitz::trace_hess(const double* acf1, const double* acf2) {
     bool sng = fabs(acf2[0] < 0.0001);
     if(sng) acf20 += 1.0;		
     // Store the negative derivative of delta in vector phi_, where phi_ = solve(acf_) * toep(acf1) * delta
-    product(phi_, gs_->delta, acf1);
+    product(phi_, delta_, acf1);
     solve(phi_, phi_);
     trace = trace_deriv(acf2);
     if(sng) trace += trace_inv();
@@ -512,7 +515,7 @@ inline double Toeplitz::trace_hess(const double* acf1, const double* acf2) {
     vfft_->fft(z_fft_, z_); // z_fft_ = fft(acf2_zero_)
     complex_mult(U1_fft_, x_fft_, z_fft_, N_ + 1);
     vfft_->ifft(U1_, U1_fft_); // U1_ = phi_ \conv acf2
-    std::copy(gs_->delta, gs_->delta + N_, y_);
+    std::copy(delta_, delta_ + N_, y_);
     std::fill(y_ + N_, y_ + 2 * N_, 0);
     vfft_->fft(y_fft_, y_); // y_fft_ = fft(delta_zero)
     complex_mult(U2_fft_, y_fft_, z_fft_, N_ + 1);
@@ -548,19 +551,19 @@ inline double Toeplitz::trace_hess(const double* acf1, const double* acf2) {
     kappa2 -= trace_LU(U1_, U2_, N_) / acf20;
     // finalize trace calculation
     trace += 2 * (kappa1 - kappa2);
-    trace /= gs_->delta[0];
+    trace /= delta_[0];
     if (sng) {
       double t0 = 0.0;
       for (int ii = 0; ii < N_; ii++) {
-	t0 += (N_ - 2 * ii) * gs_->delta[ii] * phi_[ii];
+	t0 += (N_ - 2 * ii) * delta_[ii] * phi_[ii];
       }
-      trace -= 2 * t0 / gs_->delta[0];
-      trace += trace_inv() * phi_[0] / gs_->delta[0];
+      trace -= 2 * t0 / delta_[0];
+      trace += trace_inv() * phi_[0] / delta_[0];
       // t0 = 0.0;
       // for (int ii = 0; ii < N_; ii++) {
-      // 	t0 += (N_ - 2 * ii) * gs_->delta[ii] * gs_->delta[ii];
+      // 	t0 += (N_ - 2 * ii) * delta_[ii] * delta_[ii];
       // }
-      // trace += t0 * phi_[0] / gs_->delta[0] / gs_->delta[0];
+      // trace += t0 * phi_[0] / delta_[0] / delta_[0];
       // acf2[0] -= 1;
     }		
   }
