@@ -18,7 +18,7 @@
 /// @brief Allocates memory for the corresponding `fftw` operations within the object, copies memory in and out each time the FFT and iFFT members are called.
 class VectorFFT {
 private:
-  typedef std::complex<double> complexd; ///< Typedef for complex double
+  typedef std::complex<double> dcomplex; ///< Typedef for complex double
   fftw_plan planfwd_;  ///< Plan for forward FFT.
   fftw_plan planback_;  ///< Plan for backward FFT.
   fftw_complex* y_; ///< Where to compute FFT.
@@ -42,16 +42,19 @@ public:
 inline VectorFFT::VectorFFT(int n) {
   n_ = n;
   npad_ = ceil((double)(n + 1) / 2);
-  x_ = new double[n];
+  // x_ = new double[n];
+  x_ = fftw_alloc_real(n);
   std::fill(x_, x_ + n, 0);
-  y_ = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * n);
+  // y_ = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * n);
+  y_ = fftw_alloc_complex(n);
   planfwd_ = fftw_plan_dft_r2c_1d(n, x_, y_, FFTW_ESTIMATE);
   planback_ = fftw_plan_dft_c2r_1d(n, y_, x_, FFTW_ESTIMATE);
   return;
 }
 
 inline VectorFFT::~VectorFFT() {
-  delete[] x_;
+  // delete[] x_;
+  fftw_free(x_);
   fftw_free(y_);
   fftw_destroy_plan(planfwd_);
   fftw_destroy_plan(planback_);
@@ -66,7 +69,7 @@ inline void VectorFFT::fft(std::complex<double>* y,
   std::copy(x, x + n_, x_);
   fftw_execute(planfwd_);
   for (int ii = 0; ii < npad_; ++ii) {
-    y[ii] = complexd(y_[ii][0], y_[ii][1]);
+    y[ii] = dcomplex(y_[ii][0], y_[ii][1]);
   }
   return;
 }

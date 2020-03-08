@@ -34,12 +34,16 @@ protected:
   typedef std::complex<double> dcomplex;
   // internal storage.  don't overwrite locally.
   int N_;        ///< Size of Toeplitz matrix.
+  int N2_;       ///< Size of FFT product.
+  int N3_;       ///< Size of other FFT product.
   double* acf_;    ///< First column of the Toeplitz matrix.
   double* tzcirc_; ///< Storage for Toeplitz circulant embedding.
   dcomplex* tzcirc_fft_; ///< FFT of Toeplitz circulant embedding.
   double* delta_; ///< Storage for first column of the inverse-Toeplitz matrix.
   double logdet_; ///< Storage for log-determinant of Toeplitz matrix.
   double traceinv_;///< Trace of inverse-Toeplitz.
+  dcomplex* vec_fft_; ///< FFT for convolutions.
+  double* vec_zero_; ///< Storage for zero-padding
   GSchurN* gs_;     ///< Object to compute GSchur algorithm.
   VectorFFT* vfft_;   ///< Object for fft computations.
   bool has_acf_;    ///< Boolean flag indicating whether input argument `acf_` has been modified.
@@ -68,9 +72,13 @@ protected:
   void mult_setup();    
   /// Prepare for solving linear systems.
   void solve_setup();
+  /// Convolution of real vectors from their Fourier inputs.
+  void conv_fft(double* z, const dcomplex* x_fft, const dcomplex* y_fft);
+  /// Zero-padded FFT of real vector.
+  void zero_fft(dcomplex* y_fft, double* x);
 public:
   /// Constructor.
-  Toeplitz(int N);  
+  Toeplitz(int N, int bmod);  
   /// Destructor.
   ~Toeplitz();
   /// Set the acf of the Toeplitz matrix.
@@ -100,8 +108,11 @@ public:
 };
 
 /// @param[in] N Size of Toeplitz matrix.
-inline Toeplitz::Toeplitz(int N) {
+/// @param[in] bmod Size of binary modulus for GSchur calculation.
+inline Toeplitz::Toeplitz(int N, int bmod = 5) {
   N_ = N;
+  N2_ = 2 * (N_ / 2 + 1);
+  N3_ = N2_; // N_ + 1;
   acf_ = new double[N_];
   has_acf_ = false;
   has_mult_ = false;
@@ -109,10 +120,12 @@ inline Toeplitz::Toeplitz(int N) {
   has_trace_ = false;
   if (N_ > 1) {
     // GSchur algorithm only supports N > 1
-    gs_ = new GSchurN(N_);
+    gs_ = new GSchurN(N_, bmod);
     vfft_ = new VectorFFT(2 * N_);
     tzcirc_ = new double[2 * N_];
     tzcirc_fft_ = new dcomplex[2 * N_];
+    vec_fft_ = new dcomplex[2 * N_];
+    // vec_zero_ = new double[2 * N_];
     delta_ = new double[N_];
     L1_fft_ = new dcomplex[2 * N_];
     tL1_fft_ = new dcomplex[2 * N_];
@@ -140,6 +153,8 @@ inline Toeplitz::~Toeplitz() {
     delete vfft_;
     delete[] tzcirc_;
     delete[] tzcirc_fft_;
+    delete[] vec_fft_;
+    // delete[] vec_zero_;
     delete[] L1_fft_;
     delete[] tL1_fft_;
     delete[] L2_fft_;
@@ -209,6 +224,28 @@ inline void Toeplitz::mult_setup() {
   return;
 }
 
+/// Calculates the convolution between length-`N_` vectors `x` and `y` based on their (zero-padded) FFT transformations `x_fft` and `y_fft`.  This is an elementwise multiplication of `x_fft` and `y_fft` followed by an iFFT back to the real domain.
+///
+/// @param[out] z Convolution output.
+/// @param[in] x_fft FFT of first input vector.
+/// @param[in] y_fft FFT of second input vector.
+inline void Toeplitz::conv_fft(double* z, const dcomplex* x_fft, const dcomplex* y_fft) {
+  complex_mult(vec_fft_, x_fft, y_fft, N2_);
+  vfft_->ifft(z, vec_fft_);
+  return;
+}
+
+/// Calculates the FFT of the length-`2N_` vector `[x, 0, ..., 0]`.
+///
+/// @param[out] y_fft FFT of zero-padded vector `x`.
+/// @param[in] x Input vector.
+///
+/// @warning Last `N_` elements of input vector `x` are _modified_.
+inline void Toeplitz::zero_fft(dcomplex* y_fft, double* x) {
+  std::fill(x + N_, x + 2 * N_, 0.0);
+  vfft_->fft(y_fft, x);
+}
+
 /// Product \f$ T \times x\f$ is computed efficiently by extending Toeplitz
 /// matrix \f$T\f$ into a circulant matrix, whose multiplication with vector can
 /// be done with Fast Fourier Transformation (FFT) in \f$O(n \log n) \f$ steps.
@@ -216,20 +253,22 @@ inline void Toeplitz::mult_setup() {
 /// @param[out] y Real vector of result.
 /// @param[in] x Real vector for product.
 inline void Toeplitz::mult(double* y, const double* x) {
-  // Pointers to temporary storage: `x_`, `x_fft_`, `y_`, `y_fft_`.
+  // Pointers to temporary storage: x_, x_fft_, y_.
   double* x_ = vec1_;
   dcomplex* x_fft_ = vec1_fft_;
   double* y_ = vec2_;
-  dcomplex* y_fft_ = vec2_fft_;
+  // dcomplex* y_fft_ = vec2_fft_;
   // tzcirc_ = [acf_, 0, rev(acf_[-1])]
   if(!has_mult_) mult_setup();
   // x_ = [x, 0]
   std::copy(x, x + N_, x_);
-  std::fill(x_ + N_, x_ + 2 * N_, 0);
-  vfft_->fft(x_fft_, x_);
+  // std::fill(x_ + N_, x_ + 2 * N_, 0.0);
+  // vfft_->fft(x_fft_, x_);
+  zero_fft(x_fft_, x_);
   // y_ = ifft(fft(tzcirc_) * fft(x_))[1:N_]
-  complex_mult(y_fft_, tzcirc_fft_, x_fft_, 2 * (N_ / 2 + 1));
-  vfft_->ifft(y_, y_fft_);
+  // complex_mult(y_fft_, tzcirc_fft_, x_fft_, N2_);
+  // vfft_->ifft(y_, y_fft_);
+  conv_fft(y_, tzcirc_fft_, x_fft_);
   std::copy(y_, y_ + N_, y);
   return;
 }
@@ -248,21 +287,24 @@ inline void Toeplitz::solve_setup() {
     /// tL1_fft_ stores the fft of the first column of the circulant embedding of upper triangular Toeplitz matrix L_1'
     z_[0] = delta_[0];
     std::fill(z_ + 1, z_ + N_ + 1, 0);
-    std::copy(delta_ + 1, delta_ + N_, z_ + N_ + 1);
-    std::reverse(z_ + N_ + 1, z_ + 2 * N_);
+    // std::copy(delta_ + 1, delta_ + N_, z_ + N_ + 1);
+    // std::reverse(z_ + N_ + 1, z_ + 2 * N_);
+    std::reverse_copy(delta_ + 1, delta_ + N_, z_ + N_ + 1);
     vfft_->fft(tL1_fft_, z_);
     /// L1_fft_ stores the fft of the first column of the circulant embedding of lower triangular Toeplitz matrix L_1
     std::copy(delta_, delta_ + N_, z_);
-    std::fill(z_ + N_, z_ + 2 * N_, 0);
-    vfft_->fft(L1_fft_, z_); 
+    // std::fill(z_ + N_, z_ + 2 * N_, 0);
+    // vfft_->fft(L1_fft_, z_);
+    zero_fft(L1_fft_, z_);
     /// tL2_fft_ stores the fft of the first column of the circulant embedding of upper triangular Toeplitz matrix L_2'
     std::fill(z_, z_ + N_ + 1, 0);
     std::copy(delta_ + 1, delta_ + N_, z_ + N_ + 1);
     vfft_->fft(tL2_fft_, z_);	
     /// L2_fft_ stores the fft of the first column of the circulant embedding of lower triangular Toeplitz matrix L_2
     std::fill(z_, z_ + 2 * N_, 0);
-    std::copy(delta_ + 1, delta_ + N_, z_ + 1);
-    std::reverse(z_ + 1, z_ + N_);
+    // std::copy(delta_ + 1, delta_ + N_, z_ + 1);
+    // std::reverse(z_ + 1, z_ + N_);
+    std::reverse_copy(delta_ + 1, delta_ + N_, z_ + 1);
     vfft_->fft(L2_fft_, z_);
   }
   return;
@@ -289,24 +331,31 @@ inline void Toeplitz::solve(double* y, const double* x) {
   if (N_ > 1) {
     // GSchur algorithm only supports N > 1 case.
     std::copy(x, x + N_, x_);
-    std::fill(x_ + N_, x_ + 2 * N_, 0);
-    vfft_->fft(x_fft_, x_);
+    // std::fill(x_ + N_, x_ + 2 * N_, 0);
+    // vfft_->fft(x_fft_, x_);
+    zero_fft(x_fft_, x_);
     // y_ = L1' * x_
-    complex_mult(y_fft_, tL1_fft_, x_fft_, N_ + 1);
-    vfft_->ifft(y_, y_fft_);
-    std::fill(y_ + N_, y_ + 2 * N_, 0);
+    // complex_mult(y_fft_, tL1_fft_, x_fft_, N3_);
+    // vfft_->ifft(y_, y_fft_);
+    conv_fft(y_, tL1_fft_, x_fft_);
     // z_ = L1 * y_ = L1 * L1' * x_
-    vfft_->fft(y_fft_, y_);
-    complex_mult(z_fft_, L1_fft_, y_fft_, N_ + 1);
-    vfft_->ifft(z_, z_fft_);    
+    // std::fill(y_ + N_, y_ + 2 * N_, 0);
+    // vfft_->fft(y_fft_, y_);
+    zero_fft(y_fft_, y_);
+    // complex_mult(z_fft_, L1_fft_, y_fft_, N3_);
+    // vfft_->ifft(z_, z_fft_);
+    conv_fft(z_, L1_fft_, y_fft_);
     // y_ = L2' * x_
-    complex_mult(y_fft_, tL2_fft_, x_fft_, N_ + 1);
-    vfft_->ifft(y_, y_fft_);
-    std::fill(y_ + N_, y_ + 2 * N_, 0);
+    // complex_mult(y_fft_, tL2_fft_, x_fft_, N3_);
+    // vfft_->ifft(y_, y_fft_);
+    conv_fft(y_, tL2_fft_, x_fft_);
     // x_ = L2 * y_ = L2 * L2' * x_ (temporarily stored in x_)
-    vfft_->fft(y_fft_, y_);
-    complex_mult(x_fft_, L2_fft_, y_fft_, N_ + 1);
-    vfft_->ifft(x_, x_fft_);
+    // std::fill(y_ + N_, y_ + 2 * N_, 0);
+    // vfft_->fft(y_fft_, y_);
+    zero_fft(y_fft_, y_);
+    // complex_mult(x_fft_, L2_fft_, y_fft_, N3_);
+    // vfft_->ifft(x_, x_fft_);
+    conv_fft(x_, L2_fft_, y_fft_);
     // y = (z_ - x_) / delta[1] = 1/delta[1] * (L1 * L1' * x_ - L2 * L2' * x_)
     for (int ii = 0; ii < N_; ++ii) {
       y[ii] = (z_[ii] - x_[ii]) / delta_[0];
@@ -357,7 +406,7 @@ inline void Toeplitz::product(double* y, const double* x, const double* acf1) {
   dcomplex* y_fft_ = vec2_fft_;
   double* z_ = vec3_;
   dcomplex* z_fft_ = vec3_fft_;
-  // circulant embedding of acf`
+  // circulant embedding of acf1
   std::copy(acf1, acf1 + N_, z_);
   z_[N_] = 0;
   std::copy(acf1 + 1, acf1 + N_, z_ + N_ + 1);
@@ -365,11 +414,13 @@ inline void Toeplitz::product(double* y, const double* x, const double* acf1) {
   vfft_->fft(z_fft_, z_);
   // x_ = [x, 0]
   std::copy(x, x + N_, x_);
-  std::fill(x_ + N_, x_ + 2 * N_, 0);
-  vfft_->fft(x_fft_, x_);
+  // std::fill(x_ + N_, x_ + 2 * N_, 0);
+  // vfft_->fft(x_fft_, x_);
+  zero_fft(x_fft_, x_);
   // y_ = ifft(fft(z_) * fft(x_))[1:N_]
-  complex_mult(y_fft_, z_fft_, x_fft_, N_ + 1);
-  vfft_->ifft(y_, y_fft_);
+  // complex_mult(y_fft_, z_fft_, x_fft_, N3_);
+  // vfft_->ifft(y_, y_fft_);
+  conv_fft(y_, z_fft_, x_fft_);
   std::copy(y_, y_ + N_, y);
   return;
 }
@@ -397,11 +448,13 @@ inline void Toeplitz::product(double* y, const double* x, const double* acf1, co
   vfft_->fft(z_fft_, z_);
   // x_ = [x, 0]
   std::copy(x, x + N_, x_);
-  std::fill(x_ + N_, x_ + 2 * N_, 0);
-  vfft_->fft(x_fft_, x_);
+  // std::fill(x_ + N_, x_ + 2 * N_, 0);
+  // vfft_->fft(x_fft_, x_);
+  zero_fft(x_fft_, x_);
   // y_ = ifft(fft(z_) * fft(x_))[1:N_]
-  complex_mult(y_fft_, z_fft_, x_fft_, 2 * (N_ / 2 + 1));
-  vfft_->ifft(y_, y_fft_);
+  // complex_mult(y_fft_, z_fft_, x_fft_, N2_);
+  // vfft_->ifft(y_, y_fft_);
+  conv_fft(y_, z_fft_, x_fft_);
   std::copy(y_, y_ + N_, y);
   return;
 }
@@ -430,26 +483,31 @@ inline double Toeplitz::trace_deriv(const double* acf0) {
     // }
     std::copy(acf0, acf0 + N_, U1_);
     if(sng) U1_[0] += 1.0;
-    std::fill(U1_ + N_, U1_ + 2 * N_, 0);
-    vfft_->fft(U1_fft_, U1_); // U1
+    // std::fill(U1_ + N_, U1_ + 2 * N_, 0);
+    // vfft_->fft(U1_fft_, U1_); // U1
+    zero_fft(U1_fft_, U1_);
     std::fill(U2_, U2_ + 2 * N_, 0);
     std::copy(acf0 + 1, acf0 + N_, U2_ + 1);
     vfft_->fft(U2_fft_, U2_);  // U2
     // tr{U1'L1L1'U1}
-    complex_mult(y_fft_, L1_fft_, U1_fft_, N_ + 1);
-    vfft_->ifft(y_, y_fft_);
+    // complex_mult(y_fft_, L1_fft_, U1_fft_, N3_);
+    // vfft_->ifft(y_, y_fft_);
+    conv_fft(y_, L1_fft_, U1_fft_);
     trace = trace_LU(y_, y_, N_);
     // tr{U1'L2L2'U1}
-    complex_mult(y_fft_, L2_fft_, U1_fft_, 2 * (N_ / 2 + 1));
-    vfft_->ifft(y_, y_fft_);
+    // complex_mult(y_fft_, L2_fft_, U1_fft_, N2_);
+    // vfft_->ifft(y_, y_fft_);
+    conv_fft(y_, L2_fft_, U1_fft_);
     trace -= trace_LU(y_, y_, N_);
     // tr{U2'L1L1'U2}
-    complex_mult(y_fft_, L1_fft_, U2_fft_, 2 * (N_ / 2 + 1));
-    vfft_->ifft(y_, y_fft_);
+    // complex_mult(y_fft_, L1_fft_, U2_fft_, N2_);
+    // vfft_->ifft(y_, y_fft_);
+    conv_fft(y_, L1_fft_, U2_fft_);
     trace -= trace_LU(y_, y_, N_);
     // tr{U2'L2L2'U2}
-    complex_mult(y_fft_, L2_fft_, U2_fft_, 2 * (N_ / 2 + 1));
-    vfft_->ifft(y_, y_fft_);
+    // complex_mult(y_fft_, L2_fft_, U2_fft_, N2_);
+    // vfft_->ifft(y_, y_fft_);
+    conv_fft(y_, L2_fft_, U2_fft_);
     trace += trace_LU(y_, y_, N_);
     // trace
     trace /= delta_[0];
@@ -507,26 +565,33 @@ inline double Toeplitz::trace_hess(const double* acf1, const double* acf2) {
     trace *= -phi_[0];
     // kappa1
     std::copy(phi_, phi_ + N_, x_);
-    std::fill(x_ + N_, x_ + 2 * N_, 0);
-    vfft_->fft(x_fft_, x_); // x_fft_ = fft(phi_zero_)
+    // std::fill(x_ + N_, x_ + 2 * N_, 0);
+    // vfft_->fft(x_fft_, x_); // x_fft_ = fft(phi_zero_)
+    zero_fft(x_fft_, x_);
     std::copy(acf2, acf2 + N_, z_);
-    std::fill(z_ + N_, z_ + 2 * N_, 0);
     if(sng) z_[0] += 1.0;
-    vfft_->fft(z_fft_, z_); // z_fft_ = fft(acf2_zero_)
-    complex_mult(U1_fft_, x_fft_, z_fft_, N_ + 1);
-    vfft_->ifft(U1_, U1_fft_); // U1_ = phi_ \conv acf2
+    // std::fill(z_ + N_, z_ + 2 * N_, 0.0);
+    // vfft_->fft(z_fft_, z_); // z_fft_ = fft(acf2_zero_)
+    zero_fft(z_fft_, z_);
+    // complex_mult(U1_fft_, x_fft_, z_fft_, N3_);
+    // vfft_->ifft(U1_, U1_fft_); // U1_ = phi_ \conv acf2
+    conv_fft(U1_, x_fft_, z_fft_);
     std::copy(delta_, delta_ + N_, y_);
-    std::fill(y_ + N_, y_ + 2 * N_, 0);
-    vfft_->fft(y_fft_, y_); // y_fft_ = fft(delta_zero)
-    complex_mult(U2_fft_, y_fft_, z_fft_, N_ + 1);
-    vfft_->ifft(U2_, U2_fft_); // U2_ = delta_ \conv acf2
+    // std::fill(y_ + N_, y_ + 2 * N_, 0);
+    // vfft_->fft(y_fft_, y_); // y_fft_ = fft(delta_zero)
+    zero_fft(y_fft_, y_);
+    // complex_mult(U2_fft_, y_fft_, z_fft_, N3_);
+    // vfft_->ifft(U2_, U2_fft_); // U2_ = delta_ \conv acf2
+    conv_fft(U2_, y_fft_, z_fft_);
     kappa1 = trace_LU(U1_, U2_, N_) / acf20;
     z_[0] = 0.0; // z_ = zacf2 = acf2 with zero in first entry
     vfft_->fft(z_fft_, z_);
-    complex_mult(U1_fft_, x_fft_, z_fft_, N_ + 1);
-    vfft_->ifft(U1_, U1_fft_); // U1_ = phi_ \conv zacf2
-    complex_mult(U2_fft_, y_fft_, z_fft_, N_ + 1);
-    vfft_->ifft(U2_, U2_fft_); // U2_ = delta_ \conv zacf2
+    // complex_mult(U1_fft_, x_fft_, z_fft_, N3_);
+    // vfft_->ifft(U1_, U1_fft_); // U1_ = phi_ \conv zacf2
+    conv_fft(U1_, x_fft_, z_fft_);
+    // complex_mult(U2_fft_, y_fft_, z_fft_, N3_);
+    // vfft_->ifft(U2_, U2_fft_); // U2_ = delta_ \conv zacf2
+    conv_fft(U2_, y_fft_, z_fft_);
     kappa1 -= trace_LU(U1_, U2_, N_) / acf20;
     // kappa2
     x_[0] = 0;
@@ -534,20 +599,24 @@ inline double Toeplitz::trace_hess(const double* acf1, const double* acf2) {
     vfft_->fft(x_fft_, x_); // x_fft_ = fft(zrphi), where rzphi = phi with zero in first entry, then reversed
     z_[0] = acf20;
     vfft_->fft(z_fft_, z_); // z_fft_ = fft(acf2)
-    complex_mult(U1_fft_, x_fft_, z_fft_, N_ + 1);
-    vfft_->ifft(U1_, U1_fft_); // U1_ = zrphi \conv acf2
+    // complex_mult(U1_fft_, x_fft_, z_fft_, N3_);
+    // vfft_->ifft(U1_, U1_fft_); // U1_ = zrphi \conv acf2
+    conv_fft(U1_, x_fft_, z_fft_);
     y_[0] = 0;
     std::reverse(y_ + 1, y_ + N_);
     vfft_->fft(y_fft_, y_); // y_fft_ = fft(zrdelta)
-    complex_mult(U2_fft_, y_fft_, z_fft_, N_ + 1);
-    vfft_->ifft(U2_, U2_fft_); // U2_ = zrdelta \conv acf2
+    // complex_mult(U2_fft_, y_fft_, z_fft_, N3_);
+    // vfft_->ifft(U2_, U2_fft_); // U2_ = zrdelta \conv acf2
+    conv_fft(U2_, y_fft_, z_fft_);
     kappa2 = trace_LU(U1_, U2_, N_) / acf20;
     z_[0] = 0;
     vfft_->fft(z_fft_, z_); // z_fft_ = fft(zacf2)
-    complex_mult(U1_fft_, x_fft_, z_fft_, N_ + 1);
-    vfft_->ifft(U1_, U1_fft_); // U1_ = zrphi \conv zacf2
-    complex_mult(U2_fft_, y_fft_, z_fft_, N_ + 1);
-    vfft_->ifft(U2_, U2_fft_); // U2_ = zrdelta \conv zacf2
+    // complex_mult(U1_fft_, x_fft_, z_fft_, N3_);
+    // vfft_->ifft(U1_, U1_fft_); // U1_ = zrphi \conv zacf2
+    conv_fft(U1_, x_fft_, z_fft_);
+    // complex_mult(U2_fft_, y_fft_, z_fft_, N3_);
+    // vfft_->ifft(U2_, U2_fft_); // U2_ = zrdelta \conv zacf2
+    conv_fft(U2_, y_fft_, z_fft_);
     kappa2 -= trace_LU(U1_, U2_, N_) / acf20;
     // finalize trace calculation
     trace += 2 * (kappa1 - kappa2);
