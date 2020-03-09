@@ -16,12 +16,11 @@
 /// inversion, determinant, first and second order derivative of the
 /// log-determinant.
 class Toeplitz {
-protected:
+private:
   typedef std::complex<double> dcomplex;
   // internal storage.  don't overwrite locally.
   int N_;        ///< Size of Toeplitz matrix.
   int N2_;       ///< Size of FFT product.
-  // int N3_;       ///< Size of other FFT product.
   double* acf_;    ///< First column of the Toeplitz matrix.
   double* tzcirc_; ///< Storage for Toeplitz circulant embedding.
   dcomplex* tzcirc_fft_; ///< FFT of Toeplitz circulant embedding.
@@ -43,20 +42,9 @@ protected:
   // temporary storage.  ok to overwrite locally.
   double *vec1_, *vec2_, *vec3_, *vec4_, *vec5_, *vec6_;
   dcomplex *vec1_fft_, *vec2_fft_, *vec3_fft_; //, *vec4_fft_, *vec5_fft_;
-  // double* x_;
-  // double* y_;      // Storage for `mult/solve` output.
-  // double* z_;      // Storage for `mult/solve/trace` temporary.
-  // double* phi_;    // Storage for `trace` temporary.
-  // double* U1_;     // Storage for first upper triangular toeplitz matrix.
-  // double* U2_;     // Storage for second upper triangular toeplitz matrix.
-  // dcomplex* x_fft_;
-  // dcomplex* y_fft_;
-  // dcomplex* z_fft_;
-  // dcomplex* U1_fft_;
-  // dcomplex* U2_fft_;  
-  /// Prepare for multiplication.
+  /// Precomputations for matrix-vector multiplication.
   void mult_setup();    
-  /// Prepare for solving linear systems.
+  /// Precomputations for solving linear systems.
   void solve_setup();
   /// Trace of product of lower and upper triangular Toeplitz matrices.
   double trace_LU(const double* L, const double* U);
