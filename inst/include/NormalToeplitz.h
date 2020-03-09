@@ -11,20 +11,6 @@
 # define log2Pi 1.83787706641L // log of 2 PI value
 
 
-/// Function for vector multiplication
-///
-/// @param[in] v1 First input vector.
-/// @param[in] v2 Second input vector.
-/// @param[in] n Length of input vector.
-/// @param[out] double number that equals v1 * v2.
-inline double vecProd(double* v1, double* v2, int n) {
-  double ans = 0;
-  for (int ii = 0; ii < n; ++ii) {
-    ans += v1[ii] * v2[ii];
-  }
-  return ans;
-}
-
 /// Class for Computation involving Toeplitz matrix.
 ///
 /// Model: z ~ N(0, V), where V is a Toeplitz matrix with parameter theta
@@ -39,6 +25,8 @@ private:
   double* vec3;
   double* vec4;
   double* phi;
+  /// Dot-product between vectors.
+  double dot_prod(const double* v1, const double* v2);
 public:
   /// Constructor.
   NormalToeplitz(int N, int p);
@@ -118,6 +106,18 @@ inline int NormalToeplitz::dim() {
   return p_;
 }
 
+/// @param[in] x First vector of length `N`.
+/// @param[in] y Second vector of length `N`.
+/// @param[out] Dot product `sum_i=1^n v1_i * v2_i.
+inline double NormalToeplitz::dot_prod(const double* v1, const double* v2) {
+  double ans = 0.0;
+  for (int ii=0; ii<N_; ++ii) {
+    ans += v1[ii] * v2[ii];
+  }
+  return ans;
+}
+
+
 /// Log-Density.
 ///
 /// @param[in] z length-N vector of observation.
@@ -127,7 +127,7 @@ inline double NormalToeplitz::logdens(double* z, double* acf) {
   double ldens = 0;
   Tz_->setAcf(acf); // Tz = Toeplitz(acf)
   Tz_->solve(vec1, z); // vec1 = Tz^{-1} * z
-  ldens = vecProd(z, vec1, N_); // ldens = t(z) * Tz^{-1} * z
+  ldens = dot_prod(z, vec1); // ldens = t(z) * Tz^{-1} * z
   ldens += Tz_->logDet() + N_ * log2Pi;
   ldens *= -0.5;
   return ldens;
@@ -147,8 +147,8 @@ inline void NormalToeplitz::grad(double* dldt, double* z, double* dzdt,
   Tz_->solve(vec1, z); // vec1 = Tz^{-1} * z
   for (int ii = 0; ii < p_; ++ii) {
     Tz_->product(vec2, vec1, &dacfdt[ii * N_]);
-    dldt[ii] = vecProd(vec1, vec2, N_) / 2;
-    dldt[ii] -= vecProd(&dzdt[ii * N_], vec1, N_);
+    dldt[ii] = dot_prod(vec1, vec2) / 2;
+    dldt[ii] -= dot_prod(&dzdt[ii * N_], vec1);
     dldt[ii] -= Tz_->trace_deriv(&dacfdt[ii * N_]) / 2;
   }
 }
@@ -175,19 +175,19 @@ inline void NormalToeplitz::hess(double* d2ldt,
     for (int jj = 0; jj <= ii; ++jj) {
       Tz_->product(vec4, vec1, &dacfdt[jj * N_]);
       Tz_->product(vec3, vec1, &dacfdt[ii * N_]);
-      ans = vecProd(&d2zdt[(ii * p_ + jj) * N_], vec1, N_);
+      ans = dot_prod(&d2zdt[(ii * p_ + jj) * N_], vec1);
 
       Tz_->solve(vec2, vec4);
-      ans -= vecProd(&dzdt[ii * N_], vec2, N_);
-      ans += vecProd(vec3, vec2, N_);
+      ans -= dot_prod(&dzdt[ii * N_], vec2);
+      ans += dot_prod(vec3, vec2);
       Tz_->solve(vec2, vec3);
-      ans -= vecProd(&dzdt[jj * N_], vec2, N_);
+      ans -= dot_prod(&dzdt[jj * N_], vec2);
       Tz_->solve(vec2, &dzdt[jj * N_]);
-      ans += vecProd(&dzdt[ii * N_], vec2, N_);
+      ans += dot_prod(&dzdt[ii * N_], vec2);
       ans *= 2;
 			
       Tz_->product(vec2, vec1, &d2acfdt[(ii * p_ + jj) * N_]);
-      ans -= vecProd(vec1, vec2, N_);
+      ans -= dot_prod(vec1, vec2);
       ans += Tz_->trace_deriv(&d2acfdt[(ii * p_ + jj) * N_]);
       ans -= Tz_->trace_hess(&dacfdt[ii * N_], &dacfdt[jj * N_]);
 
@@ -271,7 +271,7 @@ inline double NormalToeplitz::logdens(double* z, Toeplitz* Tz) {
 double ldens = 0;
 // acf is already stored in Tz
 Tz->solveVec(vec1, z); // vec1 = Tz^{-1} * z
-ldens = vecProd(z, vec1, N_); // ldens = t(z) * Tz^{-1} * z
+ldens = dot_prod(z, vec1, N_); // ldens = t(z) * Tz^{-1} * z
 ldens += Tz->logDet() + N_ * log2Pi;
 ldens *= -0.5;
 return ldens;
@@ -292,8 +292,8 @@ double tmp;
 for (int ii = 0; ii < p_; ++ii) {
 T2_->setAcf(&dacfdt[ii * N_]);
 T2_->multVec(vec2, vec1);
-dldt[ii] = vecProd(vec1, vec2, N_) / 2;
-dldt[ii] -= vecProd(&dzdt[ii * N_], vec1, N_);
+dldt[ii] = dot_prod(vec1, vec2, N_) / 2;
+dldt[ii] -= dot_prod(&dzdt[ii * N_], vec1, N_);
 dldt[ii] -= Tz->traceProd(&dacfdt[ii * N_]) / 2;
 }
 }
@@ -320,22 +320,22 @@ T2_->multVec(vec4, vec1);
 T2_->setAcf(&dacfdt[ii * N_]);
 T2_->multVec(vec3, vec1);
 
-ans = vecProd(&d2zdt[(ii * p_ + jj) * N_], vec1, N_);
+ans = dot_prod(&d2zdt[(ii * p_ + jj) * N_], vec1, N_);
 // temp0 = solve(Tz, temp2)
 Tz->solveVec(vec2, vec4);
-ans -= vecProd(&dzdt[ii * N_], vec2, N_);
-ans += vecProd(vec3, vec2, N_);
+ans -= dot_prod(&dzdt[ii * N_], vec2, N_);
+ans += dot_prod(vec3, vec2, N_);
 // temp0 = solve(Tz, temp1)
 Tz->solveVec(vec2, vec3);
-ans -= vecProd(&dzdt[jj * N_], vec2, N_);
+ans -= dot_prod(&dzdt[jj * N_], vec2, N_);
 // temp0 = solve(Tz, dZ[,jj])
 Tz->solveVec(vec2, &dzdt[jj * N_]);
-ans += vecProd(&dzdt[ii * N_], vec2, N_);
+ans += dot_prod(&dzdt[ii * N_], vec2, N_);
 ans *= 2;
 
 T2_->setAcf(&d2acfdt[(ii * p_ + jj) * N_]);
 T2_->multVec(vec2, vec1);
-ans -= vecProd(vec1, vec2, N_);
+ans -= dot_prod(vec1, vec2, N_);
 ans += Tz->traceProd(&d2acfdt[(ii * p_ + jj) * N_]);
 ans -= Tz->traceDeriv(&dacfdt[ii * N_], &dacfdt[jj * N_]);
 
