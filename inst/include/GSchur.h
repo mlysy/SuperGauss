@@ -8,39 +8,10 @@
 #define GSchur_h 1
 
 #include "VectorFFT.h"
-#include "ComplexMult.h"
+// #include "ComplexMult.h"
 #include <vector>
 
-/// Convert integer to modulo-binary representation.
-///
-/// Given an integer `n` and modulus `b`, returns the unique integer vector `s = (s_1, ..., s_k)` or `s = (s_0, ..., s_k)` such that:
-///
-/// - `0 < s_0 < s_1 < ... < s_k`,
-/// - `s_i = b * 2^(m_i)` for some integer `m_i`, for `1 <= i <= k`.
-/// - If `n` is a multiple of `b`, `s = (s_1, ..., s_k)`.  Otherwise, `s = (s_0, ..., s_k)` and `0 < s_0 < b`.
-/// - `n = sum(s)`.
-///
-/// @param[in] n Integer for whic the modulo-binary represention is computed.
-/// @param[in] b Integer giving the binary modulus.
-/// @return Integer vector containing the modulo-binary representation.
-inline std::vector<int> int2bin(int n, int b = 1) {
-  std::vector<int> s;
-  int n1 = n / b;
-  int dif = n - n1 * b;
-  int m = b;
-  do {
-    if (n1 & 1) {
-      s.push_back(m);
-    }
-    m <<= 1;
-  } while ((n1 >>= 1) > 0);
-  if (dif) {
-    s.insert(s.begin(), dif);
-  }
-  return s;
-}
-
-/// Memory allocation for the Generalized Schur Algorithm.
+/// @brief Memory allocation for the Generalized Schur Algorithm.
 ///
 /// The GSchur algorithm involves several polynomial multiplications, for which the `GSchur2K` class provides storage to compute efficiently via the FFT.  The notation follows that of Ling & Lysy (2020).
 ///
@@ -146,9 +117,9 @@ inline GSchur2K::~GSchur2K() {
   delete[] gamma;
 }
 
-/// Generalized Schur Algorithm for arbitrary size N.
+/// @brief The Generalized Schur Algorithm.
 ///
-/// Given a symmetric positive-definite `N x N` Toeplitz matrix `Tz` with first row/column `acf`, calculates `delta`, the first row/column of `Tz^{-1}` and `log(det(Tz))`.  This is done using a modified version of the "superfast" `O(N log^2(N))` algorithm of Ammar & Gragg (1988) which consists of the following steps:
+/// Given a symmetric positive-definite `N x N` Toeplitz matrix `Tz = Toeplitz(acf)` with first row/column `acf`, calculates `delta`, the first row/column of `Tz^{-1}` and `log(det(Tz))`.  This is done using a modified version of the "superfast" `O(N log^2(N))` algorithm of Ammar & Gragg (1988) which consists of the following steps:
 ///
 /// 1. Decompose `N` into a vectors `s = (s_1, ..., s_k)`, where each `s_i` is a power of 2 and `sum(s) = N`.
 ///
@@ -165,11 +136,11 @@ private:
   double* alpha_; ///< First input polynomial as a function of `acf`.
   double* beta_;  ///< Second input polynomial as a function of `acf`.
   std::vector<int> sbin_;  ///< Vector that records the binary decomposition of `N`.
-  ///< \f$s = {2^{k_0} \times b, 2^{k_1} \times b, ...,
-  ///< 2^{k_T} \times b, r}\f$.
-  int nbin_; ///< Length of s.
+  int nbin_; ///< Length of `sbin_`.
   GSchur2K** gsb_;  ///< Memory allocation for the binary pieces. There are `sbin_size()` pieces, each of size `sbin_[i]`.
   GSchur2K** gsm_;  ///< Memory allocation for merging the pieces.
+  /// Convert integer to modulo-binary representation.
+  std::vector<int> int2bin(int n, int b);
   /// Compute `alphan` and `betan` from `alpha0`, `beta0`, `eta0`, and `xi0`.
   void compute_nn(GSchur2K* gsr, int n1, int n2);
   /// Compute `eta2n` and `xi2n` from `etan` and `xin`.
@@ -241,6 +212,33 @@ inline GSchurN::~GSchurN() {
     }
   }
   delete[] gsm_;
+}
+
+/// Given an integer `n` and modulus `b`, returns the unique integer vector `s = (s_1, ..., s_k)` or `s = (s_0, ..., s_k)` such that:
+///
+/// - `0 < s_0 < s_1 < ... < s_k`,
+/// - `s_i = b * 2^(m_i)` for some integer `m_i`, for `1 <= i <= k`.
+/// - If `n` is a multiple of `b`, `s = (s_1, ..., s_k)`.  Otherwise, `s = (s_0, ..., s_k)` and `0 < s_0 < b`.
+/// - `n = sum(s)`.
+///
+/// @param[in] n Integer for whic the modulo-binary represention is computed.
+/// @param[in] b Integer giving the binary modulus.
+/// @return Integer vector containing the modulo-binary representation.
+inline std::vector<int> GSchurN::int2bin(int n, int b = 1) {
+  std::vector<int> s;
+  int n1 = n / b;
+  int dif = n - n1 * b;
+  int m = b;
+  do {
+    if (n1 & 1) {
+      s.push_back(m);
+    }
+    m <<= 1;
+  } while ((n1 >>= 1) > 0);
+  if (dif) {
+    s.insert(s.begin(), dif);
+  }
+  return s;
 }
 
 /// Given polynomials `alpha0(x)`, `beta0(x)`, `eta0(x)`, and `xi0(x)` each represented by a double array `alpha0`, `beta0`, etc., compute polynomials `alphan(x)` and `betan(x)` defined as

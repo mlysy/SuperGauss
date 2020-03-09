@@ -195,7 +195,10 @@ inline void Toeplitz::mult_setup() {
 /// @param[in] y_fft FFT of second input vector.
 inline void Toeplitz::conv_fft(double* z, const dcomplex* x_fft,
 			       const dcomplex* y_fft) {
-  complex_mult(conv_fft_, x_fft, y_fft, N2_);
+  for(int ii=0; ii<N2_; ii++) {
+    conv_fft_[ii] = x_fft[ii] * y_fft[ii];
+  }
+  // complex_mult(conv_fft_, x_fft, y_fft, N2_);
   vfft_->ifft(z, conv_fft_);
   return;
 }
@@ -205,13 +208,13 @@ inline void Toeplitz::conv_fft(double* z, const dcomplex* x_fft,
 /// @param[out] y_fft FFT of zero-padded vector `x_zero`.
 /// @param[in] x Input vector.
 ///
-/// @warning The input vector `x` is modified such that `x[i] = 0.0` for `i=N,...,2N-1`.
+/// @warning The input vector `x` is modified such that `x[i] = 0` for `i=N,...,2N-1`.
 inline void Toeplitz::zero_fft(dcomplex* y_fft, double* x) {
   std::fill(x + N_, x + 2 * N_, 0.0);
   vfft_->fft(y_fft, x);
 }
 
-/// Calculates `trace(L * U)`, where `L` and `U` are lower/upper triangular Toeplitz matrices. It is an `O(n)` algorithm.
+/// Calculates `trace(L * U)`, where `L` and `U` are lower/upper triangular Toeplitz matrices. It is an `O(N)` algorithm.
 ///
 /// @param[in] L First column of `L`.
 /// @param[in] U First row of `U`.
@@ -254,19 +257,19 @@ inline void Toeplitz::solve_setup() {
   if (N_ > 1) {
     // GSchur algorithm only supports N > 1 case.
     gs_->compute(delta_, logdet_, acf_);
-    /// tL1_fft_ stores the fft of the first column of the circulant embedding of upper triangular Toeplitz matrix L_1'
+    // tL1_fft_ stores the fft of the first column of the circulant embedding of upper triangular Toeplitz matrix L_1'
     z_[0] = delta_[0];
     std::fill(z_ + 1, z_ + N_ + 1, 0.0);
     std::reverse_copy(delta_ + 1, delta_ + N_, z_ + N_ + 1);
     vfft_->fft(tL1_fft_, z_);
-    /// L1_fft_ stores the fft of the first column of the circulant embedding of lower triangular Toeplitz matrix L_1
+    // L1_fft_ stores the fft of the first column of the circulant embedding of lower triangular Toeplitz matrix L_1
     std::copy(delta_, delta_ + N_, z_);
     zero_fft(L1_fft_, z_);
-    /// tL2_fft_ stores the fft of the first column of the circulant embedding of upper triangular Toeplitz matrix L_2'
+    // tL2_fft_ stores the fft of the first column of the circulant embedding of upper triangular Toeplitz matrix L_2'
     std::fill(z_, z_ + N_ + 1, 0.0);
     std::copy(delta_ + 1, delta_ + N_, z_ + N_ + 1);
     vfft_->fft(tL2_fft_, z_);	
-    /// L2_fft_ stores the fft of the first column of the circulant embedding of lower triangular Toeplitz matrix L_2
+    // L2_fft_ stores the fft of the first column of the circulant embedding of lower triangular Toeplitz matrix L_2
     std::fill(z_, z_ + 2 * N_, 0.0);
     std::reverse_copy(delta_ + 1, delta_ + N_, z_ + 1);
     vfft_->fft(L2_fft_, z_);
@@ -276,7 +279,7 @@ inline void Toeplitz::solve_setup() {
 
 /// Linear systems with symmetric positive-definite Toeplitz matrices `Tz = Toeplitz(acf)` can be solved in `O(N log^2 N)` steps using the approach of Ammar & Gragg (1988):
 ///
-/// 1.  Use the Generalized Schur (GSchur) algorithm to obtain the first column `delta` of `Tz^{-1}` in `O(N log^2 N) steps.
+/// 1.  Use the Generalized Schur (GSchur) algorithm to obtain the first column `delta` of `Tz^{-1}` in `O(N log^2 N)` steps.
 /// 2.  The first column `delta` of `Tz^{-1}` can be used to obtain the Gohberg-Semencul decomposition
 ///    ```
 ///    Tz^{-1} = 1/rho (L1 L1' - L2 L2'),
