@@ -5,8 +5,8 @@ using namespace Rcpp;
 // R wapper functions to NormalToeplitz methods using XPtr
 
 //[[Rcpp::export(".NormalToeplitz_constructor")]]
-SEXP NormalToeplitz_constructor(int n_, int p_) {
-  NormalToeplitz *Nt = new NormalToeplitz(n_, p_);
+SEXP NormalToeplitz_constructor(int N) {
+  NormalToeplitz *Nt = new NormalToeplitz(N);
   XPtr<NormalToeplitz> Nt_ptr(Nt, true);
   return Nt_ptr;
 }
@@ -18,22 +18,31 @@ double NormalToeplitz_logdens(SEXP Nt_ptr, NumericVector z, NumericVector acf) {
 }
 
 //[[Rcpp::export(".NormalToeplitz_grad")]]
-NumericVector NormalToeplitz_grad(SEXP Nt_ptr, NumericVector z, NumericVector dzdt, 
-	NumericVector acf, NumericVector dacfdt) {
+NumericVector NormalToeplitz_grad(SEXP Nt_ptr,
+				  NumericVector z,
+				  NumericMatrix dzdt, 
+				  NumericVector acf,
+				  NumericMatrix dadt,
+				  int ntheta) {
 	XPtr<NormalToeplitz> Nt(Nt_ptr);
-	NumericVector dldt(Nt->dim());
-	Nt->grad(REAL(dldt), REAL(z), REAL(dzdt), REAL(acf), REAL(dacfdt));
+	NumericVector dldt(ntheta);
+	Nt->grad(REAL(dldt), REAL(z), REAL(dzdt), REAL(acf), REAL(dadt), ntheta);
 	return dldt;
 }
 
 //[[Rcpp::export(".NormalToeplitz_hess")]]
 NumericVector NormalToeplitz_hess(SEXP Nt_ptr,
-	NumericVector z, NumericVector dzdt, NumericVector d2zdt,
-	NumericVector acf, NumericVector dacfdt, NumericVector d2acfdt) {
+				  NumericVector z,
+				  NumericMatrix dzdt,
+				  NumericMatrix d2zdt,
+				  NumericVector acf,
+				  NumericMatrix dadt,
+				  NumericMatrix d2adt,
+				  int ntheta) {
 	XPtr<NormalToeplitz> Nt(Nt_ptr);
-	NumericMatrix d2ldt(Nt->dim(), Nt->dim());
+	NumericMatrix d2ldt(ntheta, ntheta);
 	Nt->hess(REAL(d2ldt), REAL(z), REAL(dzdt), REAL(d2zdt), 
-		REAL(acf), REAL(dacfdt), REAL(d2acfdt));
+		 REAL(acf), REAL(dadt), REAL(d2adt), ntheta);
 	return d2ldt;
 }
 
@@ -41,8 +50,9 @@ NumericVector NormalToeplitz_hess(SEXP Nt_ptr,
 List NormalToeplitz_grad_full(SEXP Nt_ptr,
 	NumericVector z, NumericVector acf) {
 	XPtr<NormalToeplitz> Nt(Nt_ptr);
-	NumericVector dldz(Nt->size());
-	NumericVector dldacf(Nt->size());
+	int N = Nt->size();
+	NumericVector dldz(N);
+	NumericVector dldacf(N);
 	Nt->grad_full(REAL(dldz), REAL(dldacf), REAL(z), REAL(acf));
 	List L = List::create(Named("dldz") = dldz, _["dldacf"] = dldacf);
 	return L;

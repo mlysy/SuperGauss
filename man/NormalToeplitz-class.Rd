@@ -7,12 +7,10 @@
 \alias{NormalToeplitz}
 \title{Constructor and methods for \code{NormalToeplitz} objects.}
 \usage{
-NormalToeplitz(n, p)
+NormalToeplitz(n)
 }
 \arguments{
 \item{n}{Size of the Toeplitz matrix.}
-
-\item{p}{Number of unknown parameters.}
 }
 \value{
 A \code{NormalToeplitz} object.

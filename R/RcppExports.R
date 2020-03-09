@@ -17,20 +17,20 @@ DurbinLevinson_Base <- function(X, Y, acf, calcMode = 1L) {
     .Call(`_SuperGauss_DurbinLevinson_Base`, X, Y, acf, calcMode)
 }
 
-.NormalToeplitz_constructor <- function(n_, p_) {
-    .Call(`_SuperGauss_NormalToeplitz_constructor`, n_, p_)
+.NormalToeplitz_constructor <- function(N) {
+    .Call(`_SuperGauss_NormalToeplitz_constructor`, N)
 }
 
 .NormalToeplitz_logdens <- function(Nt_ptr, z, acf) {
     .Call(`_SuperGauss_NormalToeplitz_logdens`, Nt_ptr, z, acf)
 }
 
-.NormalToeplitz_grad <- function(Nt_ptr, z, dzdt, acf, dacfdt) {
-    .Call(`_SuperGauss_NormalToeplitz_grad`, Nt_ptr, z, dzdt, acf, dacfdt)
+.NormalToeplitz_grad <- function(Nt_ptr, z, dzdt, acf, dadt, ntheta) {
+    .Call(`_SuperGauss_NormalToeplitz_grad`, Nt_ptr, z, dzdt, acf, dadt, ntheta)
 }
 
-.NormalToeplitz_hess <- function(Nt_ptr, z, dzdt, d2zdt, acf, dacfdt, d2acfdt) {
-    .Call(`_SuperGauss_NormalToeplitz_hess`, Nt_ptr, z, dzdt, d2zdt, acf, dacfdt, d2acfdt)
+.NormalToeplitz_hess <- function(Nt_ptr, z, dzdt, d2zdt, acf, dadt, d2adt, ntheta) {
+    .Call(`_SuperGauss_NormalToeplitz_hess`, Nt_ptr, z, dzdt, d2zdt, acf, dadt, d2adt, ntheta)
 }
 
 .NormalToeplitz_grad_full <- function(Nt_ptr, z, acf) {
