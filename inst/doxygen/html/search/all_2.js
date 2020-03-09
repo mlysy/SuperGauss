@@ -1,4 +1,12 @@
 var searchData=
 [
-  ['compute',['Compute',['../class_g_schur_n.html#ac2ccc32309c339d30d2e7494de1781ae',1,'GSchurN']]]
+  ['complex_5fmult',['complex_mult',['../_complex_mult_8h.html#abea160cd808929628d7126cb7c1c056a',1,'ComplexMult.h']]],
+  ['complex_5fmult_5fminus',['complex_mult_minus',['../_complex_mult_8h.html#adff908bb93c057a1de0f136a1837ae3b',1,'ComplexMult.h']]],
+  ['complex_5fmult_5fplus',['complex_mult_plus',['../_complex_mult_8h.html#a1a5ca3080fd4c1ec7cba907ab6887111',1,'ComplexMult.h']]],
+  ['complexmult_2eh',['ComplexMult.h',['../_complex_mult_8h.html',1,'']]],
+  ['compute',['compute',['../class_g_schur_n.html#a0da15535aa130e12879798c854c8e7af',1,'GSchurN']]],
+  ['compute_5f2n',['compute_2n',['../class_g_schur_n.html#af563a79ffd3a13c0c1617702e66d2e25',1,'GSchurN']]],
+  ['compute_5fnn',['compute_nn',['../class_g_schur_n.html#a44601c55cbb867f71e22218be6673251',1,'GSchurN']]],
+  ['conv_5ffft',['conv_fft',['../class_toeplitz.html#a4fe45dbee7b1548a44a2cf9aeb4d9fca',1,'Toeplitz']]],
+  ['conv_5ffft_5f',['conv_fft_',['../class_toeplitz.html#a41ea448d9e947e903555834be5394577',1,'Toeplitz']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['toeplitz_2eh',['Toeplitz.h',['../_toeplitz_8h.html',1,'']]]
+  ['gschur_2eh',['GSchur.h',['../_g_schur_8h.html',1,'']]]
 ];

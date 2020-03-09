@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['xfft',['xfft',['../class_toeplitz.html#a1a30c6c3e44d2926b66147b252d543b9',1,'Toeplitz']]],
-  ['xi_5f0_5ffft',['xi_0_FFT',['../class_g_schur2_k.html#a2aebd73ae2b8841a2b2155da0005ec8c',1,'GSchur2K']]],
-  ['xi_5f0_5fifft',['xi_0_IFFT',['../class_g_schur2_k.html#ad574ac6b3ca46d4c1954202adc89675f',1,'GSchur2K']]],
-  ['xi_5fn_5ffft',['xi_n_FFT',['../class_g_schur2_k.html#ab31d73f7620506a5c1215c30bf9e2eaa',1,'GSchur2K']]]
+  ['vec_5fzero_5f',['vec_zero_',['../class_toeplitz.html#aac3f7213cf278b265901e91f5036b1dd',1,'Toeplitz']]],
+  ['vfft_5f',['vfft_',['../class_toeplitz.html#a4925d5e7025cdd69405d524b20c37833',1,'Toeplitz']]]
 ];

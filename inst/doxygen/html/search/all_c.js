@@ -1,8 +1,10 @@
 var searchData=
 [
-  ['phi',['Phi',['../class_g_schur_n.html#afa9df5905caf5fd01b4430b524e32d54',1,'GSchurN']]],
-  ['phi2',['phi2',['../class_toeplitz.html#a5e2b504ad9f10138fe661a3c342f5cc9',1,'Toeplitz']]],
-  ['planback',['planback',['../class_vector_i_f_f_t.html#a6a988a67f76c008a699d2a0e79f12cc9',1,'VectorIFFT']]],
-  ['planfor',['planfor',['../class_vector_f_f_t.html#a5dd2af9aa6e7125d7533abfd8978dbc3',1,'VectorFFT']]],
-  ['progstep',['ProgStep',['../class_g_schur_n.html#a439bb5b45ee144979d9c67e863b2b3f7',1,'GSchurN']]]
+  ['pcg',['PCG',['../class_p_c_g.html',1,'']]],
+  ['planback',['planback',['../class_v_f.html#a904efed25a4ae7a9954fa40b7f917954',1,'VF']]],
+  ['planback_5f',['planback_',['../class_vector_f_f_t.html#aacbf8bd0844ad8411e53d22e4b5c4e01',1,'VectorFFT']]],
+  ['planfor',['planfor',['../class_v_f.html#ab0b6b3ed98c72d8ebcbe85f997950ab5',1,'VF']]],
+  ['planfwd_5f',['planfwd_',['../class_vector_f_f_t.html#a91c67587aa809f1815fc044c7d91b253',1,'VectorFFT']]],
+  ['product',['product',['../class_toeplitz.html#a2cb04a2f117ed485fbcd45e8e85291b2',1,'Toeplitz::product(double *y, const double *x, const double *acf1)'],['../class_toeplitz.html#a4805a9f41a60c843cdbd1ba82017b6e6',1,'Toeplitz::product(double *y, const double *x, const double *acf1, const double *acf2)']]],
+  ['prog_5fstep',['prog_step',['../class_g_schur_n.html#a60a43b70b57d14e0e7b4370e713a8bb8',1,'GSchurN']]]
 ];

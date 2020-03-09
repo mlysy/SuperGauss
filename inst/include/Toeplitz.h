@@ -10,10 +10,10 @@
 #include "GSchur.h"
 
 
-/// Class for Toeplitz-related computation.
+/// @brief Superfast linear algebra with Toeplitz matrices.
 ///
-/// Generate the memory for Toeplitz computation including multiplication,
-/// inversion, determinant, first and second order derivative of the
+/// Provides methods for Toeplitz computations including multiplication,
+/// inversion, determinant, and first and second derivatives of the
 /// log-determinant.
 class Toeplitz {
 private:
@@ -205,7 +205,7 @@ inline void Toeplitz::conv_fft(double* z, const dcomplex* x_fft,
 /// @param[out] y_fft FFT of zero-padded vector `x_zero`.
 /// @param[in] x Input vector.
 ///
-/// @warning The input vector `x` is _modified_, in that `x[i] = 0.0` for `i=N,...,2N-1`.
+/// @warning The input vector `x` is modified such that `x[i] = 0.0` for `i=N,...,2N-1`.
 inline void Toeplitz::zero_fft(dcomplex* y_fft, double* x) {
   std::fill(x + N_, x + 2 * N_, 0.0);
   vfft_->fft(y_fft, x);
@@ -215,6 +215,7 @@ inline void Toeplitz::zero_fft(dcomplex* y_fft, double* x) {
 ///
 /// @param[in] L First column of `L`.
 /// @param[in] U First row of `U`.
+/// @return The trace-product `trace(L * U)`.
 inline double Toeplitz::trace_LU(const double* L, const double* U) {
   double trace = 0;
   for (int ii = 0; ii < N_; ++ii) {
@@ -390,8 +391,8 @@ inline void Toeplitz::product(double* y, const double* x,
   // z_ = [col1, 0, rev(row1[-1])]
   std::copy(col1, col1 + N_, z_);
   z_[N_] = 0;
-  std::copy(row1 + 1, row1 + N_, z_ + N_ + 1);
-  std::reverse(z_ + N_ + 1, z_ + 2 * N_);
+  std::reverse_copy(row1 + 1, row1 + N_, z_ + N_ + 1);
+  // std::reverse(z_ + N_ + 1, z_ + 2 * N_);
   vfft_->fft(z_fft_, z_);
   // y_ = ifft(fft(z_) * fft(x_))[1:N_]
   std::copy(x, x + N_, x_);

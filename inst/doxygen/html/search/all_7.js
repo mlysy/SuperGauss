@@ -1,7 +1,9 @@
 var searchData=
 [
-  ['ifft',['Ifft',['../class_vector_i_f_f_t.html#a930fbff8da40b633fa41a63b8479fd89',1,'VectorIFFT']]],
-  ['in',['in',['../class_vector_f_f_t.html#afaf759c9951b2879e9b5437b97e7ad56',1,'VectorFFT::in()'],['../class_vector_i_f_f_t.html#a02e5e14b2776509e5c41d93c1e371a0b',1,'VectorIFFT::in()']]],
-  ['int2bin',['int2Bin',['../_g_schur_8h.html#addedcf34b44255c9a679784627442818',1,'GSchur.h']]],
-  ['invfft',['Invfft',['../class_toeplitz.html#a905ae95624134c0d03ba5ba7bbbc9480',1,'Toeplitz']]]
+  ['has_5facf_5f',['has_acf_',['../class_toeplitz.html#a4056136373ed9384e4b01c491947ebf0',1,'Toeplitz']]],
+  ['has_5fmult_5f',['has_mult_',['../class_toeplitz.html#aa90e592416d0be740405d63e163d27f1',1,'Toeplitz']]],
+  ['has_5fsolve_5f',['has_solve_',['../class_toeplitz.html#a6ef13ef25ec299ea53335a7216529383',1,'Toeplitz']]],
+  ['has_5ftrace_5f',['has_trace_',['../class_toeplitz.html#a6f348251a55653abd602e1a3f839971b',1,'Toeplitz']]],
+  ['hasacf',['hasAcf',['../class_toeplitz.html#a6c46397725172c0949acb6cfb5006564',1,'Toeplitz']]],
+  ['hess',['hess',['../class_normal_toeplitz.html#a6297af3b78d19d315124a19688a074c9',1,'NormalToeplitz']]]
 ];

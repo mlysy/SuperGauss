@@ -13,9 +13,9 @@
 // #include <Rcpp.h>
 // #include <iostream>
 
-/// FFT for real to complex and corresponding iFFT for complex to real.
+/// @brief FFT for real to complex and corresponding iFFT for complex to real.
 ///
-/// @brief Allocates memory for the corresponding `fftw` operations within the object, copies memory in and out each time the FFT and iFFT members are called.
+/// Allocates memory for the corresponding `fftw` operations within the object, copies memory in and out each time the FFT and iFFT members are called.
 class VectorFFT {
 private:
   typedef std::complex<double> dcomplex; ///< Typedef for complex double

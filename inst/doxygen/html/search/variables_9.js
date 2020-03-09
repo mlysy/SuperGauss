@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['phi',['Phi',['../class_g_schur_n.html#afa9df5905caf5fd01b4430b524e32d54',1,'GSchurN']]],
-  ['phi2',['phi2',['../class_toeplitz.html#a5e2b504ad9f10138fe661a3c342f5cc9',1,'Toeplitz']]],
-  ['planback',['planback',['../class_vector_i_f_f_t.html#a6a988a67f76c008a699d2a0e79f12cc9',1,'VectorIFFT']]],
-  ['planfor',['planfor',['../class_vector_f_f_t.html#a5dd2af9aa6e7125d7533abfd8978dbc3',1,'VectorFFT']]]
+  ['n2_5f',['N2_',['../class_toeplitz.html#aa4ef1fad21c68f24dde1d016154cc73e',1,'Toeplitz']]],
+  ['n_5f',['n_',['../class_vector_f_f_t.html#a0390bfe490b24c6e7b58f9391a1def24',1,'VectorFFT::n_()'],['../class_v_f.html#a4d1786fb97809e244d0c0a61342597dd',1,'VF::n_()'],['../class_g_schur_n.html#a62b76086dc42681d4f0c0377916cdfd6',1,'GSchurN::N_()'],['../class_normal_toeplitz.html#aeb3938e96aeb4f6dd833c34230f93235',1,'NormalToeplitz::N_()'],['../class_toeplitz.html#ac83572f0ca0f13216ce1376f1fb834c8',1,'Toeplitz::N_()']]],
+  ['nbin_5f',['nbin_',['../class_g_schur_n.html#a5fcc1f1a42a85e9dc32df8ff626e3438',1,'GSchurN']]],
+  ['npad_5f',['npad_',['../class_vector_f_f_t.html#a15cca154a91380129d0870c4ddc2655d',1,'VectorFFT']]]
 ];

@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['vecconv',['vecConv',['../_vector_f_f_t_8h.html#a2b30636878ce6e4f84bfe6388e3261f9',1,'VectorFFT.h']]],
-  ['vecconv_5fadd',['vecConv_Add',['../_vector_f_f_t_8h.html#a7d2d49d919f76dad886f217cf4cf6e36',1,'VectorFFT.h']]],
-  ['vecconv_5fsub',['vecConv_Sub',['../_vector_f_f_t_8h.html#a07ba58dd4433f01668e3dc8164814c38',1,'VectorFFT.h']]],
-  ['vectorfft',['VectorFFT',['../class_vector_f_f_t.html#a2f857e8fab7f4da6b0bece0bae51f661',1,'VectorFFT']]],
-  ['vectorifft',['VectorIFFT',['../class_vector_i_f_f_t.html#ad23a6eb5a9a045dd04b96c07e73afe06',1,'VectorIFFT']]]
+  ['toeplitz',['Toeplitz',['../class_toeplitz.html#a594945b81ab481c573895b71860f8f92',1,'Toeplitz']]],
+  ['trace_5fderiv',['trace_deriv',['../class_toeplitz.html#a972aca06222a23d79b6653cf652a214f',1,'Toeplitz']]],
+  ['trace_5fhess',['trace_hess',['../class_toeplitz.html#a656d769e1f80555e5c122ca0051b7e57',1,'Toeplitz']]],
+  ['trace_5finv',['trace_inv',['../class_toeplitz.html#a741d98d788309d69c07c7e1a98ee62a4',1,'Toeplitz']]],
+  ['trace_5flu',['trace_LU',['../class_toeplitz.html#a1a769a814c05e6bc5c5676b68e30554e',1,'Toeplitz']]]
 ];

@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['n',['n',['../class_toeplitz.html#a1be6c2616c6d5afb823235f9d709b213',1,'Toeplitz::n()'],['../class_g_schur_n.html#ade7c4189ef9d51e356db8bc45c9d069f',1,'GSchurN::N()']]],
-  ['n_5fsize',['n_size',['../class_vector_f_f_t.html#aa543559ea92a05f542a10f1ca51f052b',1,'VectorFFT::n_size()'],['../class_vector_i_f_f_t.html#abb0e41396acbd17d757dfdccef57d70e',1,'VectorIFFT::n_size()']]]
+  ['has_5facf_5f',['has_acf_',['../class_toeplitz.html#a4056136373ed9384e4b01c491947ebf0',1,'Toeplitz']]],
+  ['has_5fmult_5f',['has_mult_',['../class_toeplitz.html#aa90e592416d0be740405d63e163d27f1',1,'Toeplitz']]],
+  ['has_5fsolve_5f',['has_solve_',['../class_toeplitz.html#a6ef13ef25ec299ea53335a7216529383',1,'Toeplitz']]],
+  ['has_5ftrace_5f',['has_trace_',['../class_toeplitz.html#a6f348251a55653abd602e1a3f839971b',1,'Toeplitz']]]
 ];

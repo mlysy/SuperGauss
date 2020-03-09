@@ -72,214 +72,22 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#nested-classes">Classes</a>  </div>
   <div class="headertitle">
 <div class="title">VectorFFT.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;Rcpp.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;complex&gt;</code><br />
 <code>#include &lt;fftw3.h&gt;</code><br />
-<code>#include &lt;iostream&gt;</code><br />
 </div>
 <p><a href="_vector_f_f_t_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vector_f_f_t.html">VectorFFT</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forward FFT from real to complex.  <a href="class_vector_f_f_t.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">FFT for real to complex and corresponding iFFT for complex to real.  <a href="class_vector_f_f_t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vector_i_f_f_t.html">VectorIFFT</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backward FFT from complex to real.  <a href="class_vector_i_f_f_t.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:a2b30636878ce6e4f84bfe6388e3261f9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_vector_f_f_t_8h.html#a2b30636878ce6e4f84bfe6388e3261f9">vecConv</a> (fftw_complex *y, fftw_complex *alpha, fftw_complex *beta, int n)</td></tr>
-<tr class="separator:a2b30636878ce6e4f84bfe6388e3261f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07ba58dd4433f01668e3dc8164814c38"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_vector_f_f_t_8h.html#a07ba58dd4433f01668e3dc8164814c38">vecConv_Sub</a> (fftw_complex *y, fftw_complex *alpha, fftw_complex *beta, int n)</td></tr>
-<tr class="separator:a07ba58dd4433f01668e3dc8164814c38"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d2d49d919f76dad886f217cf4cf6e36"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_vector_f_f_t_8h.html#a7d2d49d919f76dad886f217cf4cf6e36">vecConv_Add</a> (fftw_complex *y, fftw_complex *alpha, fftw_complex *beta, int n)</td></tr>
-<tr class="separator:a7d2d49d919f76dad886f217cf4cf6e36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="a2b30636878ce6e4f84bfe6388e3261f9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2b30636878ce6e4f84bfe6388e3261f9">&#9670;&nbsp;</a></span>vecConv()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void vecConv </td>
-          <td>(</td>
-          <td class="paramtype">fftw_complex *&#160;</td>
-          <td class="paramname"><em>y</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">fftw_complex *&#160;</td>
-          <td class="paramname"><em>alpha</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">fftw_complex *&#160;</td>
-          <td class="paramname"><em>beta</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>n</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Product between <code>fftw_complex</code> vectors.</p>
-<p>Result is <code>y = alpha * beta</code>.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">y</td><td>Output complex vector, 2-d array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">alpha</td><td>First input complex vector, 2-d array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">beta</td><td>Second input complex vector, 2-d array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Size of inputs (integer). </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a7d2d49d919f76dad886f217cf4cf6e36"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7d2d49d919f76dad886f217cf4cf6e36">&#9670;&nbsp;</a></span>vecConv_Add()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void vecConv_Add </td>
-          <td>(</td>
-          <td class="paramtype">fftw_complex *&#160;</td>
-          <td class="paramname"><em>y</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">fftw_complex *&#160;</td>
-          <td class="paramname"><em>alpha</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">fftw_complex *&#160;</td>
-          <td class="paramname"><em>beta</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>n</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>In-place sum product between <code>fftw_complex</code> vectors.</p>
-<p>Result is <code>y += alpha * beta</code>.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">y</td><td>Output complex vector, 2-d array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">alpha</td><td>First input complex vector, 2-d array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">beta</td><td>Second input complex vector, 2-d array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Size of inputs (integer). </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a07ba58dd4433f01668e3dc8164814c38"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a07ba58dd4433f01668e3dc8164814c38">&#9670;&nbsp;</a></span>vecConv_Sub()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void vecConv_Sub </td>
-          <td>(</td>
-          <td class="paramtype">fftw_complex *&#160;</td>
-          <td class="paramname"><em>y</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">fftw_complex *&#160;</td>
-          <td class="paramname"><em>alpha</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">fftw_complex *&#160;</td>
-          <td class="paramname"><em>beta</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>n</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>In-place subtract product between <code>fftw_complex</code> vectors.</p>
-<p>Result is <code>y -= alpha * beta</code>.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">y</td><td>Output complex vector, 2-d array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">alpha</td><td>First input complex vector, 2-d array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">beta</td><td>Second input complex vector, 2-d array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Size of inputs (integer). </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

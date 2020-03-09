@@ -11,9 +11,18 @@
 # define log2Pi 1.83787706641L // log of 2 PI value
 
 
-/// Class for Computation involving Toeplitz matrix.
+/// @brief The multivariate normal distribution with Toeplitz variance matrix.
 ///
-/// Model: z ~ N(0, V), where V is a Toeplitz matrix with parameter theta
+/// The `NormalToeplitz` class provides methods for the model
+///
+///     ```
+///     z = (z_1, ..., z_N) ~ Normal(0, Tz = Toeplitz(acf)),
+///     ```
+///
+/// where `Toeplitz(acf)` denotes a symmetric positive-definite Toeplitz variance matrix with first row/column `acf = (acf_1, ..., acf_N)`, i.e.,
+///
+///     Tz[i,j] = acf[|i-j|+1],  1 <= i,j <= N.
+/// 
 class NormalToeplitz {
 private:
   int N_; ///< Size of multivariate normal.
@@ -75,10 +84,8 @@ public:
   */
 };
 
-/// Constructor.
-///
 /// @param N length of observation.
-/// @param p_ number of parameters.
+/// @param p number of parameters.
 /// @param hasToep whether Toeplitz object Tz is imported from outside or generated within the class.
 inline NormalToeplitz::NormalToeplitz(int N, int p) {
   N_ = N;
@@ -91,7 +98,6 @@ inline NormalToeplitz::NormalToeplitz(int N, int p) {
   phi = new double[N_];	
 }
 
-/// Destructor
 inline NormalToeplitz::~NormalToeplitz() {
   delete Tz_;
   delete vec1;
@@ -111,7 +117,7 @@ inline int NormalToeplitz::dim() {
 
 /// @param[in] x First vector of length `N`.
 /// @param[in] y Second vector of length `N`.
-/// @param[out] Dot product `sum_i=1^n v1_i * v2_i.
+/// @return Dot product `sum_i=1^n v1_i * v2_i`.
 inline double NormalToeplitz::dot_prod(const double* v1, const double* v2) {
   double ans = 0.0;
   for (int ii=0; ii<N_; ++ii) {

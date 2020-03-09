@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['toeplitz',['Toeplitz',['../class_toeplitz.html',1,'']]]
+  ['normaltoeplitz',['NormalToeplitz',['../class_normal_toeplitz.html',1,'']]]
 ];

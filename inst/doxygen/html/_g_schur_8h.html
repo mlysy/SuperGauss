@@ -79,24 +79,26 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="_vector_f_f_t_8h_source.html">VectorFFT.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_complex_mult_8h_source.html">ComplexMult.h</a>&quot;</code><br />
+<code>#include &lt;vector&gt;</code><br />
 </div>
 <p><a href="_g_schur_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur2_k.html">GSchur2K</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_g_schur2_k.html">GSchur2K</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_schur_n.html">GSchurN</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:addedcf34b44255c9a679784627442818"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_g_schur_8h.html#addedcf34b44255c9a679784627442818">int2Bin</a> (int x, int b=1)</td></tr>
-<tr class="separator:addedcf34b44255c9a679784627442818"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4eff5da420e8d54435d46a37fc64dc4f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_g_schur_8h.html#a4eff5da420e8d54435d46a37fc64dc4f">int2bin</a> (int n, int b=1)</td></tr>
+<tr class="separator:a4eff5da420e8d54435d46a37fc64dc4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="addedcf34b44255c9a679784627442818"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#addedcf34b44255c9a679784627442818">&#9670;&nbsp;</a></span>int2Bin()</h2>
+<a id="a4eff5da420e8d54435d46a37fc64dc4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4eff5da420e8d54435d46a37fc64dc4f">&#9670;&nbsp;</a></span>int2bin()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -105,10 +107,10 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;int&gt; int2Bin </td>
+          <td class="memname">std::vector&lt;int&gt; int2bin </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>x</em>, </td>
+          <td class="paramname"><em>n</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -129,10 +131,16 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Convert integer to modulo-binary representation.</p>
-<p>Given an integer <code>x</code>, returns an integer vector \(s = {2^{k_0} \times b, 2^{k_1} \times b, ..., 2^{k_T} \times b, r}\), where \(k_0 &gt; ... &gt; k_T \geq 0\), \(r &lt; b\), and <code>sum(s) = x</code>.</p>
+<p>Given an integer <code>n</code> and modulus <code>b</code>, returns the unique integer vector <code>s = (s_1, ..., s_k)</code> or <code>s = (s_0, ..., s_k)</code> such that:</p>
+<ul>
+<li><code>0 &lt; s_0 &lt; s_1 &lt; ... &lt; s_k</code>,</li>
+<li><code>s_i = b * 2^(m_i)</code> for some integer <code>m_i</code>, for <code>1 &lt;= i &lt;= k</code>.</li>
+<li>If <code>n</code> is a multiple of <code>b</code>, <code>s = (s_1, ..., s_k)</code>. Otherwise, <code>s = (s_0, ..., s_k)</code> and <code>0 &lt; s_0 &lt; b</code>.</li>
+<li><code>n = sum(s)</code>.</li>
+</ul>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>Integer of which the modulo-binary represention is computed. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Integer for whic the modulo-binary represention is computed. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>Integer giving the binary modulus. </td></tr>
   </table>
   </dd>
