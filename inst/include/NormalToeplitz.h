@@ -8,8 +8,6 @@
 #define NormalToeplitz_h 1
 
 #include "Toeplitz.h"
-# define log2Pi 1.83787706641L // log of 2 PI value
-
 
 /// @brief The multivariate normal distribution with Toeplitz variance matrix.
 ///
@@ -133,11 +131,12 @@ inline double NormalToeplitz::dot_prod(const double* v1, const double* v2) {
 /// @param[in] acf length-N vector of auto-covariance.
 /// @param[out] double number of the log-density.
 inline double NormalToeplitz::logdens(const double* z, const double* acf) {
-  double ldens = 0;
+  const double LOG_2PI = 1.837877066409345483560659472811; // log(2pi)
+  double ldens = 0.0;
   Tz_->setAcf(acf); // Tz = Toeplitz(acf)
   Tz_->solve(vec1, z); // vec1 = Tz^{-1} * z
   ldens = dot_prod(z, vec1); // ldens = t(z) * Tz^{-1} * z
-  ldens += Tz_->logDet() + N_ * log2Pi;
+  ldens += Tz_->logDet() + N_ * LOG_2PI;
   ldens *= -0.5;
   return ldens;
 }
