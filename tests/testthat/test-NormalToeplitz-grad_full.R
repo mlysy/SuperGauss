@@ -17,7 +17,7 @@ test_that("The GSchur algorithm returns the correct density", {
     alpha <- runif(1,.2,.9)
     acf <- test_fbm_acf(alpha, dt, N)
     X <- rSnorm(n = 1, acf = acf)
-    Nt <- NormalToeplitz(n = N)
+    Nt <- NormalToeplitz$new(n = N)
     ans <- Nt$grad_full(X, acf)
 
     expect_equal(c(jacobian(test_logdens, x = X, acf = acf)), ans$dldz, tolerance = 1e-7)

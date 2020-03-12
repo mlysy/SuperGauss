@@ -2,19 +2,39 @@
 #'
 #' The `Toeplitz` class contains efficient methods for linear algebra with symmetric positive definite (i.e., variance) Toeplitz matrices.
 #'
-#' @aliases setAcf getAcf traceT2 traceT4 show.Toeplitz %*% determinant solve %*%,ANY,Toeplitz-method %*%,Toeplitz,ANY-method determinant,Toeplitz-method dim,Toeplitz-method ncol,Toeplitz-method nrow,Toeplitz-method show,Toeplitz-method solve,Toeplitz-method
+#' @aliases Toeplitz setAcf getAcf traceT2 traceT4 show.Toeplitz %*% determinant solve %*%,ANY,Toeplitz-method %*%,Toeplitz,ANY-method determinant,Toeplitz-method dim,Toeplitz-method ncol,Toeplitz-method nrow,Toeplitz-method show,Toeplitz-method solve,Toeplitz-method
 #' @section Methods:
-#' If `Toep` is a `Toeplitz` object with first row/column given by `acf`, then:
+#' If `Tz` is a `Toeplitz` object with first row/column given by `acf`, then:
 #' \describe{
-#' \item{`Toep$setAcf(acf)`}{Sets the autocorrelation of the matrix.}
-#' \item{`Toep$getAcf()`}{Gets the autocorrelation of the matrix.}
-#' \item{`nrow(Toep)`, `ncol(Toep)`, `dim(Toep)`}{Selected dimension(s) of the matrix.}
-#' \item{`Toep \%*\% X`, `X \%*\% Toep`}{Toeplitz-Matrix and Matrix-Toeplitz multiplication.  Also works if `X` is a vector.}
-#' \item{`solve(Toep, X)`, `solve(Toep)`}{Solves Toeplitz systems of equations.  When second argument is missing, returns the inverse of the Toeplitz matrix.}
-#' \item{`determinant(Toep)`}{Log-determinant of the Toeplitz matrix, i.e., same thing as `log(det(toeplitz(acf)))`.}
-#' \item{`Toep$traceT2(acf2)`}{If `T1 == toeplitz(acf)` and `T2 == toeplitz(acf2)`, computes the trace of `solve(T1, T2)`.  This is used in the computation of the gradient of Gaussian likelihoods with Toeplitz variance matrix.}
-#' \item{`Toep$traceT4(acf2, acf3)`}{If `T1 == toeplitz(acf)`, `T2 == toeplitz(acf2)`, and `T3 == toeplitz(acf3)`, computes the trace of `solve(T1, T2) \%*\% solve(T1, T3)`.  This is used in the computation of the Hessian of Gaussian likelihoods with Toeplitz variance matrix.}
+#' \item{`Tz$setAcf(acf)`}{Sets the autocorrelation of the matrix.}
+#' \item{`Tz$getAcf()`}{Gets the autocorrelation of the matrix.}
+#' \item{`nrow(Tz)`, `ncol(Tz)`, `dim(Tz)`}{Selected dimension(s) of the matrix.}
+#' \item{`Tz %*% X`, `X %*% Tz`}{Toeplitz-Matrix and Matrix-Toeplitz multiplication.  Also works if `X` is a vector.}
+#' \item{`solve(Tz, X)`, `solve(Tz)`}{Solves Toeplitz systems of equations.  When second argument is missing, returns the inverse of the Toeplitz matrix.}
+#' \item{`determinant(Tz)`}{Log-determinant of the Toeplitz matrix, i.e., same thing as `log(det(toeplitz(acf)))`.}
+#' \item{`Tz$trace_grad(acf2)`}{Computes the trace of `solve(Tz, toeplitz(acf2))`.  This is used in the computation of the gradient of `log(det(Tz(theta)))` with respect to `theta`.}
+#' \item{`Toep$trace_hess(acf2, acf3)`}{Computes the trace of
+#' ```
+#' solve(Tz, toeplitz(acf2)) %*% solve(Tz, toeplitz(acf3)).
+#' ```
+#' This is used in the computation of the Hessian of `log(det(Tz(theta)))` with respect to `theta`.}
 #' }
+#'
+#' \subsection{`Tz$setAcf(acf)`}{
+#'
+#' Sets the autocorrelation of the matrix.
+#'
+#' }
+#'
+#' \subsection{`Tz$trace_hess(acf2, acf3)`}{
+#'
+#' Computes the trace of
+#' ```
+#' solve(Tz, toeplitz(acf2)) %*% solve(Tz, toeplitz(acf3)).
+#' ```
+#' This is used in the computation of the Hessian of `log(det(Tz(theta)))` with respect to `theta`.
+#' }
+#'
 #' @details It is assumed that the autocorrelation of the `Toeplitz` object defines a valid (i.e., positive definite) variance matrix.  The multiplication algorithms still work when this is not the case but the other algorithms do not (return values typically contain `NaN`s).
 #' @examples
 #' # construction
@@ -48,8 +68,15 @@
 
 # exported constructor
 #' @rdname Toeplitz-class
+#' @usage Toeplitz(n, acf)
+#' @usage Toeplitz$setAcf(acf)
+#' @usage Toeplitz$getAcf()
+#' @usage Toeplitz$trace_grad(acf2)
+#' @usage Toeplitz$trace_hess(acf2, acf3)
 #' @param n Size of the Toeplitz matrix.
 #' @param acf Autocorrelation vector of Toeplitz matrix.
+#' @param acf2 Autocorrelation of second Toeplitz matrix.
+#' @param acf3 Autocorrelation of third Toeplitz matrix.
 #' @return A `Toeplitz` object.
 #' @export
 Toeplitz <- function(n, acf) {

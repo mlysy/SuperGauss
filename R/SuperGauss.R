@@ -25,5 +25,6 @@
 #' @importFrom Rcpp evalCpp
 #' @importFrom methods new show
 #' @importFrom stats rnorm
+#' @import R6
 #' @useDynLib SuperGauss, .registration = TRUE
 NULL

@@ -21,7 +21,7 @@ test_that("The GSchur algorithm returns the correct density", {
     f <- test_drift_func(mu, N)
     acf <- test_fbm_acf(alpha, dt, N)
     X <- f + rSnorm(n = 1, acf = acf)
-    Nt <- NormalToeplitz(n = N)
+    Nt <- NormalToeplitz$new(n = N)
     g1 <- c(grad(func = test_logdens, x = mu, alpha = alpha, X = X),
             grad(func = test_logdens, x = alpha, mu = mu, X = X))
     dz <- cbind(-test_drift_grad(mu, N), rep(0, N))

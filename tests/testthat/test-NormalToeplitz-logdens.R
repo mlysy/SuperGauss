@@ -14,7 +14,7 @@ test_that("The GSchur algorithm returns the correct density", {
       type <- as.character(cp)
       acf <- test_acf_func(N, type)
       X <- rSnorm(n = 1, acf = acf, fft = FALSE)
-      Nt <- NormalToeplitz(n = N)
+      Nt <- NormalToeplitz$new(n = N)
       ld1 <- dSnorm(X = X, mu = 0, acf = acf, log = TRUE)
       ld2 <- Nt$logdens(X, acf)
       expect_equal(ld1, ld2)

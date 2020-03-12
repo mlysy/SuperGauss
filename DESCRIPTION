@@ -13,6 +13,7 @@ Depends: R (>= 3.0.0)
 Imports:
     stats,
     methods,
+    R6,
     Rcpp (>= 0.12.7),
     fftw
 LinkingTo: Rcpp, RcppEigen
