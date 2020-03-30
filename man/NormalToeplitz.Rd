@@ -13,6 +13,7 @@ i.e., for a multivariate normal with mean zero and variance \code{Tz = toeplitz(
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{NormalToeplitz$new()}}
+\item \href{#method-size}{\code{NormalToeplitz$size()}}
 \item \href{#method-logdens}{\code{NormalToeplitz$logdens()}}
 \item \href{#method-grad}{\code{NormalToeplitz$grad()}}
 \item \href{#method-hess}{\code{NormalToeplitz$hess()}}
@@ -25,18 +26,30 @@ i.e., for a multivariate normal with mean zero and variance \code{Tz = toeplitz(
 \subsection{Method \code{new()}}{
 Class constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{NormalToeplitz$new(n)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{NormalToeplitz$new(N)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{n}}{Size of the Toeplitz matrix.}
+\item{\code{N}}{Size of the NTz random vector.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 A \code{NormalToeplitz} object.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-size"></a>}}
+\subsection{Method \code{size()}}{
+Get the size of the NTz random vector.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{NormalToeplitz$size()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Size of the NTz random vector.
 }
 }
 \if{html}{\out{<hr>}}
@@ -50,14 +63,14 @@ Log-density function.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{z}}{Density argument. A vector of length \code{n} or an \verb{n x N} matrix where each column is an observation.}
+\item{\code{z}}{Density argument. A vector of length \code{N} or an \verb{N x n_obs} matrix where each column is an \code{N}-dimensional observation.}
 
-\item{\code{acf}}{A vector of length \code{n} containing the first row/column of the Toeplitz variance matrix.}
+\item{\code{acf}}{A vector of length \code{N} containing the autocorrelation (i.e., first row/column) of the Toeplitz variance matrix.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A scalar or vector of length \code{N} containing the log-density of the NTz evaluated at its arguments.
+A scalar or vector of length \code{n_obs} containing the log-density of the NTz evaluated at its arguments.
 }
 }
 \if{html}{\out{<hr>}}
@@ -71,18 +84,18 @@ Gradient of the log-density with respect to parameters.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{z}}{Density argument.  A vector of length \code{n}.}
+\item{\code{z}}{Density argument.  A vector of length \code{N}.}
 
-\item{\code{dz}}{An \verb{n x ntheta} matrix containing the gradient \code{dz/dtheta}.}
+\item{\code{dz}}{An \verb{N x n_theta} matrix containing the gradient \code{dz/dtheta}.}
 
-\item{\code{acf}}{A vector of length \code{n} containing the first row/column of the Toeplitz variance matrix.}
+\item{\code{acf}}{A vector of length \code{N} containing the autocorrelation of the Toeplitz variance matrix.}
 
-\item{\code{dacf}}{An \verb{n x ntheta} matrix containing the gradient \code{dacf/dtheta}.}
+\item{\code{dacf}}{An \verb{N x n_theta} matrix containing the gradient \code{dacf/dtheta}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A vector of length \code{ntheta} containing the gradient of the NTz log-density with respect to \code{theta}.
+A vector of length \code{n_theta} containing the gradient of the NTz log-density with respect to \code{theta}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -96,22 +109,22 @@ Hessian of log-density with respect to parameters.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{z}}{Density argument.  A vector of length \code{n}.}
+\item{\code{z}}{Density argument.  A vector of length \code{N}.}
 
-\item{\code{dz}}{An \verb{n x ntheta} matrix containing the gradient \code{dz/dtheta}.}
+\item{\code{dz}}{An \verb{N x n_theta} matrix containing the gradient \code{dz/dtheta}.}
 
-\item{\code{d2z}}{An \verb{n x ntheta x ntheta} array containing the Hessian \verb{d^2z/dtheta^2}.}
+\item{\code{d2z}}{An \verb{N x n_theta x n_theta} array containing the Hessian \verb{d^2z/dtheta^2}.}
 
-\item{\code{acf}}{A vector of length \code{n} containing the first row/column of the Toeplitz variance matrix.}
+\item{\code{acf}}{A vector of length \code{N} containing the autocorrelation of the Toeplitz variance matrix.}
 
-\item{\code{dacf}}{An \verb{n x ntheta} matrix containing the gradient \code{dacf/dtheta}.}
+\item{\code{dacf}}{An \verb{N x n_theta} matrix containing the gradient \code{dacf/dtheta}.}
 
-\item{\code{d2acf}}{An \verb{n x ntheta x ntheta} array containing the Hessian \code{dacf^2/dtheta^2}.}
+\item{\code{d2acf}}{An \verb{N x n_theta x n_theta} array containing the Hessian \code{dacf^2/dtheta^2}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-An \verb{ntheta x ntheta} matrix containing the Hessian of the NTz log-density with respect to \code{theta}.
+An \verb{n_theta x n_theta} matrix containing the Hessian of the NTz log-density with respect to \code{theta}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -119,20 +132,24 @@ An \verb{ntheta x ntheta} matrix containing the Hessian of the NTz log-density w
 \subsection{Method \code{grad_full()}}{
 Full gradient of log-density function.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{NormalToeplitz$grad_full(z, acf)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{NormalToeplitz$grad_full(z, acf, calc_dldz = TRUE, calc_dlda = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{z}}{Density argument.  A vector of length \code{n}.}
+\item{\code{z}}{Density argument.  A vector of length \code{N}.}
 
-\item{\code{acf}}{A vector of length \code{n} containing the first row/column of the Toeplitz variance matrix.}
+\item{\code{acf}}{A vector of length \code{N} containing the autocorrelation of the Toeplitz variance matrix.}
+
+\item{\code{calc_dldz}}{Whether or not to calculate the gradient with respect to \code{z}.}
+
+\item{\code{calc_dlda}}{Whether or not to calculate the gradient with respect to \code{acf}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \verb{n x 2} matrix containing the gradient of the NTz log-density with respect to each element of \code{z} and \code{acf}.
+A list with one or both elements \code{dldz} and \code{dlda}, corresponding to the length \code{N} gradient vectors with respect to \code{z} and \code{acf}, respectively.
 }
 }
 \if{html}{\out{<hr>}}

@@ -1,9 +1,5 @@
 /// @file Toeplitz.h
 
-///////////////////////////////////////////////
-// Toeplitz matrix class
-///////////////////////////////////////////////
-
 #ifndef NormalToeplitz_h
 #define NormalToeplitz_h 1
 
@@ -11,16 +7,18 @@
 
 /// @brief The multivariate normal distribution with Toeplitz variance matrix.
 ///
-/// The `NormalToeplitz` class provides methods for the model
+/// The NormalToeplitz distribution `z ~ NormalToeplitz(acf)` is defined as
 ///
-///     ```
-///     z = (z_1, ..., z_N) ~ Normal(0, Tz = Toeplitz(acf)),
-///     ```
+/// ```
+/// z = (z_1, ..., z_N) ~ Normal(0, Tz = Toeplitz(acf)),
+/// ```
 ///
-/// where `Toeplitz(acf)` denotes a symmetric positive-definite Toeplitz variance matrix with first row/column `acf = (acf_1, ..., acf_N)`, i.e.,
+/// where `Toeplitz(acf)` denotes a symmetric positive-definite Toeplitz variance matrix with autocorrelation (i.e., first row/column) `acf = (acf_1, ..., acf_N)`, i.e.,
 ///
-///     Tz[i,j] = acf[|i-j|+1],  1 <= i,j <= N.
-/// 
+/// ```
+/// Tz[i,j] = acf[|i-j|+1],  1 <= i,j <= N.
+/// ```
+///
 class NormalToeplitz {
 private:
   int N_; ///< Size of multivariate normal.
@@ -40,34 +38,20 @@ public:
   ~NormalToeplitz();
   /// Size of NormalToeplitz random vector.
   int size();
-  // /// Dimension
-  // int dim();
-  /// Log-Density.
+  /// Log-density of NormalToeplitz distribution.
   double logdens(const double* z, const double* acf);
-  /// Log-likelihood Gradient.
+  /// Gradient of NormalToeplitz loglikelihood.
   void grad(double* dldt, const double* z, const double* dzdt,
 	    const double* acf, const double* dadt, int n_theta);
-  /// Hessian matrix of Log-likelihood.
+  /// Hessian of NormalToeplitz loglikelihood.
   void hess(double* d2ldt,
 	    const double* z, const double* dzdt, const double* d2zdt,
 	    const double* acf, const double* dadt, const double* d2adt,
 	    int n_theta);
-  /// Full Gradient of the Log-Density for Auto-Differentiation Algorithms.
+  /// Full gradient of NormalToeplitz log-density.
   void grad_full(double* dldz, double* dlda,
-		 const double* z, const double* acf);
-  // /// Overloaded Log-Density.
-  // double logdens(double* z, Toeplitz* Tz);
-  // /// Overloaded Log-likelihood Gradient.
-  // void grad(double* dldt,
-  // 	    double* z, double* dzdt,
-  // 	    Toeplitz* Tz, double* dacfdt);
-  // /// Overloaded function for the Hessian matrix of Log-likelihood.
-  // void hess(double* d2ldt,
-  // 	    double* z, double* dzdt, double* d2zdt,
-  // 	    Toeplitz* Tz, double* dacfdt, double* d2adt);
-  // /// Overloaded function for the Full Gradient of the Log-Density for Auto-Differentiation Algorithms.
-  // void grad_full(double* dldz, double* dlda,
-  // 		 double* z, Toeplitz* Tz);
+		 const double* z, const double* acf,
+		 bool calc_dldz, bool calc_dlda);
 };
 
 /// @param N Size of NormalToeplitz random vector.
@@ -94,10 +78,6 @@ inline int NormalToeplitz::size() {
   return N_;
 }
 
-// inline int NormalToeplitz::dim() {
-//   return p_;
-// }
-
 /// @param[in] x First vector of length `N`.
 /// @param[in] y Second vector of length `N`.
 /// @return Dot product `sum_i=1^n v1_i * v2_i`.
@@ -110,11 +90,9 @@ inline double NormalToeplitz::dot_prod(const double* v1, const double* v2) {
 }
 
 
-/// Log-Density.
-///
-/// @param[in] z length-N vector of observation.
-/// @param[in] acf length-N vector of auto-covariance.
-/// @param[out] double number of the log-density.
+/// @param[in] z Observation vector of length `N`.
+/// @param[in] acf Autocorrelation vector of length `N`.
+/// @param[out] Scalar value of the log-density.
 inline double NormalToeplitz::logdens(const double* z, const double* acf) {
   const double LOG_2PI = 1.837877066409345483560659472811; // log(2pi)
   double ldens = 0.0;
@@ -126,39 +104,47 @@ inline double NormalToeplitz::logdens(const double* z, const double* acf) {
   return ldens;
 }
 
-
-/// Log-likelihood Gradient.
+/// Calculates the gradient with respect to `theta` of the loglikelihood corresponding to
 ///
-/// @param[out] dldt length-p vector of the gradient.
-/// @param[in] z length-N vector of observation.
-/// @param[in] dzdt length-N*p vector of observation derivatives, elememts dzdt[0:N + ii*N] is the derivative of z with respect to the ii-th parameter.
-/// @param[in] acf length-N vector of auto-covariance.
-/// @param[in] dadt length-N*p vector of observation derivatives, elememts dadt[0:N + ii*N] is the derivative of acf with respect to the ii-th parameter.
+/// ```
+/// z(theta) ~ NormalToeplitz(acf(theta)).
+/// ```
+///
+/// @param[out] dldt Gradient of the loglikelihood.  A vector of length `n_theta`.
+/// @param[in] z Observation vector of length `N`.
+/// @param[in] dzdt Gradient of `z` with respect to `theta`.  A vector of length `N * n_theta` corresponding to the gradient matrix of size `N x n_theta` flattened in column-major order.
+/// @param[in] acf Autocorrelation vector of length `N`.
+/// @param[in] dadt Gradient of `acf` with respect to `theta`.  A vector of length `N * n_theta` corresponding to the gradient matrix of size `N x n_theta` flattened in column-major order.
 inline void NormalToeplitz::grad(double* dldt,
 				 const double* z, const double* dzdt, 
 				 const double* acf, const double* dadt,
 				 int n_theta) {
   Tz_->setAcf(acf); // Tz = Toeplitz(acf)
   Tz_->solve(vec1, z); // vec1 = Tz^{-1} * z
-  for (int ii = 0; ii < n_theta; ++ii) {
+  for(int ii = 0; ii < n_theta; ++ii) {
     Tz_->product(vec2, vec1, &dadt[ii * N_]);
     dldt[ii] = .5 * dot_prod(vec1, vec2);
     dldt[ii] -= dot_prod(&dzdt[ii * N_], vec1);
     dldt[ii] -= .5 * Tz_->trace_deriv(&dadt[ii * N_]);
   }
+  return;
 }
 
 
 
-/// Hessian matrix of Log-likelihood.
+/// Calculates the Hessian matrix with respect to `theta` of the loglikelihood corresponding to
 ///
-/// @param[out] d2ldt length-p*p vector of the Hessian, elememts d2ldt[0:p + ii*p] is the (ii+1)-th column of Hessian matrix.
-/// @param[in] z length-N vector of observation.
-/// @param[in] dzdt length-N*p vector of observation derivatives, elememts dzdt[0:N + ii*N] is the derivative of z with respect to the ii-th parameter.
-/// @param[in] d2zdt length-N*p*p vector of observation derivatives, elememts d2zdt[0:N + (ii*p+jj)*N] is the second derivative of z with respect to the ii-th parameter and then the jj-th parameter.
-/// @param[in] acf length-N vector of auto-covariance.
-/// @param[in] dadt length-N*p vector of observation derivatives, elememts dadt[0:N + ii*N] is the derivative of acf with respect to the ii-th parameter.
-/// @param[in] d2adt length-N*p*p vector of observation derivatives, elememts d2adt[0:N + (ii*p+jj)*N] is the second derivative of acf with respect to the ii-th parameter and then the jj-th parameter.
+/// ```
+/// z(theta) ~ NormalToeplitz(acf(theta)).
+/// ```
+///
+/// @param[out] d2ldt Hessian of the loglikelihood.  A vector of length `n_theta * n_theta` corresponding to the Hessian matrix of size `n_theta x n_theta` flattened in column-major order.
+/// @param[in] z Observation vector of length `N`.
+/// @param[in] dzdt Gradient of `z` with respect to `theta`.  A vector of length `N * n_theta` corresponding to the gradient matrix of size `N x n_theta` flattened in column-major order.
+/// @param[in] d2zdt Hessian of `z` with respect to `theta`.  A vector of length `N * n_theta * n_theta` corresponding to the Hessian tensor of size `N x n_theta x n_theta` flattened in column-major order (i.e., leftmost dimension running fastest).
+/// @param[in] acf Autocorrelation vector of length `N`.
+/// @param[in] dadt Gradient of `acf` with respect to `theta`.  A vector of length `N * n_theta` corresponding to the gradient matrix of size `N x n_theta` flattened in column-major order.
+/// @param[in] d2adt Hessian of `acf` with respect to `theta`.  A vector of length `N * n_theta * n_theta` corresponding to the Hessian tensor of size `N x n_theta x n_theta` flattened in column-major order.
 inline void NormalToeplitz::hess(double* d2ldt,
 				 const double* z,
 				 const double* dzdt,
@@ -171,12 +157,11 @@ inline void NormalToeplitz::hess(double* d2ldt,
   Tz_->solve(vec1, z);
   double ans;
   std::fill(d2ldt, d2ldt + n_theta * n_theta, 0.0);
-  for (int ii = 0; ii < n_theta; ++ii) {
-    for (int jj = 0; jj <= ii; ++jj) {
+  for(int ii = 0; ii < n_theta; ++ii) {
+    for(int jj = 0; jj <= ii; ++jj) {
       Tz_->product(vec4, vec1, &dadt[jj * N_]);
       Tz_->product(vec3, vec1, &dadt[ii * N_]);
       ans = dot_prod(&d2zdt[(ii * n_theta + jj) * N_], vec1);
-
       Tz_->solve(vec2, vec4);
       ans -= dot_prod(&dzdt[ii * N_], vec2);
       ans += dot_prod(vec3, vec2);
@@ -185,77 +170,86 @@ inline void NormalToeplitz::hess(double* d2ldt,
       Tz_->solve(vec2, &dzdt[jj * N_]);
       ans += dot_prod(&dzdt[ii * N_], vec2);
       ans *= 2.0;
-			
       Tz_->product(vec2, vec1, &d2adt[(ii * n_theta + jj) * N_]);
       ans -= dot_prod(vec1, vec2);
       ans += Tz_->trace_deriv(&d2adt[(ii * n_theta + jj) * N_]);
       ans -= Tz_->trace_hess(&dadt[ii * N_], &dadt[jj * N_]);
-
       d2ldt[ii * n_theta + jj] = -.5 * ans;
     }
   }
-
-  if (n_theta > 1) {
-    for (int ii = 0; ii < n_theta; ++ii) {
-      for (int jj = ii + 1; jj < n_theta; ++jj) {
+  if(n_theta > 1) {
+    // copy other triangular half of hessian
+    for(int ii = 0; ii < n_theta; ++ii) {
+      for(int jj = ii + 1; jj < n_theta; ++jj) {
 	d2ldt[ii * n_theta + jj] = d2ldt[jj * n_theta + ii];
       }
     }
   }
-
+  return;
 }
 
-
-/// Full Gradient of the Log-Density for Auto-Differentiation Algorithms.
+/// Calculates the gradient with respect to each element of `z` and `acf` of the log-density corresponding to `z ~ NormalToeplitz(acf)`.
 ///
-/// @param[out] dldz length-N vector of the log-density with respect to the observation z.
-/// @param[out] dlda length-N vector of the log-density with respect to the auto-covariance acf.
-/// @param[in] z length-N vector of observation.
-/// @param[in] acf length-N vector of auto-covariance.
+/// @param[out] dldz Gradient with respect to `z`.  A vector of length `N`.
+/// @param[out] dlda Gradient with respect to `acf`.  A vector of length `N`.
+/// @param[in] z Observation vector of length `N`.
+/// @param[in] acf Autocorrelation vector of length `N`.
+/// @param[in] calc_dldz Whether or not to calculate the gradient with respect to `z`.  If `false`, the input vector `dldz` is left unchanged.
+/// @param[in] calc_dlda Whether or not to calculate the gradient with respect to `acf`.  If `false`, the input vector `dlda` is left unchanged.
 inline void NormalToeplitz::grad_full(double* dldz, double* dlda,
-				      const double* z, const double* acf) {
-  Tz_->setAcf(acf);
-
-  // gradient with respect to z
-  Tz_->solve(dldz, z);
-  for (int ii = 0; ii < N_; ii++) {
-    dldz[ii] = -dldz[ii];
+				      const double* z, const double* acf,
+				      bool calc_dldz = true,
+				      bool calc_dlda = true) {
+  if(calc_dldz || calc_dlda) {
+    Tz_->setAcf(acf);
+    Tz_->solve(vec1, z);	
   }
-
-  // gradient with respect to acf
-  Tz_->solve(vec1, z);	
-  vec2[0] = 1.0;
-  std::fill(vec2 + 1, vec2 + N_, 0.0);
-  Tz_->solve(vec3, vec2);
-  double tau1 = vec3[0];
-  std::fill(phi, phi + N_, 0.0);
-  phi[0] = vec1[0];
-  Tz_->product(dlda, vec1, phi, vec1); // dlda = upper.toep(Vz) %*% Vz = ip
-  vec4[0] = 0.0;
-  for (int ii = 1; ii < N_; ++ii) {
-    vec4[ii] = vec3[N_ - ii];
+  if(calc_dldz) {
+    // gradient with respect to z
+    // Tz_->solve(dldz, z);
+    for (int ii = 0; ii < N_; ii++) {
+      // dldz[ii] = -dldz[ii];
+      dldz[ii] = -vec1[ii];
+    }
   }
-  for (int ii = 0; ii < N_; ++ii) {
-    vec2[ii] = (N_ - ii) * vec3[ii];
-  } // vec2 = (N_:1 * tau)
-
-  phi[0] = vec3[0];
-  Tz_->product(vec1, vec2, phi, vec3); // vec1 = upper.toep(tau) %*% (N_:1 * tau) = tr
-
-  for (int ii = 0; ii < N_; ++ii) {
-    vec2[ii] = (N_ - ii) * vec4[ii];
-  } // vec2 = (N_:1 * tau2)
-
-  phi[0] = vec4[0];
-  Tz_->product(vec3, vec2, phi, vec4); // vec3 = upper.toep(tau2) %*% (N_:1 * tau2)
-
-  for (int ii = 0; ii < N_; ++ii) {
-    vec1[ii] -= vec3[ii];
-    vec1[ii] /= tau1;
-    dlda[ii] -= vec1[ii];
-  } // vec1 = (vec1 - vec3) / tau[1] = tr, dlda = ip - tr
-
-  dlda[0] *= .5;
+  if(calc_dlda) {
+    // gradient with respect to acf
+    // Tz_->solve(vec1, z);	
+    vec2[0] = 1.0;
+    std::fill(vec2 + 1, vec2 + N_, 0.0);
+    Tz_->solve(vec3, vec2);
+    // dlda = upper.toep(Vz) %*% Vz = ip
+    double tau1 = vec3[0];
+    std::fill(phi, phi + N_, 0.0);
+    phi[0] = vec1[0];
+    Tz_->product(dlda, vec1, phi, vec1);
+    // vec2 = (N_:1 * tau)
+    vec4[0] = 0.0;
+    for (int ii = 1; ii < N_; ++ii) {
+      vec4[ii] = vec3[N_ - ii];
+    }
+    for (int ii = 0; ii < N_; ++ii) {
+      vec2[ii] = (N_ - ii) * vec3[ii];
+    }
+    // vec1 = upper.toep(tau) %*% (N_:1 * tau) = tr
+    phi[0] = vec3[0];
+    Tz_->product(vec1, vec2, phi, vec3); 
+    // vec2 = (N_:1 * tau2)
+    for (int ii = 0; ii < N_; ++ii) {
+      vec2[ii] = (N_ - ii) * vec4[ii];
+    } 
+    // vec3 = upper.toep(tau2) %*% (N_:1 * tau2)
+    phi[0] = vec4[0];
+    Tz_->product(vec3, vec2, phi, vec4); 
+    // vec1 = (vec1 - vec3) / tau[1] = tr, dlda = ip - tr
+    for (int ii = 0; ii < N_; ++ii) {
+      vec1[ii] -= vec3[ii];
+      vec1[ii] /= tau1;
+      dlda[ii] -= vec1[ii];
+    }
+    dlda[0] *= .5;
+  }
+  return;
 }
 
 
