@@ -7,7 +7,7 @@ context("Toeplitz - Determinant.")
 
 nrep <- 10
 test_that("Toeplitz determinant", {
-  replicate(n = nrep, expr = {  
+  replicate(n = nrep, expr = {
     N <- round(abs(rnorm(n = 1, mean = 50, sd = 10)))
     Tz <- Toeplitz(N)
     case.par <- expand.grid(type = c("fbm", "matern"))
@@ -17,7 +17,7 @@ test_that("Toeplitz determinant", {
       type <- as.character(cp)
       acf <- test_acf_func(N, type)
       Tmat <- toeplitz(acf)
-      Tz$setAcf(acf)
+      Tz$set_acf(acf)
       expect_equal(determinant(Tz, logarithm = TRUE),
                    determinant(Tmat, logarithm = TRUE)$mod[1],
                    tolerance = 1e-6)

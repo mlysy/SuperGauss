@@ -17,7 +17,7 @@ test_that("Toeplitz-matrix inversion", {
       type <- as.character(cp$type)
       acf <- test_acf_func(N, type)
       Tmat <- toeplitz(acf)
-      Toep$setAcf(acf)
+      Toep$set_acf(acf)
       if(cp$b) {
         expect_equal(Tmat %*% solve(Toep, X), X, tolerance = 1e-5)
       } else {

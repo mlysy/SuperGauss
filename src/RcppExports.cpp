@@ -167,25 +167,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Toeplitz_setAcf
-void Toeplitz_setAcf(SEXP Toep_ptr, NumericVector acf);
-RcppExport SEXP _SuperGauss_Toeplitz_setAcf(SEXP Toep_ptrSEXP, SEXP acfSEXP) {
+// Toeplitz_set_acf
+void Toeplitz_set_acf(SEXP Toep_ptr, NumericVector acf);
+RcppExport SEXP _SuperGauss_Toeplitz_set_acf(SEXP Toep_ptrSEXP, SEXP acfSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type Toep_ptr(Toep_ptrSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type acf(acfSEXP);
-    Toeplitz_setAcf(Toep_ptr, acf);
+    Toeplitz_set_acf(Toep_ptr, acf);
     return R_NilValue;
 END_RCPP
 }
-// Toeplitz_getAcf
-NumericVector Toeplitz_getAcf(SEXP Toep_ptr);
-RcppExport SEXP _SuperGauss_Toeplitz_getAcf(SEXP Toep_ptrSEXP) {
+// Toeplitz_get_acf
+NumericVector Toeplitz_get_acf(SEXP Toep_ptr);
+RcppExport SEXP _SuperGauss_Toeplitz_get_acf(SEXP Toep_ptrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type Toep_ptr(Toep_ptrSEXP);
-    rcpp_result_gen = Rcpp::wrap(Toeplitz_getAcf(Toep_ptr));
+    rcpp_result_gen = Rcpp::wrap(Toeplitz_get_acf(Toep_ptr));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -224,14 +224,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Toeplitz_hasAcf
-bool Toeplitz_hasAcf(SEXP Toep_ptr);
-RcppExport SEXP _SuperGauss_Toeplitz_hasAcf(SEXP Toep_ptrSEXP) {
+// Toeplitz_has_acf
+bool Toeplitz_has_acf(SEXP Toep_ptr);
+RcppExport SEXP _SuperGauss_Toeplitz_has_acf(SEXP Toep_ptrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type Toep_ptr(Toep_ptrSEXP);
-    rcpp_result_gen = Rcpp::wrap(Toeplitz_hasAcf(Toep_ptr));
+    rcpp_result_gen = Rcpp::wrap(Toeplitz_has_acf(Toep_ptr));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -249,12 +249,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SuperGauss_PCG_constructor", (DL_FUNC) &_SuperGauss_PCG_constructor, 1},
     {"_SuperGauss_PCG_Solve", (DL_FUNC) &_SuperGauss_PCG_Solve, 4},
     {"_SuperGauss_Toeplitz_constructor", (DL_FUNC) &_SuperGauss_Toeplitz_constructor, 1},
-    {"_SuperGauss_Toeplitz_setAcf", (DL_FUNC) &_SuperGauss_Toeplitz_setAcf, 2},
-    {"_SuperGauss_Toeplitz_getAcf", (DL_FUNC) &_SuperGauss_Toeplitz_getAcf, 1},
+    {"_SuperGauss_Toeplitz_set_acf", (DL_FUNC) &_SuperGauss_Toeplitz_set_acf, 2},
+    {"_SuperGauss_Toeplitz_get_acf", (DL_FUNC) &_SuperGauss_Toeplitz_get_acf, 1},
     {"_SuperGauss_Toeplitz_Multiply", (DL_FUNC) &_SuperGauss_Toeplitz_Multiply, 2},
     {"_SuperGauss_Toeplitz_Solve", (DL_FUNC) &_SuperGauss_Toeplitz_Solve, 2},
     {"_SuperGauss_Toeplitz_Determinant", (DL_FUNC) &_SuperGauss_Toeplitz_Determinant, 1},
-    {"_SuperGauss_Toeplitz_hasAcf", (DL_FUNC) &_SuperGauss_Toeplitz_hasAcf, 1},
+    {"_SuperGauss_Toeplitz_has_acf", (DL_FUNC) &_SuperGauss_Toeplitz_has_acf, 1},
     {NULL, NULL, 0}
 };
 

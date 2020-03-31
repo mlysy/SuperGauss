@@ -11,18 +11,18 @@ SEXP Toeplitz_constructor(int n) {
   return Toep_ptr;
 }
 
-//[[Rcpp::export(".Toeplitz_setAcf")]]
-void Toeplitz_setAcf(SEXP Toep_ptr, NumericVector acf) {
+//[[Rcpp::export(".Toeplitz_set_acf")]]
+void Toeplitz_set_acf(SEXP Toep_ptr, NumericVector acf) {
   XPtr<Toeplitz> Toep(Toep_ptr);
-  Toep->setAcf(REAL(acf));
+  Toep->set_acf(REAL(acf));
   return;
 }
 
-//[[Rcpp::export(".Toeplitz_getAcf")]]
-NumericVector Toeplitz_getAcf(SEXP Toep_ptr) {
+//[[Rcpp::export(".Toeplitz_get_acf")]]
+NumericVector Toeplitz_get_acf(SEXP Toep_ptr) {
   XPtr<Toeplitz> Toep(Toep_ptr);
   NumericVector acf(Toep->size());
-  Toep->getAcf(REAL(acf));
+  Toep->get_acf(REAL(acf));
   return acf;
 }
 
@@ -76,9 +76,9 @@ double Toeplitz_Determinant(SEXP Toep_ptr) {
 //   return Toep->traceDeriv(REAL(acf2), REAL(acf3));
 // }
 
-//[[Rcpp::export(".Toeplitz_hasAcf")]]
-bool Toeplitz_hasAcf(SEXP Toep_ptr) {
+//[[Rcpp::export(".Toeplitz_has_acf")]]
+bool Toeplitz_has_acf(SEXP Toep_ptr) {
   XPtr<Toeplitz> Toep(Toep_ptr);
-  return Toep->hasAcf();
+  return Toep->has_acf();
 }
 

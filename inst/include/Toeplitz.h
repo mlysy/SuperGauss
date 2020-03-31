@@ -58,13 +58,13 @@ public:
   /// Destructor.
   ~Toeplitz();
   /// Set the acf of the Toeplitz matrix.
-  void setAcf(const double* acf);
+  void set_acf(const double* acf);
   /// Get the acf of the Toepliz matrix.
-  void getAcf(double* acf);  
+  void get_acf(double* acf);  
   /// Size of the Toeplitz matrix.
   int size(); 
   /// Check whether the acf has been set.
-  bool hasAcf();  
+  bool has_acf();  
   /// Toeplitz matrix-vector multiplication.
   void mult(double* y, const double* x);
   /// External symmetric Toeplitz matrix-vector multiplication.
@@ -152,7 +152,7 @@ inline Toeplitz::~Toeplitz() {
 /// @param[in] acf First row/column of Toeplitz matrix.
 ///
 /// @note Calls to `Toeplitz::mult()`, `Toeplitz::solve()`, and `Toeplitz::trace_inv()` store intermediate calculations which make these calls much faster for the same `acf` with different values of the other inputs.  Calling `set_acf()` indicates to `Toeplitz` that these intermediate calculations need to be recomputed.
-inline void Toeplitz::setAcf(const double* acf) {
+inline void Toeplitz::set_acf(const double* acf) {
   std::copy(acf, acf + N_, acf_);
   has_acf_ = true;
   has_mult_ = false;
@@ -162,12 +162,12 @@ inline void Toeplitz::setAcf(const double* acf) {
 }
 
 /// @param[out] acf First row/column of Toeplitz matrix.
-inline void Toeplitz::getAcf(double* acf) {
+inline void Toeplitz::get_acf(double* acf) {
   std::copy(acf_, acf_ + N_, acf);
   return;
 }
 
-inline bool Toeplitz::hasAcf() { 
+inline bool Toeplitz::has_acf() { 
   return has_acf_; 
 }
 

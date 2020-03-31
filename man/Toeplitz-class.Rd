@@ -5,8 +5,8 @@
 \alias{Toeplitz-class}
 \alias{.Toeplitz}
 \alias{Toeplitz}
-\alias{setAcf}
-\alias{getAcf}
+\alias{set_acf}
+\alias{get_acf}
 \alias{traceT2}
 \alias{traceT4}
 \alias{show.Toeplitz}
@@ -25,9 +25,9 @@
 \usage{
 Toeplitz(n, acf)
 
-Toeplitz$setAcf(acf)
+Toeplitz$set_acf(acf)
 
-Toeplitz$getAcf()
+Toeplitz$get_acf()
 
 Toeplitz$trace_grad(acf2)
 
@@ -56,8 +56,8 @@ It is assumed that the autocorrelation of the \code{Toeplitz} object defines a v
 
 If \code{Tz} is a \code{Toeplitz} object with first row/column given by \code{acf}, then:
 \describe{
-\item{\code{Tz$setAcf(acf)}}{Sets the autocorrelation of the matrix.}
-\item{\code{Tz$getAcf()}}{Gets the autocorrelation of the matrix.}
+\item{\code{Tz$set_acf(acf)}}{Sets the autocorrelation of the matrix.}
+\item{\code{Tz$get_acf()}}{Gets the autocorrelation of the matrix.}
 \item{\code{nrow(Tz)}, \code{ncol(Tz)}, \code{dim(Tz)}}{Selected dimension(s) of the matrix.}
 \item{\code{Tz \%*\% X}, \code{X \%*\% Tz}}{Toeplitz-Matrix and Matrix-Toeplitz multiplication.  Also works if \code{X} is a vector.}
 \item{\code{solve(Tz, X)}, \code{solve(Tz)}}{Solves Toeplitz systems of equations.  When second argument is missing, returns the inverse of the Toeplitz matrix.}
@@ -69,7 +69,7 @@ If \code{Tz} is a \code{Toeplitz} object with first row/column given by \code{ac
 This is used in the computation of the Hessian of \code{log(det(Tz(theta)))} with respect to \code{theta}.}
 }
 
-\subsection{\code{Tz$setAcf(acf)}}{
+\subsection{\code{Tz$set_acf(acf)}}{
 
 Sets the autocorrelation of the matrix.
 
@@ -90,11 +90,11 @@ acf <- exp(-(1:5))
 Toep <- Toeplitz(acf = acf)
 # alternatively, can allocate space first
 Toep <- Toeplitz(n = length(acf))
-Toep$setAcf(acf = acf)
+Toep$set_acf(acf = acf)
 
 dim(Toep) # == c(nrow(Toep), ncol(Toep))
 Toep # show method
-Toep$getAcf() # extract the acf
+Toep$get_acf() # extract the acf
 
 # linear algebra
 X <- matrix(rnorm(10), 5, 2)

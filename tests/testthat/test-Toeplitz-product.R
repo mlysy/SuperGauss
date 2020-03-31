@@ -5,7 +5,7 @@ context("Toeplitz - Product.")
 
 nrep <- 10
 test_that("Toeplitz-Matrix multiplication", {
-  replicate(n = nrep, expr = {  
+  replicate(n = nrep, expr = {
     N <- round(abs(rnorm(n = 1, mean = 100, sd = 10)))
     d <- round(abs(rnorm(n = 1, mean = 10, sd = 3)))
     Toep <- Toeplitz(N)
@@ -16,7 +16,7 @@ test_that("Toeplitz-Matrix multiplication", {
       cp <- case.par[ii, ]
       type <- as.character(cp)
       acf <- test_acf_func(N, type)
-      Toep$setAcf(acf)
+      Toep$set_acf(acf)
       acf.mat <- toeplitz(acf)
       y1 <- Toep %*% X
       y2 <- acf.mat %*% X
@@ -26,7 +26,7 @@ test_that("Toeplitz-Matrix multiplication", {
 })
 
 test_that("Matrix-Toeplitz multiplication", {
-  replicate(n = nrep, expr = {  
+  replicate(n = nrep, expr = {
     N <- round(abs(rnorm(n = 1, mean = 100, sd = 10)))
     d <- round(abs(rnorm(n = 1, mean = 10, sd = 3)))
     Toep <- Toeplitz(N)
@@ -37,7 +37,7 @@ test_that("Matrix-Toeplitz multiplication", {
       cp <- case.par[ii, ]
       type <- as.character(cp)
       acf <- test_acf_func(N, type)
-      Toep$setAcf(acf)
+      Toep$set_acf(acf)
       acf.mat <- toeplitz(acf)
       y1 <- X %*% Toep
       y2 <- X %*% acf.mat
