@@ -74,7 +74,7 @@ public:
   /// Solve Toeplitz matrix-vector system of equations.
   void solve(double* y, const double* x);
   /// Log-determinant of the Toeplitz matrix.
-  double logDet();
+  double log_det();
   /// Trace of inverse-Toeplitz matrix.
   double trace_inv();
   /// Gradient-specialized trace-product.
@@ -325,7 +325,7 @@ inline void Toeplitz::solve(double* y, const double* x) {
 /// The log-determinant of `Tz = Toeplitz(acf)` is obtained as a biproduct of the Generalized Schur algorithm.
 ///
 /// @return Scalar containing the value of `log(det(Tz))`.
-inline double Toeplitz::logDet() {
+inline double Toeplitz::log_det() {
   if (!has_solve_) solve_setup();
   if (N_ > 1) {
     // GSchur algorithm only supports N > 1 case.

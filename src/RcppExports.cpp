@@ -213,14 +213,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Toeplitz_Determinant
-double Toeplitz_Determinant(SEXP Toep_ptr);
-RcppExport SEXP _SuperGauss_Toeplitz_Determinant(SEXP Toep_ptrSEXP) {
+// Toeplitz_log_det
+double Toeplitz_log_det(SEXP Toep_ptr);
+RcppExport SEXP _SuperGauss_Toeplitz_log_det(SEXP Toep_ptrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type Toep_ptr(Toep_ptrSEXP);
-    rcpp_result_gen = Rcpp::wrap(Toeplitz_Determinant(Toep_ptr));
+    rcpp_result_gen = Rcpp::wrap(Toeplitz_log_det(Toep_ptr));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -253,7 +253,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SuperGauss_Toeplitz_get_acf", (DL_FUNC) &_SuperGauss_Toeplitz_get_acf, 1},
     {"_SuperGauss_Toeplitz_Multiply", (DL_FUNC) &_SuperGauss_Toeplitz_Multiply, 2},
     {"_SuperGauss_Toeplitz_Solve", (DL_FUNC) &_SuperGauss_Toeplitz_Solve, 2},
-    {"_SuperGauss_Toeplitz_Determinant", (DL_FUNC) &_SuperGauss_Toeplitz_Determinant, 1},
+    {"_SuperGauss_Toeplitz_log_det", (DL_FUNC) &_SuperGauss_Toeplitz_log_det, 1},
     {"_SuperGauss_Toeplitz_has_acf", (DL_FUNC) &_SuperGauss_Toeplitz_has_acf, 1},
     {NULL, NULL, 0}
 };

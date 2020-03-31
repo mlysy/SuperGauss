@@ -99,7 +99,7 @@ inline double NormalToeplitz::logdens(const double* z, const double* acf) {
   Tz_->set_acf(acf); // Tz = Toeplitz(acf)
   Tz_->solve(vec1, z); // vec1 = Tz^{-1} * z
   ldens = dot_prod(z, vec1); // ldens = t(z) * Tz^{-1} * z
-  ldens += Tz_->logDet() + N_ * LOG_2PI;
+  ldens += Tz_->log_det() + N_ * LOG_2PI;
   ldens *= -0.5;
   return ldens;
 }
@@ -267,7 +267,7 @@ double ldens = 0;
 // acf is already stored in Tz
 Tz->solveVec(vec1, z); // vec1 = Tz^{-1} * z
 ldens = dot_prod(z, vec1, N_); // ldens = t(z) * Tz^{-1} * z
-ldens += Tz->logDet() + N_ * log2Pi;
+ldens += Tz->log_det() + N_ * log2Pi;
 ldens *= -0.5;
 return ldens;
 }

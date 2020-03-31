@@ -65,8 +65,8 @@ DurbinLevinson_Base <- function(X, Y, acf, calcMode = 1L) {
     .Call(`_SuperGauss_Toeplitz_Solve`, Toep_ptr, X)
 }
 
-.Toeplitz_Determinant <- function(Toep_ptr) {
-    .Call(`_SuperGauss_Toeplitz_Determinant`, Toep_ptr)
+.Toeplitz_log_det <- function(Toep_ptr) {
+    .Call(`_SuperGauss_Toeplitz_log_det`, Toep_ptr)
 }
 
 .Toeplitz_has_acf <- function(Toep_ptr) {

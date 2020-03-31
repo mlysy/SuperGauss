@@ -177,7 +177,7 @@ setMethod("determinant", "Toeplitz",
   if(!.Toeplitz_has_acf(x$cpp_ptr)) {
     stop("set_acf has not been called yet")
   }
-  ldT <- .Toeplitz_Determinant(x$cpp_ptr)
+  ldT <- .Toeplitz_log_det(x$cpp_ptr)
   if(!logarithm) {
     ldT <- exp(ldT)
   }

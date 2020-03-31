@@ -58,10 +58,10 @@ NumericMatrix Toeplitz_Solve(SEXP Toep_ptr, NumericMatrix X) {
   return Y;
 }
 
-//[[Rcpp::export(".Toeplitz_Determinant")]]
-double Toeplitz_Determinant(SEXP Toep_ptr) {
+//[[Rcpp::export(".Toeplitz_log_det")]]
+double Toeplitz_log_det(SEXP Toep_ptr) {
   XPtr<Toeplitz> Toep(Toep_ptr);
-  return Toep->logDet();
+  return Toep->log_det();
 }
 
 // //[[Rcpp::export(".Toeplitz_traceT2")]]
