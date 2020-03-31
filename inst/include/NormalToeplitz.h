@@ -125,7 +125,7 @@ inline void NormalToeplitz::grad(double* dldt,
     Tz_->product(vec2, vec1, &dadt[ii * N_]);
     dldt[ii] = .5 * dot_prod(vec1, vec2);
     dldt[ii] -= dot_prod(&dzdt[ii * N_], vec1);
-    dldt[ii] -= .5 * Tz_->trace_deriv(&dadt[ii * N_]);
+    dldt[ii] -= .5 * Tz_->trace_grad(&dadt[ii * N_]);
   }
   return;
 }
@@ -172,7 +172,7 @@ inline void NormalToeplitz::hess(double* d2ldt,
       ans *= 2.0;
       Tz_->product(vec2, vec1, &d2adt[(ii * n_theta + jj) * N_]);
       ans -= dot_prod(vec1, vec2);
-      ans += Tz_->trace_deriv(&d2adt[(ii * n_theta + jj) * N_]);
+      ans += Tz_->trace_grad(&d2adt[(ii * n_theta + jj) * N_]);
       ans -= Tz_->trace_hess(&dadt[ii * N_], &dadt[jj * N_]);
       d2ldt[ii * n_theta + jj] = -.5 * ans;
     }

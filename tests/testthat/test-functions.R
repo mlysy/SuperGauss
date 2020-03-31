@@ -25,12 +25,13 @@ test_matern_acf <- function(lambda, nu, N) {
   ans
 }
 
-test_acf_func <- function(N, type){
+test_acf_func <- function(N, type, first0 = FALSE) {
   lambda <- 1 / runif(1, 1, 3)
   alpha <- runif(1, .2, .9)
   nu <- 3
   dT <- runif(1, .1, .9)
-  type <- match.arg(type, choices = c("exp", "exp2", "fbm", "matern", "zero", "rnd"))
+  type <- match.arg(type,
+                    choices = c("exp", "exp2", "fbm", "matern", "zero", "rnd"))
   if(type == "exp2") {
     acf <- test_exp_acf(lambda, 2, N)
   } else if(type == "exp") {
@@ -44,6 +45,7 @@ test_acf_func <- function(N, type){
   } else {
     acf <- rnorm(N)
   }
+  if(first0) acf[1] <- 0
   acf
 }
 

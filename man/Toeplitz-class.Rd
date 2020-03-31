@@ -7,8 +7,8 @@
 \alias{Toeplitz}
 \alias{set_acf}
 \alias{get_acf}
-\alias{traceT2}
-\alias{traceT4}
+\alias{trace_grad}
+\alias{trace_hess}
 \alias{show.Toeplitz}
 \alias{\%*\%}
 \alias{determinant}

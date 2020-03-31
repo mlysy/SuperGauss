@@ -64,17 +64,17 @@ double Toeplitz_log_det(SEXP Toep_ptr) {
   return Toep->log_det();
 }
 
-// //[[Rcpp::export(".Toeplitz_traceT2")]]
-// double Toeplitz_traceT2(SEXP Toep_ptr, NumericVector acf2) {
-//   XPtr<Toeplitz> Toep(Toep_ptr);
-//   return Toep->traceProd(REAL(acf2));
-// }
+//[[Rcpp::export(".Toeplitz_trace_grad")]]
+double Toeplitz_trace_grad(SEXP Toep_ptr, NumericVector acf2) {
+  XPtr<Toeplitz> Toep(Toep_ptr);
+  return Toep->trace_grad(REAL(acf2));
+}
 
-// //[[Rcpp::export(".Toeplitz_traceT4")]]
-// double Toeplitz_traceT4(SEXP Toep_ptr, NumericVector acf2, NumericVector acf3) {
-//   XPtr<Toeplitz> Toep(Toep_ptr);
-//   return Toep->traceDeriv(REAL(acf2), REAL(acf3));
-// }
+//[[Rcpp::export(".Toeplitz_trace_hess")]]
+double Toeplitz_traceT4(SEXP Toep_ptr, NumericVector acf2, NumericVector acf3) {
+  XPtr<Toeplitz> Toep(Toep_ptr);
+  return Toep->trace_hess(REAL(acf2), REAL(acf3));
+}
 
 //[[Rcpp::export(".Toeplitz_has_acf")]]
 bool Toeplitz_has_acf(SEXP Toep_ptr) {

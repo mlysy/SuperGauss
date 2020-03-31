@@ -78,7 +78,7 @@ public:
   /// Trace of inverse-Toeplitz matrix.
   double trace_inv();
   /// Gradient-specialized trace-product.
-  double trace_deriv(const double* acf1);
+  double trace_grad(const double* acf1);
   /// Hessian-specialized trace-product.
   double trace_hess(const double* acf1, const double* acf2);
 };
@@ -413,7 +413,7 @@ inline void Toeplitz::product(double* y, const double* x,
 ///
 /// @param[in] acf0 Vector of length `N` giving the first row/column of the Toeplitz matrix `Tz0 = Toeplitz(acf0)`.
 /// @return The Toeplitz trace-product `trace( Tz^{-1} * Tz0 )`.
-inline double Toeplitz::trace_deriv(const double* acf0) {
+inline double Toeplitz::trace_grad(const double* acf0) {
   // Pointers to temporary storage: U1_, U1_fft_, U2_, U2_fft_, y_.
   double* U1_ = vec1_;
   dcomplex* U1_fft_ = vec1_fft_;
@@ -491,7 +491,7 @@ inline double Toeplitz::trace_hess(const double* acf1, const double* acf2) {
     // Store the negative derivative of delta in vector phi_, where phi_ = solve(acf_) * toep(acf1) * delta
     product(phi_, delta_, acf1);
     solve(phi_, phi_);
-    trace = trace_deriv(acf2);
+    trace = trace_grad(acf2);
     if(sng) trace += trace_inv();
     trace *= -phi_[0];
     // kappa1

@@ -69,6 +69,14 @@ DurbinLevinson_Base <- function(X, Y, acf, calcMode = 1L) {
     .Call(`_SuperGauss_Toeplitz_log_det`, Toep_ptr)
 }
 
+.Toeplitz_trace_grad <- function(Toep_ptr, acf2) {
+    .Call(`_SuperGauss_Toeplitz_trace_grad`, Toep_ptr, acf2)
+}
+
+.Toeplitz_trace_hess <- function(Toep_ptr, acf2, acf3) {
+    .Call(`_SuperGauss_Toeplitz_traceT4`, Toep_ptr, acf2, acf3)
+}
+
 .Toeplitz_has_acf <- function(Toep_ptr) {
     .Call(`_SuperGauss_Toeplitz_has_acf`, Toep_ptr)
 }

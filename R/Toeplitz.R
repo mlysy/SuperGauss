@@ -2,7 +2,7 @@
 #'
 #' The `Toeplitz` class contains efficient methods for linear algebra with symmetric positive definite (i.e., variance) Toeplitz matrices.
 #'
-#' @aliases Toeplitz set_acf get_acf traceT2 traceT4 show.Toeplitz %*% determinant solve %*%,ANY,Toeplitz-method %*%,Toeplitz,ANY-method determinant,Toeplitz-method dim,Toeplitz-method ncol,Toeplitz-method nrow,Toeplitz-method show,Toeplitz-method solve,Toeplitz-method
+#' @aliases Toeplitz set_acf get_acf trace_grad trace_hess show.Toeplitz %*% determinant solve %*%,ANY,Toeplitz-method %*%,Toeplitz,ANY-method determinant,Toeplitz-method dim,Toeplitz-method ncol,Toeplitz-method nrow,Toeplitz-method show,Toeplitz-method solve,Toeplitz-method
 #' @section Methods:
 #' If `Tz` is a `Toeplitz` object with first row/column given by `acf`, then:
 #' \describe{
@@ -104,6 +104,32 @@ Toeplitz <- function(n, acf) {
 .Toeplitz$methods(get_acf = function() {
   .Toeplitz_get_acf(cpp_ptr)
 })
+
+# trace_grad
+.Toeplitz$methods(trace_grad = function(acf2) {
+  if(!.Toeplitz_has_acf(cpp_ptr)) {
+    stop("setAcf has not been called yet")
+  }
+  if(length(acf2) != size) {
+    stop("acf2 has wrong length.")
+  }
+  .Toeplitz_trace_grad(cpp_ptr, acf2)
+})
+
+# trace_hess
+.Toeplitz$methods(trace_hess = function(acf2, acf3) {
+  if(!.Toeplitz_has_acf(cpp_ptr)) {
+    stop("setAcf has not been called yet")
+  }
+  if(length(acf2) != size) {
+    stop("acf2 has wrong length.")
+  }
+  if(length(acf3) != size) {
+    stop("acf3 has wrong length.")
+  }
+  .Toeplitz_trace_hess(cpp_ptr, acf2, acf3)
+})
+
 
 #--- generic methods -----------------------------------------------------------
 

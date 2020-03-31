@@ -224,6 +224,31 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// Toeplitz_trace_grad
+double Toeplitz_trace_grad(SEXP Toep_ptr, NumericVector acf2);
+RcppExport SEXP _SuperGauss_Toeplitz_trace_grad(SEXP Toep_ptrSEXP, SEXP acf2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type Toep_ptr(Toep_ptrSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type acf2(acf2SEXP);
+    rcpp_result_gen = Rcpp::wrap(Toeplitz_trace_grad(Toep_ptr, acf2));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Toeplitz_traceT4
+double Toeplitz_traceT4(SEXP Toep_ptr, NumericVector acf2, NumericVector acf3);
+RcppExport SEXP _SuperGauss_Toeplitz_traceT4(SEXP Toep_ptrSEXP, SEXP acf2SEXP, SEXP acf3SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type Toep_ptr(Toep_ptrSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type acf2(acf2SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type acf3(acf3SEXP);
+    rcpp_result_gen = Rcpp::wrap(Toeplitz_traceT4(Toep_ptr, acf2, acf3));
+    return rcpp_result_gen;
+END_RCPP
+}
 // Toeplitz_has_acf
 bool Toeplitz_has_acf(SEXP Toep_ptr);
 RcppExport SEXP _SuperGauss_Toeplitz_has_acf(SEXP Toep_ptrSEXP) {
@@ -254,6 +279,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SuperGauss_Toeplitz_Multiply", (DL_FUNC) &_SuperGauss_Toeplitz_Multiply, 2},
     {"_SuperGauss_Toeplitz_Solve", (DL_FUNC) &_SuperGauss_Toeplitz_Solve, 2},
     {"_SuperGauss_Toeplitz_log_det", (DL_FUNC) &_SuperGauss_Toeplitz_log_det, 1},
+    {"_SuperGauss_Toeplitz_trace_grad", (DL_FUNC) &_SuperGauss_Toeplitz_trace_grad, 2},
+    {"_SuperGauss_Toeplitz_traceT4", (DL_FUNC) &_SuperGauss_Toeplitz_traceT4, 3},
     {"_SuperGauss_Toeplitz_has_acf", (DL_FUNC) &_SuperGauss_Toeplitz_has_acf, 1},
     {NULL, NULL, 0}
 };
