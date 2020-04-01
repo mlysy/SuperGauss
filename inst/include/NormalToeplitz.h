@@ -122,7 +122,7 @@ inline void NormalToeplitz::grad(double* dldt,
   Tz_->set_acf(acf); // Tz = Toeplitz(acf)
   Tz_->solve(vec1, z); // vec1 = Tz^{-1} * z
   for(int ii = 0; ii < n_theta; ++ii) {
-    Tz_->product(vec2, vec1, &dadt[ii * N_]);
+    Tz_->prod(vec2, vec1, &dadt[ii * N_]);
     dldt[ii] = .5 * dot_prod(vec1, vec2);
     dldt[ii] -= dot_prod(&dzdt[ii * N_], vec1);
     dldt[ii] -= .5 * Tz_->trace_grad(&dadt[ii * N_]);
@@ -159,8 +159,8 @@ inline void NormalToeplitz::hess(double* d2ldt,
   std::fill(d2ldt, d2ldt + n_theta * n_theta, 0.0);
   for(int ii = 0; ii < n_theta; ++ii) {
     for(int jj = 0; jj <= ii; ++jj) {
-      Tz_->product(vec4, vec1, &dadt[jj * N_]);
-      Tz_->product(vec3, vec1, &dadt[ii * N_]);
+      Tz_->prod(vec4, vec1, &dadt[jj * N_]);
+      Tz_->prod(vec3, vec1, &dadt[ii * N_]);
       ans = dot_prod(&d2zdt[(ii * n_theta + jj) * N_], vec1);
       Tz_->solve(vec2, vec4);
       ans -= dot_prod(&dzdt[ii * N_], vec2);
@@ -170,7 +170,7 @@ inline void NormalToeplitz::hess(double* d2ldt,
       Tz_->solve(vec2, &dzdt[jj * N_]);
       ans += dot_prod(&dzdt[ii * N_], vec2);
       ans *= 2.0;
-      Tz_->product(vec2, vec1, &d2adt[(ii * n_theta + jj) * N_]);
+      Tz_->prod(vec2, vec1, &d2adt[(ii * n_theta + jj) * N_]);
       ans -= dot_prod(vec1, vec2);
       ans += Tz_->trace_grad(&d2adt[(ii * n_theta + jj) * N_]);
       ans -= Tz_->trace_hess(&dadt[ii * N_], &dadt[jj * N_]);
@@ -222,7 +222,7 @@ inline void NormalToeplitz::grad_full(double* dldz, double* dlda,
     double tau1 = vec3[0];
     std::fill(phi, phi + N_, 0.0);
     phi[0] = vec1[0];
-    Tz_->product(dlda, vec1, phi, vec1);
+    Tz_->prod(dlda, vec1, phi, vec1);
     // vec2 = (N_:1 * tau)
     vec4[0] = 0.0;
     for (int ii = 1; ii < N_; ++ii) {
@@ -233,14 +233,14 @@ inline void NormalToeplitz::grad_full(double* dldz, double* dlda,
     }
     // vec1 = upper.toep(tau) %*% (N_:1 * tau) = tr
     phi[0] = vec3[0];
-    Tz_->product(vec1, vec2, phi, vec3); 
+    Tz_->prod(vec1, vec2, phi, vec3); 
     // vec2 = (N_:1 * tau2)
     for (int ii = 0; ii < N_; ++ii) {
       vec2[ii] = (N_ - ii) * vec4[ii];
     } 
     // vec3 = upper.toep(tau2) %*% (N_:1 * tau2)
     phi[0] = vec4[0];
-    Tz_->product(vec3, vec2, phi, vec4); 
+    Tz_->prod(vec3, vec2, phi, vec4); 
     // vec1 = (vec1 - vec3) / tau[1] = tr, dlda = ip - tr
     for (int ii = 0; ii < N_; ++ii) {
       vec1[ii] -= vec3[ii];

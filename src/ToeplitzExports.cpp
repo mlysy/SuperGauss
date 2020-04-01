@@ -34,20 +34,20 @@ NumericVector Toeplitz_get_acf(SEXP Toep_ptr) {
 //   return phi;
 // }
 
-//[[Rcpp::export(".Toeplitz_Multiply")]]
-NumericMatrix Toeplitz_Multiply(SEXP Toep_ptr, NumericMatrix X) {
+//[[Rcpp::export(".Toeplitz_prod")]]
+NumericMatrix Toeplitz_prod(SEXP Toep_ptr, NumericMatrix X) {
   XPtr<Toeplitz> Toep(Toep_ptr);
   int p = X.ncol();
   int n = X.nrow();
   NumericMatrix Y(n,p);
   for(int ii=0; ii<p; ii++) {
-    Toep->mult(&REAL(Y)[n*ii], &REAL(X)[n*ii]);
+    Toep->prod(&REAL(Y)[n*ii], &REAL(X)[n*ii]);
   }
   return Y;
 }
 
-//[[Rcpp::export(".Toeplitz_Solve")]]
-NumericMatrix Toeplitz_Solve(SEXP Toep_ptr, NumericMatrix X) {
+//[[Rcpp::export(".Toeplitz_solve")]]
+NumericMatrix Toeplitz_solve(SEXP Toep_ptr, NumericMatrix X) {
   XPtr<Toeplitz> Toep(Toep_ptr);
   int p = X.ncol();
   int n = X.nrow();

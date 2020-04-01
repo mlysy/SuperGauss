@@ -108,7 +108,7 @@ Toeplitz <- function(n, acf) {
 # trace_grad
 .Toeplitz$methods(trace_grad = function(acf2) {
   if(!.Toeplitz_has_acf(cpp_ptr)) {
-    stop("setAcf has not been called yet")
+    stop("set_acf has not been called yet")
   }
   if(length(acf2) != size) {
     stop("acf2 has wrong length.")
@@ -119,7 +119,7 @@ Toeplitz <- function(n, acf) {
 # trace_hess
 .Toeplitz$methods(trace_hess = function(acf2, acf3) {
   if(!.Toeplitz_has_acf(cpp_ptr)) {
-    stop("setAcf has not been called yet")
+    stop("set_acf has not been called yet")
   }
   if(length(acf2) != size) {
     stop("acf2 has wrong length.")
@@ -178,7 +178,7 @@ setMethod("%*%", signature(x = "Toeplitz", y = "ANY"), function(x, y) {
   if(nrow(y) != x$size) {
     stop("Toeplitz and second argument are non-conformable.")
   }
-  .Toeplitz_Multiply(x$cpp_ptr, y)
+  .Toeplitz_prod(x$cpp_ptr, y)
 })
 
 # Matrix-Toeplitz multiplication
@@ -193,7 +193,7 @@ setMethod("%*%", signature(x = "ANY", y = "Toeplitz"), function(x, y) {
   if(ncol(x) != y$size) {
     stop("First argument and Toeplitz are non-conformable.")
   }
-  t(.Toeplitz_Multiply(y$cpp_ptr, t(x)))
+  t(.Toeplitz_prod(y$cpp_ptr, t(x)))
 })
 
 # determinant
@@ -224,7 +224,7 @@ setMethod("solve", "Toeplitz", function(a, b, ...) {
   if(nrow(b) != a$size) {
     stop("a and b are non-conformable.")
   }
-  .Toeplitz_Solve(a$cpp_ptr, b)
+  .Toeplitz_solve(a$cpp_ptr, b)
 })
 
 # now make methods display arguments
@@ -249,7 +249,7 @@ setMethod("solve", "Toeplitz", function(a, b, ...) {
 ##                                callSuper(n)
 ##                                size <<- n
 ##                              },
-##                              setAcf = function(acf) {
+##                              set_acf = function(acf) {
 ##                                if(length(acf) != size) {
 ##                                  stop("acf has wrong length.")
 ##                                }
@@ -266,7 +266,7 @@ setMethod("solve", "Toeplitz", function(a, b, ...) {
 ##   }
 ##   Tz <- .Toeplitz_R$new(n)
 ##   if(!missing(acf)) {
-##     Tz$setAcf(acf)
+##     Tz$set_acf(acf)
 ##   }
 ##   Tz
 ## }

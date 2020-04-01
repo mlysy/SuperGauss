@@ -57,12 +57,12 @@ DurbinLevinson_Base <- function(X, Y, acf, calcMode = 1L) {
     .Call(`_SuperGauss_Toeplitz_get_acf`, Toep_ptr)
 }
 
-.Toeplitz_Multiply <- function(Toep_ptr, X) {
-    .Call(`_SuperGauss_Toeplitz_Multiply`, Toep_ptr, X)
+.Toeplitz_prod <- function(Toep_ptr, X) {
+    .Call(`_SuperGauss_Toeplitz_prod`, Toep_ptr, X)
 }
 
-.Toeplitz_Solve <- function(Toep_ptr, X) {
-    .Call(`_SuperGauss_Toeplitz_Solve`, Toep_ptr, X)
+.Toeplitz_solve <- function(Toep_ptr, X) {
+    .Call(`_SuperGauss_Toeplitz_solve`, Toep_ptr, X)
 }
 
 .Toeplitz_log_det <- function(Toep_ptr) {

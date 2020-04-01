@@ -189,27 +189,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Toeplitz_Multiply
-NumericMatrix Toeplitz_Multiply(SEXP Toep_ptr, NumericMatrix X);
-RcppExport SEXP _SuperGauss_Toeplitz_Multiply(SEXP Toep_ptrSEXP, SEXP XSEXP) {
+// Toeplitz_prod
+NumericMatrix Toeplitz_prod(SEXP Toep_ptr, NumericMatrix X);
+RcppExport SEXP _SuperGauss_Toeplitz_prod(SEXP Toep_ptrSEXP, SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type Toep_ptr(Toep_ptrSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(Toeplitz_Multiply(Toep_ptr, X));
+    rcpp_result_gen = Rcpp::wrap(Toeplitz_prod(Toep_ptr, X));
     return rcpp_result_gen;
 END_RCPP
 }
-// Toeplitz_Solve
-NumericMatrix Toeplitz_Solve(SEXP Toep_ptr, NumericMatrix X);
-RcppExport SEXP _SuperGauss_Toeplitz_Solve(SEXP Toep_ptrSEXP, SEXP XSEXP) {
+// Toeplitz_solve
+NumericMatrix Toeplitz_solve(SEXP Toep_ptr, NumericMatrix X);
+RcppExport SEXP _SuperGauss_Toeplitz_solve(SEXP Toep_ptrSEXP, SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type Toep_ptr(Toep_ptrSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(Toeplitz_Solve(Toep_ptr, X));
+    rcpp_result_gen = Rcpp::wrap(Toeplitz_solve(Toep_ptr, X));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -276,8 +276,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SuperGauss_Toeplitz_constructor", (DL_FUNC) &_SuperGauss_Toeplitz_constructor, 1},
     {"_SuperGauss_Toeplitz_set_acf", (DL_FUNC) &_SuperGauss_Toeplitz_set_acf, 2},
     {"_SuperGauss_Toeplitz_get_acf", (DL_FUNC) &_SuperGauss_Toeplitz_get_acf, 1},
-    {"_SuperGauss_Toeplitz_Multiply", (DL_FUNC) &_SuperGauss_Toeplitz_Multiply, 2},
-    {"_SuperGauss_Toeplitz_Solve", (DL_FUNC) &_SuperGauss_Toeplitz_Solve, 2},
+    {"_SuperGauss_Toeplitz_prod", (DL_FUNC) &_SuperGauss_Toeplitz_prod, 2},
+    {"_SuperGauss_Toeplitz_solve", (DL_FUNC) &_SuperGauss_Toeplitz_solve, 2},
     {"_SuperGauss_Toeplitz_log_det", (DL_FUNC) &_SuperGauss_Toeplitz_log_det, 1},
     {"_SuperGauss_Toeplitz_trace_grad", (DL_FUNC) &_SuperGauss_Toeplitz_trace_grad, 2},
     {"_SuperGauss_Toeplitz_traceT4", (DL_FUNC) &_SuperGauss_Toeplitz_traceT4, 3},

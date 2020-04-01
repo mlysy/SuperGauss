@@ -32,7 +32,7 @@ private:
   GSchurN* gs_;     ///< Object to compute GSchur algorithm.
   VectorFFT* vfft_;   ///< Object for fft computations.
   bool has_acf_;    ///< Wheter input argument `acf_` has been modified.
-  bool has_mult_;   ///< Whether multiplication-related FFT has been done.
+  bool has_prod_;   ///< Whether multiplication-related FFT has been done.
   bool has_solve_;  ///< Whether inversion-related FFT has been done.
   bool has_trace_;  ///< Whether trace-of-inverse calculation has been done.
   dcomplex* L1_fft_; ///< FFT for first lower-triangular Toeplitz matrix in `solve`.
@@ -43,7 +43,7 @@ private:
   double *vec1_, *vec2_, *vec3_, *vec4_, *vec5_, *vec6_;
   dcomplex *vec1_fft_, *vec2_fft_, *vec3_fft_; //, *vec4_fft_, *vec5_fft_;
   /// Precomputations for matrix-vector multiplication.
-  void mult_setup();    
+  void prod_setup();    
   /// Precomputations for solving linear systems.
   void solve_setup();
   /// Trace of product of lower and upper triangular Toeplitz matrices.
@@ -66,11 +66,11 @@ public:
   /// Check whether the acf has been set.
   bool has_acf();  
   /// Toeplitz matrix-vector multiplication.
-  void mult(double* y, const double* x);
+  void prod(double* y, const double* x);
   /// External symmetric Toeplitz matrix-vector multiplication.
-  void product(double* y, const double* x, const double* acf1);
+  void prod(double* y, const double* x, const double* acf1);
   /// External non-symmetric Toeplitz matrix-vector multiplication.
-  void product(double* y, const double* x, const double* acf1, const double* acf2);  
+  void prod(double* y, const double* x, const double* acf1, const double* acf2);  
   /// Solve Toeplitz matrix-vector system of equations.
   void solve(double* y, const double* x);
   /// Log-determinant of the Toeplitz matrix.
@@ -91,7 +91,7 @@ inline Toeplitz::Toeplitz(int N, int bmod = 64) {
   // N3_ = N_ + 1;
   acf_ = new double[N_];
   has_acf_ = false;
-  has_mult_ = false;
+  has_prod_ = false;
   has_solve_ = false;
   has_trace_ = false;
   if (N_ > 1) {
@@ -151,11 +151,11 @@ inline Toeplitz::~Toeplitz() {
 
 /// @param[in] acf First row/column of Toeplitz matrix.
 ///
-/// @note Calls to `Toeplitz::mult()`, `Toeplitz::solve()`, and `Toeplitz::trace_inv()` store intermediate calculations which make these calls much faster for the same `acf` with different values of the other inputs.  Calling `set_acf()` indicates to `Toeplitz` that these intermediate calculations need to be recomputed.
+/// @note Calls to `Toeplitz::prod()`, `Toeplitz::solve()`, and `Toeplitz::trace_inv()` store intermediate calculations which make these calls much faster for the same `acf` with different values of the other inputs.  Calling `set_acf()` indicates to `Toeplitz` that these intermediate calculations need to be recomputed.
 inline void Toeplitz::set_acf(const double* acf) {
   std::copy(acf, acf + N_, acf_);
   has_acf_ = true;
-  has_mult_ = false;
+  has_prod_ = false;
   has_solve_ = false;
   has_trace_ = false;
   return;
@@ -175,9 +175,9 @@ inline int Toeplitz::size() {
   return N_; 
 }
 
-/// Precomputes the FFT of the circulant embedding of `acf_` into `tzcirc_fft_` and sets `has_mult_ = true`.
-inline void Toeplitz::mult_setup() {
-  has_mult_ = true;
+/// Precomputes the FFT of the circulant embedding of `acf_` into `tzcirc_fft_` and sets `has_prod_ = true`.
+inline void Toeplitz::prod_setup() {
+  has_prod_ = true;
   if (N_ > 1) {
     std::copy(acf_, acf_ + N_, tzcirc_);
     tzcirc_[N_] = 0;
@@ -232,14 +232,14 @@ inline double Toeplitz::trace_LU(const double* L, const double* U) {
 ///
 /// @param[out] y Output vector of size `N` for the matrix-vector multiplication `Tz * x`.
 /// @param[in] x Input vector of size `N`.
-inline void Toeplitz::mult(double* y, const double* x) {
+inline void Toeplitz::prod(double* y, const double* x) {
   // Pointers to temporary storage: x_, x_fft_, y_.
   double* x_ = vec1_;
   dcomplex* x_fft_ = vec1_fft_;
   double* y_ = vec2_;
   // dcomplex* y_fft_ = vec2_fft_;
   // tzcirc_ = [acf_, 0, rev(acf_[-1])]
-  if(!has_mult_) mult_setup();
+  if(!has_prod_) prod_setup();
   std::copy(x, x + N_, x_);
   zero_fft(x_fft_, x_);
   // y_ = ifft(fft(tzcirc_) * fft(x_))[1:N_]
@@ -355,7 +355,7 @@ inline double Toeplitz::trace_inv() {
 /// @param[out] y Vector of length `N` containing the output `y = Tz * x`.
 /// @param[in] x Input vector of length `N`.
 /// @param[in] acf1 Vector of length `N` specifying the first row/column of the Toeplitz matrix `Tz = Toeplitz(acf1)`.
-inline void Toeplitz::product(double* y, const double* x, const double* acf1) {
+inline void Toeplitz::prod(double* y, const double* x, const double* acf1) {
   // Pointers to temporary storage: x_, x_fft_, z_, z_fft_, y_.
   double* x_ = vec1_;
   dcomplex* x_fft_ = vec1_fft_;
@@ -383,7 +383,7 @@ inline void Toeplitz::product(double* y, const double* x, const double* acf1) {
 /// @param[in] x Input vector of length `N`.
 /// @param[in] col1 Vector of length `N` specifying the first column of `Tz`.
 /// @param[in] row1 Vector of length `N` specifying the first row of `Tz`.
-inline void Toeplitz::product(double* y, const double* x,
+inline void Toeplitz::prod(double* y, const double* x,
 			      const double* col1, const double* row1) {
   // Pointers to temporary storage: x_, x_fft_, z_, z_fft_, y_.
   double* x_ = vec1_;
@@ -489,7 +489,7 @@ inline double Toeplitz::trace_hess(const double* acf1, const double* acf2) {
     bool sng = fabs(acf2[0] < 0.0001);
     if(sng) acf20 += 1.0;		
     // Store the negative derivative of delta in vector phi_, where phi_ = solve(acf_) * toep(acf1) * delta
-    product(phi_, delta_, acf1);
+    prod(phi_, delta_, acf1);
     solve(phi_, phi_);
     trace = trace_grad(acf2);
     if(sng) trace += trace_inv();
