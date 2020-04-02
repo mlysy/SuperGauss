@@ -40,8 +40,8 @@ NormalToeplitz <- R6Class(
     #' @param acf A vector of length `N` containing the autocorrelation (i.e., first row/column) of the Toeplitz variance matrix.
     #' @return A scalar or vector of length `n_obs` containing the log-density of the NTz evaluated at its arguments.
     logdens = function(z, acf) {
-      check_var(z, N = private$N_, varname = "z")
-      check_var(acf, N = private$N_, varname = "acf")
+      check_ntz(z, N = private$N_, varname = "z")
+      check_ntz(acf, N = private$N_, varname = "acf")
       .NormalToeplitz_logdens(private$NTz_ptr, z, acf)
     },
 
@@ -53,8 +53,8 @@ NormalToeplitz <- R6Class(
     #' @param dacf An `N x n_theta` matrix containing the gradient `dacf/dtheta`.
     #' @return A vector of length `n_theta` containing the gradient of the NTz log-density with respect to `theta`.
     grad = function(z, dz, acf, dacf) {
-      check_var(z, dx = dz, N = private$N_, varname = "z")
-      check_var(acf, dx = dacf, N = private$N_, varname = "acf")
+      check_ntz(z, dx = dz, N = private$N_, varname = "z")
+      check_ntz(acf, dx = dacf, N = private$N_, varname = "acf")
       if(ncol(dz) != ncol(dacf)) {
         stop("dz and dacf must have the same number of columns.")
       }
@@ -72,8 +72,8 @@ NormalToeplitz <- R6Class(
     #' @param d2acf An `N x n_theta x n_theta` array containing the Hessian `dacf^2/dtheta^2`.
     #' @return An `n_theta x n_theta` matrix containing the Hessian of the NTz log-density with respect to `theta`.
     hess = function(z, dz, d2z, acf, dacf, d2acf) {
-      check_var(z, dx = dz, d2x = d2z, N = private$N_, varname = "z")
-      check_var(acf, dx = dacf, d2x = d2acf, N = private$N_,
+      check_ntz(z, dx = dz, d2x = d2z, N = private$N_, varname = "z")
+      check_ntz(acf, dx = dacf, d2x = d2acf, N = private$N_,
                 varname = "acf")
       if(ncol(dz) != ncol(dacf)) {
         stop("dz and dacf must have the same number of columns.")
@@ -100,8 +100,8 @@ NormalToeplitz <- R6Class(
       if(!calc_dldz && !calc_dlda) {
         stop("At least one of calc_dldz or calc_dlda must be TRUE.")
       }
-      check_var(z, N = private$N_, varname = "z")
-      check_var(acf, N = private$N_, varname = "acf")
+      check_ntz(z, N = private$N_, varname = "z")
+      check_ntz(acf, N = private$N_, varname = "acf")
       .NormalToeplitz_grad_full(private$NTz_ptr, z, acf, calc_dldz, calc_dlda)
     }
   )
@@ -122,7 +122,7 @@ NormalToeplitz <- R6Class(
 #' - If `dx` provided, checks that its a matrix with `nrow(dx) = length(x)`.
 #' - If `d2x` is provided, check that `dim(d2x) = c(length(x), ncol(dx), ncol(dx))`.
 #' @noRd
-check_var <- function(x, dx, d2x, N, varname) {
+check_ntz <- function(x, dx, d2x, N, varname) {
   if(!(is.vector(x) && is.numeric(x))) {
     stop(paste0(varname, " must be a numeric vector."))
   }
@@ -179,15 +179,15 @@ check_var <- function(x, dx, d2x, N, varname) {
 
 ## # Log-density function.
 ## NormalToeplitz$set("public", "logdens", overwrite = TRUE, function(z, acf) {
-##   check_var(z, N = private$size, varname = "z")
-##   check_var(acf, N = private$size, varname = "acf")
+##   check_ntz(z, N = private$size, varname = "z")
+##   check_ntz(acf, N = private$size, varname = "acf")
 ##   .NormalToeplitz_logdens(private$NTz_ptr, z, acf)
 ## })
 
 ## # Gradient of log-density with respect to parameters.
 ## NormalToeplitz$set("public", "grad", overwrite = TRUE, function(z, dz, acf, dacf) {
-##   check_var(z, dx = dz, N = private$size, varname = "z")
-##   check_var(acf, dx = dacf, N = private$size, varname = "acf")
+##   check_ntz(z, dx = dz, N = private$size, varname = "z")
+##   check_ntz(acf, dx = dacf, N = private$size, varname = "acf")
 ##   if(ncol(dz) != ncol(dacf)) {
 ##     stop("dz and dacf must have the same number of columns.")
 ##   }
@@ -197,8 +197,8 @@ check_var <- function(x, dx, d2x, N, varname) {
 
 ## # Hessian of log-density with respect to parameters.
 ## NormalToeplitz$set("public", "hess", overwrite = TRUE, function(z, dz, d2z, acf, dacf, d2acf) {
-##   check_var(z, dx = dz, d2x = d2z, N = private$size, varname = "z")
-##   check_var(acf, dx = dacf, d2x = d2acf, N = private$size, varname = "acf")
+##   check_ntz(z, dx = dz, d2x = d2z, N = private$size, varname = "z")
+##   check_ntz(acf, dx = dacf, d2x = d2acf, N = private$size, varname = "acf")
 ##   if(ncol(dz) != ncol(dacf)) {
 ##     stop("dz and dacf must have the same number of columns.")
 ##   }
@@ -214,7 +214,7 @@ check_var <- function(x, dx, d2x, N, varname) {
 
 ## # Full gradient of log-density.
 ## NormalToeplitz$set("public", "grad_full", overwrite = TRUE, function(z, acf) {
-##   check_var(z, N = private$size, varname = "z")
-##   check_var(acf, N = private$size, varname = "acf")
+##   check_ntz(z, N = private$size, varname = "z")
+##   check_ntz(acf, N = private$size, varname = "acf")
 ##   .NormalToeplitz_grad_full(private$NTz_ptr, z, acf)
 ## })

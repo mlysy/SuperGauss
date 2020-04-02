@@ -11,7 +11,7 @@ test_that("Toeplitz$trace_hess is same in R and C++", {
     type3 <- sample(c("exp", "exp2", "fbm", "matern", "zero", "rnd"), 1)
     first20 <- sample(c(TRUE, FALSE), 1)
     first30 <- sample(c(TRUE, FALSE), 1)
-    Toep <- Toeplitz(N)
+    Toep <- Toeplitz$new(N)
     acf <- test_acf_func(N, type1)
     acf2 <- test_acf_func(N, type2, first20)
     acf3 <- test_acf_func(N, type3, first30)

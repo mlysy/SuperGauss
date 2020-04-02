@@ -8,7 +8,7 @@ test_that("Toeplitz-Matrix multiplication", {
   replicate(n = nrep, expr = {
     N <- round(abs(rnorm(n = 1, mean = 100, sd = 10)))
     d <- round(abs(rnorm(n = 1, mean = 10, sd = 3)))
-    Toep <- Toeplitz(N)
+    Toep <- Toeplitz$new(N)
     case.par <- expand.grid(type = c("exp", "exp2", "fbm", "matern", "zero", "rnd"))
     ncase <- nrow(case.par)
     X <- matrix(rnorm(N * d), N, d)
@@ -21,6 +21,7 @@ test_that("Toeplitz-Matrix multiplication", {
       y1 <- Toep %*% X
       y2 <- acf.mat %*% X
       expect_equal(y1, y2, tolerance = 1e-6)
+      expect_equal(Toep$prod(X), y2, tolerance = 1e-6)
     }
   })
 })
@@ -29,7 +30,7 @@ test_that("Matrix-Toeplitz multiplication", {
   replicate(n = nrep, expr = {
     N <- round(abs(rnorm(n = 1, mean = 100, sd = 10)))
     d <- round(abs(rnorm(n = 1, mean = 10, sd = 3)))
-    Toep <- Toeplitz(N)
+    Toep <- Toeplitz$new(N)
     case.par <- expand.grid(type = c("exp", "exp2", "fbm", "matern", "zero", "rnd"))
     ncase <- nrow(case.par)
     X <- matrix(rnorm(N * d), d, N)

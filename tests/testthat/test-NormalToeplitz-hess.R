@@ -10,7 +10,8 @@ test_that("The GSchur algorithm returns the correct density", {
     test_logdens <- function(mu, alpha, X) {
       f <- test_drift_func(mu, N)
       acf <- test_fbm_acf(alpha, dt, N)
-      Tz <- Toeplitz(acf = acf)
+      Tz <- Toeplitz$new(N)
+      Tz$set_acf(acf = acf)
       dSnorm(X, f, acf = Tz, log = T)
     }
     test_logdens_grad <- function(mu, alpha, X) {

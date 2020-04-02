@@ -9,7 +9,7 @@ test_that("Toeplitz$trace_grad is same in R and C++", {
     type1 <- sample(c("exp", "fbm", "matern"), 1)
     type2 <- sample(c("exp", "exp2", "fbm", "matern", "zero", "rnd"), 1)
     first20 <- sample(c(TRUE, FALSE), 1)
-    Toep <- Toeplitz(N)
+    Toep <- Toeplitz$new(N)
     acf <- test_acf_func(N, type1)
     acf2 <- test_acf_func(N, type2, first20)
     Toep$set_acf(acf)
