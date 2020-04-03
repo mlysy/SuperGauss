@@ -23,6 +23,7 @@ i.e., for a multivariate normal with mean zero and variance \code{Tz = toeplitz(
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 Class constructor.
 \subsection{Usage}{
@@ -42,6 +43,7 @@ A \code{NormalToeplitz} object.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-size"></a>}}
+\if{latex}{\out{\hypertarget{method-size}{}}}
 \subsection{Method \code{size()}}{
 Get the size of the NTz random vector.
 \subsection{Usage}{
@@ -54,6 +56,7 @@ Size of the NTz random vector.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-logdens"></a>}}
+\if{latex}{\out{\hypertarget{method-logdens}{}}}
 \subsection{Method \code{logdens()}}{
 Log-density function.
 \subsection{Usage}{
@@ -75,6 +78,7 @@ A scalar or vector of length \code{n_obs} containing the log-density of the NTz 
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-grad"></a>}}
+\if{latex}{\out{\hypertarget{method-grad}{}}}
 \subsection{Method \code{grad()}}{
 Gradient of the log-density with respect to parameters.
 \subsection{Usage}{
@@ -100,6 +104,7 @@ A vector of length \code{n_theta} containing the gradient of the NTz log-density
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-hess"></a>}}
+\if{latex}{\out{\hypertarget{method-hess}{}}}
 \subsection{Method \code{hess()}}{
 Hessian of log-density with respect to parameters.
 \subsection{Usage}{
@@ -129,6 +134,7 @@ An \verb{n_theta x n_theta} matrix containing the Hessian of the NTz log-density
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-grad_full"></a>}}
+\if{latex}{\out{\hypertarget{method-grad_full}{}}}
 \subsection{Method \code{grad_full()}}{
 Full gradient of log-density function.
 \subsection{Usage}{
@@ -154,6 +160,7 @@ A list with one or both elements \code{dldz} and \code{dlda}, corresponding to t
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

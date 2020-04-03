@@ -2,79 +2,41 @@
 % Please edit documentation in R/Toeplitz.R
 \name{Toeplitz}
 \alias{Toeplitz}
-\alias{set_acf}
-\alias{get_acf}
-\alias{trace_grad}
-\alias{trace_hess}
-\alias{show.Toeplitz}
-\alias{\%*\%}
-\alias{determinant}
-\alias{solve}
-\alias{\%*\%,ANY,Toeplitz-method}
-\alias{\%*\%,Toeplitz,ANY-method}
-\alias{determinant,Toeplitz-method}
-\alias{dim.Toeplitz}
-\alias{ncol,Toeplitz-method}
-\alias{nrow,Toeplitz-method}
-\alias{show,Toeplitz-method}
-\alias{solve,Toeplitz-method}
 \title{Constructor and methods for Toeplitz matrix objects.}
 \description{
 The \code{Toeplitz} class contains efficient methods for linear algebra with symmetric positive definite (i.e., variance) Toeplitz matrices.
 }
 \details{
-It is assumed that the autocorrelation of the \code{Toeplitz} object defines a valid (i.e., positive definite) variance matrix.  The multiplication algorithms still work when this is not the case but the other algorithms do not (return values typically contain \code{NaN}s).
+An \verb{N x N} Toeplitz matrix \code{Tz} is defined by its length-\code{N} "autocorrelation" vector \code{acf}, i.e., first row/column \code{Tz}.  Thus, for the function \code{\link[stats:toeplitz]{stats::toeplitz()}}, we have \code{Tz = toeplitz(acf)}.
+
+It is assumed that \code{acf} defines a valid (i.e., positive definite) variance matrix.  The matrix multiplication methods still work when this is not the case but the other methods do not (return values typically contain \code{NaN}s).
 }
-\section{Methods}{
-
-If \code{Tz} is a \code{Toeplitz} object with first row/column given by \code{acf}, then:
-\describe{
-\item{\code{Tz$set_acf(acf)}}{Sets the autocorrelation of the matrix.}
-\item{\code{Tz$get_acf()}}{Gets the autocorrelation of the matrix.}
-\item{\code{nrow(Tz)}, \code{ncol(Tz)}, \code{dim(Tz)}}{Selected dimension(s) of the matrix.}
-\item{\code{Tz \%*\% X}, \code{X \%*\% Tz}}{Toeplitz-Matrix and Matrix-Toeplitz multiplication.  Also works if \code{X} is a vector.}
-\item{\code{solve(Tz, X)}, \code{solve(Tz)}}{Solves Toeplitz systems of equations.  When second argument is missing, returns the inverse of the Toeplitz matrix.}
-\item{\code{determinant(Tz)}}{Log-determinant of the Toeplitz matrix, i.e., same thing as \code{log(det(toeplitz(acf)))}.}
-\item{\code{Tz$trace_grad(acf2)}}{Computes the trace of \code{solve(Tz, toeplitz(acf2))}.  This is used in the computation of the gradient of \code{log(det(Tz(theta)))} with respect to \code{theta}.}
-\item{\code{Toep$trace_hess(acf2, acf3)}}{Computes the trace of\preformatted{solve(Tz, toeplitz(acf2)) \%*\% solve(Tz, toeplitz(acf3)).
-}
-
-This is used in the computation of the Hessian of \code{log(det(Tz(theta)))} with respect to \code{theta}.}
-}
-
-\subsection{\code{Tz$set_acf(acf)}}{
-
-Sets the autocorrelation of the matrix.
-
-}
-
-\subsection{\code{Tz$trace_hess(acf2, acf3)}}{
-
-Computes the trace of\preformatted{solve(Tz, toeplitz(acf2)) \%*\% solve(Tz, toeplitz(acf3)).
-}
-
-This is used in the computation of the Hessian of \code{log(det(Tz(theta)))} with respect to \code{theta}.
-}
-}
-
 \examples{
-# construction
+# construct a Toeplitz matrix
 acf <- exp(-(1:5))
-Toep <- Toeplitz(acf = acf)
+Tz <- Toeplitz$new(acf = acf)
 # alternatively, can allocate space first
-Toep <- Toeplitz(n = length(acf))
-Toep$set_acf(acf = acf)
+Tz <- Toeplitz$new(N = length(acf))
+Tz$set_acf(acf = acf)
 
-dim(Toep) # == c(nrow(Toep), ncol(Toep))
-Toep # show method
-Toep$get_acf() # extract the acf
+# basic methods
+Tz$get_acf() # extract the acf
+dim(Tz) # == c(nrow(Tz), ncol(Tz))
+Tz # print method
 
-# linear algebra
+# linear algebra methods
 X <- matrix(rnorm(10), 5, 2)
-Toep \%*\% X
-t(X) \%*\% Toep
-solve(Toep, X)
-determinant(Toep) # log-determinant
+Tz \%*\% X
+t(X) \%*\% Tz
+solve(Tz, X)
+determinant(Tz) # log-determinant
+}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{has_acf}}{Logical; \code{TRUE} if \code{Toeplitz$set_acf()} has been called.}
+}
+\if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -94,86 +56,183 @@ determinant(Toep) # log-determinant
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
+Class constructor
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Toeplitz$new(N)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Toeplitz$new(N, acf)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{N}}{Size of Toeplitz matrix.}
+
+\item{\code{acf}}{Autocorrelation vector of length \code{N}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A \code{Toeplitz} object.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-print"></a>}}
+\if{latex}{\out{\hypertarget{method-print}{}}}
 \subsection{Method \code{print()}}{
+Print method.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Toeplitz$print(...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Toeplitz$print()}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-size"></a>}}
+\if{latex}{\out{\hypertarget{method-size}{}}}
 \subsection{Method \code{size()}}{
+Get the size of the Toeplitz matrix.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Toeplitz$size()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+Size of the Toeplitz matrix.  \code{\link[base:ncol]{ncol()}}, \code{\link[base:nrow]{nrow()}}, and \code{\link[base:dim]{dim()}} methods for \code{Toeplitz} objects also work as expected.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-set_acf"></a>}}
+\if{latex}{\out{\hypertarget{method-set_acf}{}}}
 \subsection{Method \code{set_acf()}}{
+Set the autocorrelation of the Toeplitz matrix.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Toeplitz$set_acf(acf)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{acf}}{Autocorrelation vector of length \code{N}.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-get_acf"></a>}}
+\if{latex}{\out{\hypertarget{method-get_acf}{}}}
 \subsection{Method \code{get_acf()}}{
+Get the autocorrelation of the Toeplitz matrix.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Toeplitz$get_acf()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+The autocorrelation vector of length \code{N}.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-prod"></a>}}
+\if{latex}{\out{\hypertarget{method-prod}{}}}
 \subsection{Method \code{prod()}}{
+Product between regular and Toeplitz matrix.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Toeplitz$prod(x)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{Vector or matrix with \code{N} rows.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The matrix product \code{Tz \%*\% x}. \code{Tz \%*\% x} and \code{x \%*\% Tz} also work as expected.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-solve"></a>}}
+\if{latex}{\out{\hypertarget{method-solve}{}}}
 \subsection{Method \code{solve()}}{
+Solve a Toeplitz system of equations.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Toeplitz$solve(x)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{Optional vector or matrix with \code{N} rows.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The solution in \code{z} to the system of equations \code{Tz \%*\% z = x}.  If \code{x} is missing, returns the inverse of \code{Tz}.  \code{solve(Tz, x)} also works as expected.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-log_det"></a>}}
+\if{latex}{\out{\hypertarget{method-log_det}{}}}
 \subsection{Method \code{log_det()}}{
+Calculate the log-determinant of the Toeplitz matrix.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Toeplitz$log_det()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+The log-determinant \code{log(det(Tz))}.  \code{determinant(Tz)} also works as expected.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-trace_grad"></a>}}
+\if{latex}{\out{\hypertarget{method-trace_grad}{}}}
 \subsection{Method \code{trace_grad()}}{
+Computes the trace-gradient with respect to Toeplitz matrices.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Toeplitz$trace_grad(acf2)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{acf2}}{Length-\code{N} autocorrelation vector of the second Toeplitz matrix.  This matrix must be symmetric but not necessarily positive definite.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Computes the trace of\preformatted{solve(Tz, toeplitz(acf2)).
+}
+
+This is used in the computation of the gradient of \code{log(det(Tz(theta)))} with respect to \code{theta}.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-trace_hess"></a>}}
+\if{latex}{\out{\hypertarget{method-trace_hess}{}}}
 \subsection{Method \code{trace_hess()}}{
+Computes the trace-Hessian with respect to Toeplitz matrices.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Toeplitz$trace_hess(acf2, acf3)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{acf2}}{Length-\code{N} autocorrelation vector of the second Toeplitz matrix.  This matrix must be symmetric but not necessarily positive definite.}
+
+\item{\code{acf3}}{Length-\code{N} autocorrelation vector of the third Toeplitz matrix.  This matrix must be symmetric but not necessarily positive definite.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Computes the trace of\preformatted{solve(Tz, toeplitz(acf2)) \%*\% solve(Tz, toeplitz(acf3)).
+}
+
+This is used in the computation of the Hessian of \code{log(det(Tz(theta)))} with respect to \code{theta}.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

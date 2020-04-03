@@ -5,13 +5,14 @@
 #' z ~ NTz(acf)   <=>   z ~ Normal(0, toeplitz(acf)),
 #' ```
 #' i.e., for a multivariate normal with mean zero and variance `Tz = toeplitz(acf)`.
+#'
 #' @export
 NormalToeplitz <- R6Class(
   classname = "NormalToeplitz",
 
   private = list(
 
-    NTz_ptr = NULL,
+    NTz_ = NULL,
     N_ = NA
 
   ),
@@ -23,7 +24,7 @@ NormalToeplitz <- R6Class(
     #' @param N Size of the NTz random vector.
     #' @return A `NormalToeplitz` object.
     initialize = function(N) {
-      private$NTz_ptr <- .NormalToeplitz_constructor(N)
+      private$NTz_ <- .NormalToeplitz_constructor(N)
       private$N_ <- N
     },
 
@@ -42,7 +43,7 @@ NormalToeplitz <- R6Class(
     logdens = function(z, acf) {
       check_ntz(z, N = private$N_, varname = "z")
       check_ntz(acf, N = private$N_, varname = "acf")
-      .NormalToeplitz_logdens(private$NTz_ptr, z, acf)
+      .NormalToeplitz_logdens(private$NTz_, z, acf)
     },
 
     #' @description Gradient of the log-density with respect to parameters.
@@ -59,7 +60,7 @@ NormalToeplitz <- R6Class(
         stop("dz and dacf must have the same number of columns.")
       }
       n_theta <- ncol(dz)
-      .NormalToeplitz_grad(private$NTz_ptr, z, dz, acf, dacf, n_theta)
+      .NormalToeplitz_grad(private$NTz_, z, dz, acf, dacf, n_theta)
     },
 
     #' @description Hessian of log-density with respect to parameters.
@@ -82,7 +83,7 @@ NormalToeplitz <- R6Class(
         stop("d2z and d2acf must have the same dimensions.")
       }
       n_theta <- ncol(dz)
-      .NormalToeplitz_hess(private$NTz_ptr, z, dz,
+      .NormalToeplitz_hess(private$NTz_, z, dz,
                            matrix(d2z, private$N_, n_theta*n_theta),
                            acf, dacf,
                            matrix(d2acf, private$N_, n_theta*n_theta),
@@ -102,7 +103,7 @@ NormalToeplitz <- R6Class(
       }
       check_ntz(z, N = private$N_, varname = "z")
       check_ntz(acf, N = private$N_, varname = "acf")
-      .NormalToeplitz_grad_full(private$NTz_ptr, z, acf, calc_dldz, calc_dlda)
+      .NormalToeplitz_grad_full(private$NTz_, z, acf, calc_dldz, calc_dlda)
     }
   )
 

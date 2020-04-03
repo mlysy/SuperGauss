@@ -4,9 +4,6 @@
 \name{SuperGauss}
 \alias{SuperGauss}
 \title{Superfast inference for stationary Gaussian time series.}
-\description{
-Superfast inference for stationary Gaussian time series.
-}
 \details{
 While likelihood calculations with stationary Gaussian time series generally scale as \eqn{\mathcal O(N^2)}{O(N^2)} in the number of observations, this package implements an algorithm which scales as \eqn{\mathcal O(N \log^2 N)}{O(N \log^2 N)}.  "Superfast" algorithms for loglikelihood gradients and Hessians are also provided.  The underlying C++ code is distributed through a header-only library found in the installed package's \code{include} directory.
 }
