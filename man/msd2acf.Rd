@@ -2,35 +2,20 @@
 % Please edit documentation in R/msd2acf.R
 \name{msd2acf}
 \alias{msd2acf}
-\title{Convert mean square displacement to autocorrelations.}
+\title{Convert mean square displacement of positions to autocorrelation of increments.}
 \usage{
 msd2acf(msd)
 }
 \arguments{
-\item{msd}{Length-\code{N} vector of MSDs at regular timepoints \code{ dt, 2*dt, ..., N*dt}.}
+\item{msd}{Length-\code{N} MSD vector, i.e., excluding \code{x_0} which is assumed to be zero.}
 }
 \value{
-Length \code{N} vector of ACFs.
+Length-\code{N} autocorrelation vector.
 }
 \description{
-Converts the mean squared displacement (MSD) of positions to the autocorrelation (ACF) of the corresponding increments.
-}
-\details{
-For a stationary increments process \eqn{X_t}, converts a sequence \eqn{\eta_1, \ldots, \eta_N} of regularly spaced MSDs,
-\deqn{
-\eta_i = E[(X_{i\Delta t} - X_0)^2],
-}{
-\eta_i = E[(X_(i*\Delta t) - X_0)^2],
-}
-into \eqn{\gamma_1, \ldots, \gamma_N}, a sequence of regularly spaced ACFs,
-\deqn{
-\gamma_i = \mathrm{cov}\{X_{(i+1)\Delta t} - X_{i \Delta_i}, X_{\Delta t} - X_{0}\}.
-}{
-\gamma_i = cov{X_((i+1)*\Delta t) - X_(i * \Delta t), X_(\Delta t) - X_0}.
-}
-This only produces correct results when \code{msd} corresponds to equally-spaced observations.
+Converts the mean squared displacement (MSD) of a stationary increments sequence \verb{x = (x_0, x_1, ..., x_N)} positions to the autocorrelation of the corresponding increments \verb{dx = (x_1 - x_0, ..., x_N - x_(N-1))}.
 }
 \examples{
 # autocorrelation of fBM increments
-msd2acf(msd = fbm.msd(tseq = 0:10, H = .3))
+msd2acf(msd = fbm_msd(tseq = 0:10, H = .3))
 }

@@ -1,25 +1,10 @@
-#' @title Convert mean square displacement to autocorrelations.
+#' Convert mean square displacement of positions to autocorrelation of increments.
 #'
-#' @description Converts the mean squared displacement (MSD) of positions to the autocorrelation (ACF) of the corresponding increments.
-#' @param msd Length-\code{N} vector of MSDs at regular timepoints \code{ dt, 2*dt, ..., N*dt}.
-#' @return Length \code{N} vector of ACFs.
-#' @details
-#' For a stationary increments process \eqn{X_t}, converts a sequence \eqn{\eta_1, \ldots, \eta_N} of regularly spaced MSDs,
-#' \deqn{
-#' \eta_i = E[(X_{i\Delta t} - X_0)^2],
-#' }{
-#' \eta_i = E[(X_(i*\Delta t) - X_0)^2],
-#' }
-#' into \eqn{\gamma_1, \ldots, \gamma_N}, a sequence of regularly spaced ACFs,
-#' \deqn{
-#' \gamma_i = \mathrm{cov}\{X_{(i+1)\Delta t} - X_{i \Delta_i}, X_{\Delta t} - X_{0}\}.
-#' }{
-#' \gamma_i = cov{X_((i+1)*\Delta t) - X_(i * \Delta t), X_(\Delta t) - X_0}.
-#' }
-#' This only produces correct results when \code{msd} corresponds to equally-spaced observations.
-#' @examples
-#' # autocorrelation of fBM increments
-#' msd2acf(msd = fbm.msd(tseq = 0:10, H = .3))
+#' Converts the mean squared displacement (MSD) of a stationary increments sequence `x = (x_0, x_1, ..., x_N)` positions to the autocorrelation of the corresponding increments `dx = (x_1 - x_0, ..., x_N - x_(N-1))`.
+#'
+#' @param msd Length-`N` MSD vector, i.e., excluding `x_0` which is assumed to be zero.
+#' @return Length-`N` autocorrelation vector.
+#' @example examples/msd2acf.R
 #' @export
 msd2acf <- function(msd) {
   n <- length(msd)

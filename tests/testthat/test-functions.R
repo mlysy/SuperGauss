@@ -1,29 +1,49 @@
 test_fbm_acf <- function(alpha, dT, N) {
-  if(N == 1) {
-    acf <- dT^alpha
-  } else {
-    acf <- (dT*(0:N))^alpha
-    acf <- .5 * (acf[1:N+1] + c(acf[2], acf[1:(N-1)]) - 2*acf[1:N])
-  }
-  acf
+  msd <- fbm_msd(dT*(1:N), alpha/2)
+  msd2acf(msd)
+  ## if(N == 1) {
+  ##   acf <- dT^alpha
+  ## } else {
+  ##   acf <- (dT*(0:N))^alpha
+  ##   acf <- .5 * (acf[1:N+1] + c(acf[2], acf[1:(N-1)]) - 2*acf[1:N])
+  ## }
+  ## acf
 }
+
+## alpha <- runif(1, 0, 2)
+## dT <- runif(1, 0, 5)
+## N <- 1
+## test_fbm_acf(alpha, dT, N) - test_fbm_acf2(alpha, dT, N)
 
 test_exp_acf <- function(lambda, order, N) {
   # process autocorrelation
-  gam <- exp(-(0:N/N)^order * lambda)
-  ans <- gam[1:N]
-  ans
+  ## gam <- exp(-(0:N/N)^order * lambda)
+  ## ans <- gam[1:N]
+  ## ans
+  pex_acf(0:(N-1)/N, rho = order, lambda = 1/lambda^(1/order))
 }
+
+## lambda <- 1 / runif(1, 1, 3)
+## order <- runif(1, 0, 5)
+## N <- 5
+## test_exp_acf(lambda, order, N) - test_exp_acf2(lambda, order, N)
 
 test_matern_acf <- function(lambda, nu, N) {
   # process autocorrelation
-  tt <- sqrt(2*nu) * (0:N) / lambda
-  gam <- nu * log(.5 * tt) - lgamma(nu)
-  gam <- 2 * exp(gam) * besselK(tt, nu)
-  gam[tt == 0] <- 1
-  ans <- gam[1:N]
-  ans
+  ## tt <- sqrt(2*nu) * (0:N) / lambda
+  ## gam <- nu * log(.5 * tt) - lgamma(nu)
+  ## gam <- 2 * exp(gam) * besselK(tt, nu)
+  ## gam[tt == 0] <- 1
+  ## ans <- gam[1:N]
+  ## ans
+  matern_acf(0:(N-1), lambda, nu)
 }
+
+## lambda <- 1 / runif(1, 1, 3)
+## nu <- runif(1, 0, 5)
+## N <- 5
+## test_matern_acf(lambda, nu, N) - test_matern_acf2(lambda, nu, N)
+
 
 test_acf_func <- function(N, type, first0 = FALSE) {
   lambda <- 1 / runif(1, 1, 3)

@@ -7,20 +7,13 @@
 acf2msd(acf)
 }
 \arguments{
-\item{acf}{length-\code{N} ACF vector of a stationary increment sequence.}
+\item{acf}{Length-\code{N} autocorrelation vector of a stationary increment sequence.}
 }
 \value{
 Length-\code{N} MSD vector of the corresponding positions.
 }
 \description{
-Converts the autocorrelation (ACF) of stationary increments to the mean squared displacement (MSD) of the corresponding positions.
-}
-\details{
-If \eqn{X(t)} is a stationary increments process, then \eqn{\Delta X_0, \Delta X_1, \ldots} with
-\deqn{
-\Delta X_n = X((n+1)\Delta t) - X(n \Delta t)
-}
-is a stationary time series.  This function converts the ACF of this series into the MSD of the corresponding positions, namely returns the sequence \eqn{\eta_1, \ldots, \eta_N}, where \eqn{\eta_i = \mathrm{var}(X(i\Delta t))}{\eta_i = var(X(i\Delta t))}.
+Converts the autocorrelation of a stationary increment sequence \verb{dx = (x_1 - x_0, ..., x_N - x_(N-1))} to the mean squared displacement (MSD) of the corresponding positions, i.e., \code{MSD_i = E[(x_i - x_0)^2]}.
 }
 \examples{
 acf2msd(acf = exp(-(0:10)))

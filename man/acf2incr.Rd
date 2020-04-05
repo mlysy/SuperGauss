@@ -2,7 +2,7 @@
 % Please edit documentation in R/acf2incr.R
 \name{acf2incr}
 \alias{acf2incr}
-\title{Convert position to increment autocorrelations.}
+\title{Convert position autocorrelations to increment autocorrelations.}
 \usage{
 acf2incr(acf)
 }
@@ -10,10 +10,10 @@ acf2incr(acf)
 \item{acf}{Length-\code{N} vector of position autocorrelations.}
 }
 \value{
-Length \code{N-1} vector if increment autocorrelations.
+Length \code{N-1} vector of increment autocorrelations.
 }
 \description{
-Converts the autocorrelation of a stationary sequence \code{X} to that of its increments, \code{dX == diff(X)}.
+Convert the autocorrelation of a stationary sequence \verb{x = (x_1, ..., x_N)} to that of its increments, \verb{dx = (x_2 - x_1, ..., x_N - x_(N-1))}.
 }
 \examples{
 acf2incr(acf = exp(-(0:10)))

@@ -1,10 +1,11 @@
-#' @title Convert position to increment autocorrelations.
+#' Convert position autocorrelations to increment autocorrelations.
 #'
-#' @description Converts the autocorrelation of a stationary sequence \code{X} to that of its increments, \code{dX == diff(X)}.
-#' @param acf Length-\code{N} vector of position autocorrelations.
-#' @return Length \code{N-1} vector if increment autocorrelations.
-#' @examples
-#' acf2incr(acf = exp(-(0:10)))
+#' Convert the autocorrelation of a stationary sequence `x = (x_1, ..., x_N)` to that of its increments, `dx = (x_2 - x_1, ..., x_N - x_(N-1))`.
+#'
+#' @param acf Length-`N` vector of position autocorrelations.
+#' @return Length `N-1` vector of increment autocorrelations.
+#'
+#' @example examples/acf2incr.R
 #' @export
 acf2incr <- function(acf) {
   N <- length(acf)-1
