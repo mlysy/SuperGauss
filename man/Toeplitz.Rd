@@ -31,13 +31,6 @@ t(X) \%*\% Tz
 solve(Tz, X)
 determinant(Tz) # log-determinant
 }
-\section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{has_acf}}{Logical; \code{TRUE} if \code{Toeplitz$set_acf()} has been called.}
-}
-\if{html}{\out{</div>}}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -46,6 +39,7 @@ determinant(Tz) # log-determinant
 \item \href{#method-size}{\code{Toeplitz$size()}}
 \item \href{#method-set_acf}{\code{Toeplitz$set_acf()}}
 \item \href{#method-get_acf}{\code{Toeplitz$get_acf()}}
+\item \href{#method-has_acf}{\code{Toeplitz$has_acf()}}
 \item \href{#method-prod}{\code{Toeplitz$prod()}}
 \item \href{#method-solve}{\code{Toeplitz$solve()}}
 \item \href{#method-log_det}{\code{Toeplitz$log_det()}}
@@ -127,6 +121,19 @@ Get the autocorrelation of the Toeplitz matrix.
 
 \subsection{Returns}{
 The autocorrelation vector of length \code{N}.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-has_acf"></a>}}
+\if{latex}{\out{\hypertarget{method-has_acf}{}}}
+\subsection{Method \code{has_acf()}}{
+Check whether the autocorrelation of the Toeplitz matrix has been set.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Toeplitz$has_acf()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Logical; \code{TRUE} if \code{Toeplitz$set_acf()} has been called.
 }
 }
 \if{html}{\out{<hr>}}

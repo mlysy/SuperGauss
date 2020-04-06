@@ -18,15 +18,18 @@ Toeplitz <- R6Class(
   private = list(
 
     Tz_ = NULL,
-    N_ = NA
+    N_ = NA,
 
-  ),
-
-  active = list(
-
-    #' @field has_acf Logical; `TRUE` if `Toeplitz$set_acf()` has been called.
-    has_acf = function() {
-      .Toeplitz_has_acf(private$Tz_)
+    deep_clone = function(name, value) {
+      switch(name,
+             Tz_ = {
+               Tz_new <- .Toeplitz_constructor(private$N_)
+               if(self$has_acf()) {
+                 .Toeplitz_set_acf(Tz_new, self$get_acf())
+               }
+               Tz_new
+             },
+             value)
     }
 
   ),
@@ -48,7 +51,7 @@ Toeplitz <- R6Class(
 
     #' @description Print method.
     print = function() {
-      if(self$has_acf) {
+      if(self$has_acf()) {
         obj_acf <- self$get_acf()[1:min(6, private$N_)]
         obj_acf <- signif(obj_acf, digits = 3)
         if(private$N_ > 6) obj_acf <- c(obj_acf, "...")
@@ -78,8 +81,15 @@ Toeplitz <- R6Class(
     #'
     #' @return The autocorrelation vector of length `N`.
     get_acf = function() {
-      check_tz(has_acf = self$has_acf)
+      check_tz(has_acf = self$has_acf())
       .Toeplitz_get_acf(private$Tz_)
+    },
+
+    #' @description Check whether the autocorrelation of the Toeplitz matrix has been set.
+    #'
+    #' @return Logical; `TRUE` if `Toeplitz$set_acf()` has been called.
+    has_acf = function() {
+      .Toeplitz_has_acf(private$Tz_)
     },
 
     #' @description Product between regular and Toeplitz matrix.
@@ -87,7 +97,7 @@ Toeplitz <- R6Class(
     #' @param x Vector or matrix with `N` rows.
     #' @return The matrix product `Tz %*% x`. `Tz %*% x` and `x %*% Tz` also work as expected.
     prod = function(x) {
-      check_tz(has_acf = self$has_acf)
+      check_tz(has_acf = self$has_acf())
       if(is.vector(x)) x <- as.matrix(x)
       if(!(is.matrix(x) && is.numeric(x))) {
         stop("x must be a numeric matrix.")
@@ -103,7 +113,7 @@ Toeplitz <- R6Class(
     #' @param x Optional vector or matrix with `N` rows.
     #' @return The solution in `z` to the system of equations `Tz %*% z = x`.  If `x` is missing, returns the inverse of `Tz`.  `solve(Tz, x)` also works as expected.
     solve = function(x) {
-      check_tz(has_acf = self$has_acf)
+      check_tz(has_acf = self$has_acf())
       if(missing(x)) x <- diag(private$N_)
       if(is.vector(x)) x <- as.matrix(x)
       if(!(is.matrix(x) && is.numeric(x))) {
@@ -119,7 +129,7 @@ Toeplitz <- R6Class(
     #'
     #' @return The log-determinant `log(det(Tz))`.  `determinant(Tz)` also works as expected.
     log_det = function() {
-      check_tz(has_acf = self$has_acf)
+      check_tz(has_acf = self$has_acf())
       .Toeplitz_log_det(private$Tz_)
     },
 
@@ -132,7 +142,7 @@ Toeplitz <- R6Class(
     #' This is used in the computation of the gradient of `log(det(Tz(theta)))` with respect to `theta`.
     trace_grad = function(acf2) {
       check_tz(acfs = list(acf2 = acf2), N = private$N_,
-               has_acf = self$has_acf)
+               has_acf = self$has_acf())
       .Toeplitz_trace_grad(private$Tz_, acf2)
     },
 
@@ -147,7 +157,7 @@ Toeplitz <- R6Class(
     #' This is used in the computation of the Hessian of `log(det(Tz(theta)))` with respect to `theta`.
     trace_hess = function(acf2, acf3) {
       check_tz(acfs = list(acf2 = acf2, acf3 = acf3),
-               N = private$N_, has_acf = self$has_acf)
+               N = private$N_, has_acf = self$has_acf())
       .Toeplitz_trace_hess(private$Tz_, acf2, acf3)
     }
 
@@ -193,7 +203,7 @@ dim.Toeplitz <- function(x) rep(x$size(), 2)
       # but not currently implemented.
       y <- toeplitz(y$get_acf())
     }
-    check_tz(has_acf = x$has_acf)
+    check_tz(has_acf = x$has_acf())
     if(is.vector(y)) y <- as.matrix(y)
     if(!(is.matrix(y) && is.numeric(y))) {
       stop("Second argument must be a numeric matrix.")
@@ -204,7 +214,7 @@ dim.Toeplitz <- function(x) rep(x$size(), 2)
     ans <- x$prod(y)
   } else if(is.Toeplitz(y)) {
     # Matrix %*% Toeplitz
-    check_tz(has_acf = y$has_acf)
+    check_tz(has_acf = y$has_acf())
     if(is.vector(x)) x <- as.matrix(x)
     if(!(is.matrix(x) && is.numeric(x))) {
       stop("First argument must be a numeric matrix.")
@@ -228,7 +238,7 @@ setMethod("determinant", "Toeplitz", function(x, logarithm = TRUE, ...) {
 # solve
 #' @export
 setMethod("solve", "Toeplitz", function(a, b, ...) {
-  check_tz(has_acf = a$has_acf)
+  check_tz(has_acf = a$has_acf())
   if(missing(b)) b <- diag(a$size())
   if(is.vector(b)) b <- as.matrix(b)
   if(!is.matrix(b)) {
