@@ -20,6 +20,8 @@ Toeplitz <- R6Class(
     Tz_ = NULL,
     N_ = NA,
 
+    # deep clone method.
+    # required to create new Xptr for Tz_ at C++ level
     deep_clone = function(name, value) {
       switch(name,
              Tz_ = {

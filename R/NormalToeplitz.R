@@ -13,7 +13,22 @@ NormalToeplitz <- R6Class(
   private = list(
 
     NTz_ = NULL,
-    N_ = NA
+    N_ = NA,
+
+    # deep clone method.
+    # required to create new Xptr for NTz_ at C++ level
+    deep_clone = function(name, value) {
+      switch(name,
+             NTz_ = {
+               NTz_new <- .NormalToeplitz_constructor(private$N_)
+               ## if(self$has_acf()) {
+               ##   .Toeplitz_set_acf(Tz_new, self$get_acf())
+               ## }
+               NTz_new
+             },
+             value)
+    }
+
 
   ),
 
