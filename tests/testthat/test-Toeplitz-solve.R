@@ -7,20 +7,22 @@ nrep <- 10
 test_that("Toeplitz-matrix inversion", {
   replicate(n = nrep, expr = {
     N <- round(abs(rnorm(n = 1, mean = 100, sd = 10)))
-    d <- round(abs(rnorm(n = 1, mean = 10, sd = 3)))
+    d <- sample(1:3, 1)
     Toep <- Toeplitz$new(N)
     case.par <- expand.grid(type = c("fbm", "matern"), b = c(TRUE, FALSE))
     ncase <- nrow(case.par)
     X <- matrix(rnorm(N * d), N, d)
+    if(runif(1) > .5) X <- drop(X)
     for(ii in 1:ncase){
       cp <- case.par[ii, ]
       type <- as.character(cp$type)
       acf <- test_acf_func(N, type)
       Tmat <- toeplitz(acf)
+      Z <- solve(Tmat, X)
       Toep$set_acf(acf)
       if(cp$b) {
-        expect_equal(Tmat %*% solve(Toep, X), X, tolerance = 1e-5)
-        expect_equal(Tmat %*% Toep$solve(X), X, tolerance = 1e-5)
+        expect_equal(solve(Toep, X), Z, tolerance = 1e-5)
+        expect_equal(Toep$solve(X), Z, tolerance = 1e-5)
       } else {
         expect_equal(Tmat %*% solve(Toep), diag(N), tolerance = 1e-5)
         expect_equal(Tmat %*% Toep$solve(), diag(N), tolerance = 1e-5)

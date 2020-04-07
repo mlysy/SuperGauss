@@ -142,17 +142,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// PCG_Solve
-NumericVector PCG_Solve(SEXP PCG_ptr, NumericVector acf, NumericVector y, double tol);
-RcppExport SEXP _SuperGauss_PCG_Solve(SEXP PCG_ptrSEXP, SEXP acfSEXP, SEXP ySEXP, SEXP tolSEXP) {
+// PCG_solve
+NumericMatrix PCG_solve(SEXP PCG_ptr, NumericVector acf, NumericMatrix y, double tol);
+RcppExport SEXP _SuperGauss_PCG_solve(SEXP PCG_ptrSEXP, SEXP acfSEXP, SEXP ySEXP, SEXP tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type PCG_ptr(PCG_ptrSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type acf(acfSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type y(ySEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
-    rcpp_result_gen = Rcpp::wrap(PCG_Solve(PCG_ptr, acf, y, tol));
+    rcpp_result_gen = Rcpp::wrap(PCG_solve(PCG_ptr, acf, y, tol));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -272,7 +272,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SuperGauss_NormalToeplitz_hess", (DL_FUNC) &_SuperGauss_NormalToeplitz_hess, 8},
     {"_SuperGauss_NormalToeplitz_grad_full", (DL_FUNC) &_SuperGauss_NormalToeplitz_grad_full, 5},
     {"_SuperGauss_PCG_constructor", (DL_FUNC) &_SuperGauss_PCG_constructor, 1},
-    {"_SuperGauss_PCG_Solve", (DL_FUNC) &_SuperGauss_PCG_Solve, 4},
+    {"_SuperGauss_PCG_solve", (DL_FUNC) &_SuperGauss_PCG_solve, 4},
     {"_SuperGauss_Toeplitz_constructor", (DL_FUNC) &_SuperGauss_Toeplitz_constructor, 1},
     {"_SuperGauss_Toeplitz_set_acf", (DL_FUNC) &_SuperGauss_Toeplitz_set_acf, 2},
     {"_SuperGauss_Toeplitz_get_acf", (DL_FUNC) &_SuperGauss_Toeplitz_get_acf, 1},

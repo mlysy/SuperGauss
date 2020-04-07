@@ -12,10 +12,13 @@ SEXP PCG_constructor(int n) {
 }
 
 //[[Rcpp::export(".PCG_solve")]]
-NumericVector PCG_Solve(SEXP PCG_ptr, NumericVector acf, NumericVector y, double tol) {
+NumericMatrix PCG_solve(SEXP PCG_ptr, NumericVector acf, NumericMatrix y, double tol) {
   XPtr<PCG> P1(PCG_ptr);
-  int n = y.size();
-  NumericVector Y(n);
-  P1->solve(REAL(Y), REAL(acf), REAL(y), tol);
+  int N = y.nrow();
+  int p = y.ncol();
+  NumericMatrix Y(N, p);
+  for(int ii=0; ii<p; ii++) {
+    P1->solve(REAL(Y)+ii*N, REAL(acf), REAL(y)+ii*N, tol);
+  }
   return Y;
 }

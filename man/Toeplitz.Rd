@@ -162,18 +162,22 @@ The matrix product \code{Tz \%*\% x}. \code{Tz \%*\% x} and \code{x \%*\% Tz} al
 \subsection{Method \code{solve()}}{
 Solve a Toeplitz system of equations.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Toeplitz$solve(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Toeplitz$solve(x, method = c("gschur", "pcg"), tol = 1e-10)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{x}}{Optional vector or matrix with \code{N} rows.}
+
+\item{\code{method}}{Solve method to use.  Choices are: \code{gschur} for a modified version of the Generalized Schur algorithm of Ammar & Gragg (1988), or \code{pcg} for the preconditioned conjugate gradient method of Chen et al (2006).  The former is faster and obtains the log-determinant as a direct biproduct.  The later is more numerically stable for long-memory autocorrelations.}
+
+\item{\code{tol}}{Tolerance level for the \code{pcg} method.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The solution in \code{z} to the system of equations \code{Tz \%*\% z = x}.  If \code{x} is missing, returns the inverse of \code{Tz}.  \code{solve(Tz, x)} also works as expected.
+The solution in \code{z} to the system of equations \code{Tz \%*\% z = x}.  If \code{x} is missing, returns the inverse of \code{Tz}.  \code{solve(Tz, x)} and \code{solve(Tz, x, method, tol)} also work as expected.
 }
 }
 \if{html}{\out{<hr>}}

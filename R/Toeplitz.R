@@ -18,6 +18,7 @@ Toeplitz <- R6Class(
   private = list(
 
     Tz_ = NULL,
+    PCG_ = NULL,
     N_ = NA,
 
     # deep clone method.
@@ -31,6 +32,7 @@ Toeplitz <- R6Class(
                }
                Tz_new
              },
+             PCG_ = .PCG_constructor(private$N_),
              value)
     }
 
@@ -48,6 +50,7 @@ Toeplitz <- R6Class(
       if(missing(N)) N <- length(acf)
       private$N_ <- N
       private$Tz_ <- .Toeplitz_constructor(N)
+      private$PCG_ <- .PCG_constructor(N)
       if(!missing(acf)) self$set_acf(acf)
     },
 
@@ -113,18 +116,26 @@ Toeplitz <- R6Class(
     #' @description Solve a Toeplitz system of equations.
     #'
     #' @param x Optional vector or matrix with `N` rows.
-    #' @return The solution in `z` to the system of equations `Tz %*% z = x`.  If `x` is missing, returns the inverse of `Tz`.  `solve(Tz, x)` also works as expected.
-    solve = function(x) {
+    #' @param method Solve method to use.  Choices are: `gschur` for a modified version of the Generalized Schur algorithm of Ammar & Gragg (1988), or `pcg` for the preconditioned conjugate gradient method of Chen et al (2006).  The former is faster and obtains the log-determinant as a direct biproduct.  The later is more numerically stable for long-memory autocorrelations.
+    #' @param tol Tolerance level for the `pcg` method.
+    #' @return The solution in `z` to the system of equations `Tz %*% z = x`.  If `x` is missing, returns the inverse of `Tz`.  `solve(Tz, x)` and `solve(Tz, x, method, tol)` also work as expected.
+    solve = function(x, method = c("gschur", "pcg"), tol = 1e-10) {
+      method <- match.arg(method)
       check_tz(has_acf = self$has_acf())
       if(missing(x)) x <- diag(private$N_)
-      if(is.vector(x)) x <- as.matrix(x)
+      vec_x <- is.vector(x)
+      if(vec_x) x <- as.matrix(x)
       if(!(is.matrix(x) && is.numeric(x))) {
         stop("x must be a numeric matrix.")
       }
       if(nrow(x) != private$N_) {
         stop("Incompatible matrix solve dimensions.")
       }
-      .Toeplitz_solve(private$Tz_, x)
+      y <- switch(method,
+                  gschur = .Toeplitz_solve(private$Tz_, x),
+                  pcg = .PCG_solve(private$PCG_, self$get_acf(), x, tol))
+      if(vec_x) y <- drop(y)
+      y
     },
 
     #' @description Calculate the log-determinant of the Toeplitz matrix.
@@ -239,17 +250,21 @@ setMethod("determinant", "Toeplitz", function(x, logarithm = TRUE, ...) {
 
 # solve
 #' @export
-setMethod("solve", "Toeplitz", function(a, b, ...) {
-  check_tz(has_acf = a$has_acf())
-  if(missing(b)) b <- diag(a$size())
-  if(is.vector(b)) b <- as.matrix(b)
-  if(!is.matrix(b)) {
-    stop("b must be a matrix or vector.")
-  }
-  if(nrow(b) != a$size()) {
-    stop("Incompatible matrix solve dimensions.")
-  }
-  a$solve(b)
+setMethod("solve", "Toeplitz",
+          function(a, b, method = c("gschur", "pcg"), tol = 1e-10, ...) {
+            check_tz(has_acf = a$has_acf())
+            if(missing(b)) b <- diag(a$size())
+            vec_b <- is.vector(b)
+            if(vec_b) b <- as.matrix(b)
+            if(!is.matrix(b)) {
+              stop("b must be a matrix or vector.")
+            }
+            if(nrow(b) != a$size()) {
+              stop("Incompatible matrix solve dimensions.")
+            }
+            y <- a$solve(b, method, tol)
+            if(vec_b) y <- drop(y)
+            y
 })
 
 

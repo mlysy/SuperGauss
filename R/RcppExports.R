@@ -42,7 +42,7 @@ DurbinLevinson_Base <- function(X, Y, acf, calcMode = 1L) {
 }
 
 .PCG_solve <- function(PCG_ptr, acf, y, tol) {
-    .Call(`_SuperGauss_PCG_Solve`, PCG_ptr, acf, y, tol)
+    .Call(`_SuperGauss_PCG_solve`, PCG_ptr, acf, y, tol)
 }
 
 .Toeplitz_constructor <- function(n) {
