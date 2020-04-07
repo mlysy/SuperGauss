@@ -1,3 +1,12 @@
+check_acf <- function(acf, N) {
+  if(!is.numeric(acf) || !is.vector(acf)) {
+    stop("acf must be a numeric vector.")
+  }
+  if(length(acf) != N) {
+    stop("acf and X have incompatible dimensions.")
+  }
+}
+
 # extract number of parameters from these values
 # returns an error if this is not possible or
 # there are conflicting number of parameters

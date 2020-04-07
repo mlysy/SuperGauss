@@ -8,14 +8,14 @@ nrep <- 10
 test_that("The GSchur algorithm returns the correct density", {
   replicate(n = nrep, expr = {
     test_logdens <- function(X, acf) {
-      dSnorm(X, 0, acf = acf, log = T)
+      mvtnorm::dmvnorm(X, sigma = toeplitz(acf), log = TRUE)
     }
     N <- round(abs(rnorm(n = 1, mean = 20, sd = 5)))
     p <- 2
     dt <- runif(1,0,1)
     alpha <- runif(1,.2,.9)
     acf <- test_fbm_acf(alpha, dt, N)
-    X <- rSnorm(n = 1, acf = acf)
+    X <- rnormtz(n = 1, acf = acf)
     Nt <- NormalToeplitz$new(N = N)
     ans_z <- Nt$grad_full(X, acf, calc_dldz = TRUE, calc_dlda = FALSE)
     ans_a <- Nt$grad_full(X, acf, calc_dldz = FALSE, calc_dlda = TRUE)

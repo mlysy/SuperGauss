@@ -116,7 +116,7 @@ Toeplitz <- R6Class(
     #' @description Solve a Toeplitz system of equations.
     #'
     #' @param x Optional vector or matrix with `N` rows.
-    #' @param method Solve method to use.  Choices are: `gschur` for a modified version of the Generalized Schur algorithm of Ammar & Gragg (1988), or `pcg` for the preconditioned conjugate gradient method of Chen et al (2006).  The former is faster and obtains the log-determinant as a direct biproduct.  The later is more numerically stable for long-memory autocorrelations.
+    #' @param method Solve method to use.  Choices are: `gschur` for a modified version of the Generalized Schur algorithm of Ammar & Gragg (1988), or `pcg` for the preconditioned conjugate gradient method of Chen et al (2006).  The former is faster and obtains the log-determinant as a direct biproduct.  The latter is more numerically stable for long-memory autocorrelations.
     #' @param tol Tolerance level for the `pcg` method.
     #' @return The solution in `z` to the system of equations `Tz %*% z = x`.  If `x` is missing, returns the inverse of `Tz`.  `solve(Tz, x)` and `solve(Tz, x, method, tol)` also work as expected.
     solve = function(x, method = c("gschur", "pcg"), tol = 1e-10) {

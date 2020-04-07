@@ -170,7 +170,7 @@ Solve a Toeplitz system of equations.
 \describe{
 \item{\code{x}}{Optional vector or matrix with \code{N} rows.}
 
-\item{\code{method}}{Solve method to use.  Choices are: \code{gschur} for a modified version of the Generalized Schur algorithm of Ammar & Gragg (1988), or \code{pcg} for the preconditioned conjugate gradient method of Chen et al (2006).  The former is faster and obtains the log-determinant as a direct biproduct.  The later is more numerically stable for long-memory autocorrelations.}
+\item{\code{method}}{Solve method to use.  Choices are: \code{gschur} for a modified version of the Generalized Schur algorithm of Ammar & Gragg (1988), or \code{pcg} for the preconditioned conjugate gradient method of Chen et al (2006).  The former is faster and obtains the log-determinant as a direct biproduct.  The latter is more numerically stable for long-memory autocorrelations.}
 
 \item{\code{tol}}{Tolerance level for the \code{pcg} method.}
 }
