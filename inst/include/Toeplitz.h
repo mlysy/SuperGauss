@@ -28,7 +28,7 @@ private:
   double logdet_; ///< Storage for log-determinant of Toeplitz matrix.
   double traceinv_;///< Trace of inverse-Toeplitz.
   dcomplex* conv_fft_; ///< FFT for convolutions.
-  double* vec_zero_; ///< Storage for zero-padding
+  // double* vec_zero_; ///< Storage for zero-padding
   GSchurN* gs_;     ///< Object to compute GSchur algorithm.
   VectorFFT* vfft_;   ///< Object for fft computations.
   bool has_acf_;    ///< Wheter input argument `acf_` has been modified.
@@ -427,7 +427,7 @@ inline double Toeplitz::trace_grad(const double* acf0) {
     // GSchur algorithm only supports N > 1 case.
     if (!has_solve_) solve_setup();
     // check first term to avoid singularity
-    bool sng = fabs(acf0[0] < 0.0001);
+    bool sng = fabs(acf0[0]) < 0.0001;
     if(sng) acf00 += 1.0;
     std::copy(acf0, acf0 + N_, U1_);
     if(sng) U1_[0] += 1.0;
@@ -486,7 +486,7 @@ inline double Toeplitz::trace_hess(const double* acf1, const double* acf2) {
     // GSchur algorithm only supports N > 1 case.
     if (!has_solve_) solve_setup();
     // check first term to avoid singularity
-    bool sng = fabs(acf2[0] < 0.0001);
+    bool sng = fabs(acf2[0]) < 0.0001;
     if(sng) acf20 += 1.0;		
     // Store the negative derivative of delta in vector phi_, where phi_ = solve(acf_) * toep(acf1) * delta
     prod(phi_, delta_, acf1);

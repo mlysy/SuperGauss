@@ -2,7 +2,23 @@
 % Please edit documentation in R/Toeplitz.R
 \name{Toeplitz}
 \alias{Toeplitz}
+\alias{is.Toeplitz}
+\alias{as.Toeplitz}
 \title{Constructor and methods for Toeplitz matrix objects.}
+\usage{
+Toeplitz$new(N, acf)
+
+is.Toeplitz(x)
+
+as.Toeplitz(x)
+}
+\arguments{
+\item{x}{An R object.}
+
+\item{N}{Size of Toeplitz matrix.}
+
+\item{acf}{Autocorrelation vector of length \code{N}.}
+}
 \description{
 The \code{Toeplitz} class contains efficient methods for linear algebra with symmetric positive definite (i.e., variance) Toeplitz matrices.
 }
@@ -10,6 +26,8 @@ The \code{Toeplitz} class contains efficient methods for linear algebra with sym
 An \verb{N x N} Toeplitz matrix \code{Tz} is defined by its length-\code{N} "autocorrelation" vector \code{acf}, i.e., first row/column \code{Tz}.  Thus, for the function \code{\link[stats:toeplitz]{stats::toeplitz()}}, we have \code{Tz = toeplitz(acf)}.
 
 It is assumed that \code{acf} defines a valid (i.e., positive definite) variance matrix.  The matrix multiplication methods still work when this is not the case but the other methods do not (return values typically contain \code{NaN}s).
+
+\code{as.Toeplitz(x)} attempts to convert its argument to a \code{Toeplitz} object by calling \code{Toeplitz$new(acf = x)}. \code{is.Toeplitz(x)} checks whether its argument is a \code{Toeplitz} object.
 }
 \examples{
 # construct a Toeplitz matrix

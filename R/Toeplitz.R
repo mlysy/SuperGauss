@@ -1,14 +1,30 @@
 #' Constructor and methods for Toeplitz matrix objects.
 #'
 #' @name Toeplitz
+#' @usage Toeplitz$new(N, acf)
+#' @param N Size of Toeplitz matrix.
+#' @param acf Autocorrelation vector of length `N`.
+#' @param x An R object.
 #' @description The `Toeplitz` class contains efficient methods for linear algebra with symmetric positive definite (i.e., variance) Toeplitz matrices.
 #'
 #' @details An `N x N` Toeplitz matrix `Tz` is defined by its length-`N` "autocorrelation" vector `acf`, i.e., first row/column `Tz`.  Thus, for the function [stats::toeplitz()], we have `Tz = toeplitz(acf)`.
 #'
 #' It is assumed that `acf` defines a valid (i.e., positive definite) variance matrix.  The matrix multiplication methods still work when this is not the case but the other methods do not (return values typically contain `NaN`s).
 #'
+#' `as.Toeplitz(x)` attempts to convert its argument to a `Toeplitz` object by calling `Toeplitz$new(acf = x)`. `is.Toeplitz(x)` checks whether its argument is a `Toeplitz` object.
+#'
 #' @example examples/Toeplitz.R
 NULL
+
+#' @rdname Toeplitz
+#' @export
+is.Toeplitz <- function(x) "Toeplitz" %in% class(x)
+
+#' @rdname Toeplitz
+#' @export
+as.Toeplitz <- function(x) {
+  Toeplitz$new(acf = x)
+}
 
 #' @rdname Toeplitz
 #' @export
@@ -269,11 +285,6 @@ setMethod("solve", "Toeplitz",
 
 
 #--- helper functions ----------------------------------------------------------
-
-#' Check whether object is of class `Toeplitz`.
-#'
-#' @noRd
-is.Toeplitz <- function(x) "Toeplitz" %in% class(x)
 
 #' Check inputs to Toeplitz.
 #' @param acfs Named list of acfs.
