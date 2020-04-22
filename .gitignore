@@ -1,5 +1,6 @@
 Meta
 doc
+!doc
 *.DS_Store
 *.Rapp.history
 *.Rhistory

@@ -6,7 +6,7 @@
 
 ### Description
 
-Likelihood evaluations for stationary Gaussian time series are typically obtained via the Durbin-Levinson algorithm, which scales as O(N^2) in the number of time series observations.  This package provides a "superfast" O(N log^2 N) algorithm written in C++, crossing over with Durbin-Levinson around N = 300.  Efficient implementations of the score and Hessian functions are also provided, leading to superfast versions of inference algorithms such as Newton-Raphson and Hamiltonian Monte Carlo.  The C++ code provides a `Toeplitz` matrix class and a `NormalToeplitz` distribution class packaged as a header-only library, to simplify low-level usage in other packages and outside of R.
+Likelihood evaluations for stationary Gaussian time series are typically obtained via the Durbin-Levinson algorithm, which scales as O(N^2) in the number of time series observations.  This package provides a "superfast" O(N log^2 N) algorithm written in C++, crossing over with Durbin-Levinson around N = 300.  Efficient implementations of the score and Hessian functions are also provided, leading to superfast versions of inference algorithms such as Newton-Raphson and Hamiltonian Monte Carlo.  The C++ code provides a `Toeplitz` matrix class and a `NormalToeplitz` distribution class packaged as a header-only library, to simplify low-level usage in other packages and outside of R.  A complete description of the algorithms is available in this [preprint](doc/SuperGauss_preprint.pdf).
 
 ### Installation
 
