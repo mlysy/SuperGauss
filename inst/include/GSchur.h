@@ -10,6 +10,8 @@
 #include "VectorFFT.h"
 // #include "ComplexMult.h"
 #include <vector>
+#include <complex>
+#include <algorithm>
 
 /// @brief Memory allocation for the Generalized Schur Algorithm.
 ///

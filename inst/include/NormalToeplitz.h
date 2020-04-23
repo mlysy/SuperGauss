@@ -67,11 +67,11 @@ inline NormalToeplitz::NormalToeplitz(int N) {
 
 inline NormalToeplitz::~NormalToeplitz() {
   delete Tz_;
-  delete vec1;
-  delete vec2;
-  delete vec3;
-  delete vec4;
-  delete phi;
+  delete[] vec1;
+  delete[] vec2;
+  delete[] vec3;
+  delete[] vec4;
+  delete[] phi;
 }
 
 inline int NormalToeplitz::size() {

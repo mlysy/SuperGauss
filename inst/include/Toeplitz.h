@@ -130,6 +130,7 @@ inline Toeplitz::~Toeplitz() {
     delete[] tzcirc_;
     delete[] tzcirc_fft_;
     delete[] conv_fft_;
+    delete[] delta_;
     // delete[] vec_zero_;
     delete[] L1_fft_;
     delete[] tL1_fft_;

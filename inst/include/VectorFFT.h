@@ -9,6 +9,7 @@
 
 // usual header
 #include <complex>
+#include <algorithm>
 #include <fftw3.h>
 // #include <Rcpp.h>
 // #include <iostream>
