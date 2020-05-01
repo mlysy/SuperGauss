@@ -1,6 +1,7 @@
 ^\.vscode$
 ^inst/doxygen$
 ^vignettes/Makefile$
+^vignettes/old$
 ^config\.status$
 ^config\.log$
 ^Meta$
@@ -8,3 +9,4 @@
 ^TODO\.md$
 ^README\.md$
 ^tests/dontrun$
+^examples$

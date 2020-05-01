@@ -197,12 +197,16 @@ setOldClass("Toeplitz")
 #--- generic methods -----------------------------------------------------------
 
 # ncol
+#' @rdname Toeplitz
+#' @aliases ncol,Toeplitz-method
 #' @export
 setMethod("ncol", "Toeplitz", function(x) {
   x$size()
 })
 
 # nrow
+#' @rdname Toeplitz
+#' @aliases nrow,Toeplitz-method
 #' @export
 setMethod("nrow", "Toeplitz", function(x) {
   x$size()
@@ -213,6 +217,8 @@ setMethod("nrow", "Toeplitz", function(x) {
 dim.Toeplitz <- function(x) rep(x$size(), 2)
 
 # Matrix multiplication
+#' @rdname Toeplitz
+#' @aliases %*%
 #' @export
 `%*%` <- function(x, y) UseMethod("%*%")
 
@@ -230,7 +236,7 @@ dim.Toeplitz <- function(x) rep(x$size(), 2)
       # Toeplitz %*% Toeplitz
       # This can be done more efficiently by Gohberg-Semencul decomposition,
       # but not currently implemented.
-      y <- toeplitz(y$get_acf())
+      y <- stats::toeplitz(y$get_acf())
     }
     check_tz(has_acf = x$has_acf())
     if(is.vector(y)) y <- as.matrix(y)
@@ -257,6 +263,8 @@ dim.Toeplitz <- function(x) rep(x$size(), 2)
 }
 
 # determinant
+#' @rdname Toeplitz
+#' @aliases determinant,Toeplitz-method
 #' @export
 setMethod("determinant", "Toeplitz", function(x, logarithm = TRUE, ...) {
   ldT <- x$log_det()
@@ -265,6 +273,8 @@ setMethod("determinant", "Toeplitz", function(x, logarithm = TRUE, ...) {
 })
 
 # solve
+#' @rdname Toeplitz
+#' @aliases solve,Toeplitz-method
 #' @export
 setMethod("solve", "Toeplitz",
           function(a, b, method = c("gschur", "pcg"), tol = 1e-10, ...) {

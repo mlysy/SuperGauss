@@ -24,7 +24,7 @@ vignette: >
 \newcommand{\dX}{\Delta\X}
 \newcommand{\VH}{\bm{V}_H}
 
-This vignette illustrates the basic functionality of the **`SuperGauss`** package by simulating a few stochastic processes and estimating their parameters from regularly spaced data.
+This vignette illustrates the basic functionality of the **SuperGauss** package by simulating a few stochastic processes and estimating their parameters from regularly spaced data.
 
 ## Simulation of fractional Brownian motion
 
@@ -45,16 +45,16 @@ tseq <- (0:N)*dT # times at which to sample fBM
 npaths <- 5 # number of fBM paths to generate
 
 # to generate fbm, generate its increments, which are stationary
-msd <- fbm.msd(tseq = tseq[-1], H = H)
+msd <- fbm_msd(tseq = tseq[-1], H = H)
 acf <- msd2acf(msd = msd) # convert msd to acf
 
 # superfast method
 system.time({
-  dX <- rSnorm(n = npaths, acf = acf, fft = TRUE)
+  dX <- rnormtz(n = npaths, acf = acf, fft = TRUE)
 })
 # fast method (about 3x as slow)
 system.time({
-  rSnorm(n = npaths, acf = acf, fft = FALSE)
+  rnormtz(n = npaths, acf = acf, fft = FALSE)
 })
 # unstructured variance method (much slower)
 system.time({
@@ -92,24 +92,24 @@ $$
 					  \gamma_{N-1} & \gamma_{N-2} & \cdots & \gamma_0
       \end{bmatrix}.
 $$
-Thus, each evaluation of the loglikelihood requires the inverse and log-determinant of a Toeplitz matrix, which scales as $\mathcal O(N^2)$ with the Durbin-Levinson algorithm.  The **`SuperGauss`** package implements an extended version of the Generalized Schur algorithm of @ammar.gragg88, which scales these computations as $\mathcal O(N \log^2 N)$.  With careful memory management and extensive use of the **`FFTW`** library [@frigo.johnson05], the **`SuperGauss`** implementation crosses over Durbin-Levinson at around $N = 300$.
+Thus, each evaluation of the loglikelihood requires the inverse and log-determinant of a Toeplitz matrix, which scales as $\mathcal O(N^2)$ with the Durbin-Levinson algorithm.  The **SuperGauss** package implements an extended version of the Generalized Schur algorithm of @ammar.gragg88, which scales these computations as $\mathcal O(N \log^2 N)$.  With careful memory management and extensive use of the **FFTW** library [@frigo.johnson05], the **SuperGauss** implementation crosses over Durbin-Levinson at around $N = 300$.
 
 ### The `Toeplitz` matrix class
 
-The bulk of the likelihood calculations in **`SuperGauss`** are handled by the `Toeplitz` matrix class.  A `Toeplitz` object is created as follows:
+The bulk of the likelihood calculations in **SuperGauss** are handled by the `Toeplitz` matrix class.  A `Toeplitz` object is created as follows:
 ```{r}
 # allocate and assign in one step
-Toep <- Toeplitz(acf = acf)
+Toep <- Toeplitz$new(acf = acf)
 Toep
 
 # allocate memory only
-Toep <- Toeplitz(n = N)
+Toep <- Toeplitz$new(N = N)
 Toep
-Toep$setAcf(acf = acf) # assign later
+Toep$set_acf(acf = acf) # assign later
 ```
 Its primary methods are illustrated below:
 ```{r}
-all(acf == Toep$getAcf()) # extract acf
+all(acf == Toep$get_acf()) # extract acf
 
 # matrix multiplication
 z <- rnorm(N)
@@ -136,83 +136,94 @@ dX <- diff(Xt[,1]) # obtain the increments of a given path
 N <- length(dX)
 
 # autocorrelation of fBM increments
-fbm.acf <- function(H) {
-  msd <- fbm.msd(1:N*dT, H = H)
+fbm_acf <- function(H) {
+  msd <- fbm_msd(1:N*dT, H = H)
   msd2acf(msd)
 }
 
 # loglikelihood using generalized Schur algorithm
-Toep <- Toeplitz(n = N) # pre-allocate memory
-loglik.GS <- function(H) {
-  Toep$setAcf(acf = fbm.acf(H))
-  dSnorm(X = dX, acf = Toep, log = TRUE)
+Toep <- Toeplitz$new(N = N) # pre-allocate memory
+loglik_GS <- function(H) {
+  Toep$set_acf(acf = fbm_acf(H))
+  dnormtz(X = dX, acf = Toep, log = TRUE)
 }
 
 # loglikelihood using Durbin-Levinson algorithm
-loglik.DL <- function(H) {
-  dSnormDL(X = dX, acf = fbm.acf(H), log = TRUE)
+loglik_DL <- function(H) {
+  dnormtz(X = dX, acf = fbm_acf(H), method = "ltz", log = TRUE)
 }
 
 # superfast method
 system.time({
-  GS.mle <- optimize(loglik.GS, interval = c(.01, .99), maximum = TRUE)
+  GS_mle <- optimize(loglik_GS, interval = c(.01, .99), maximum = TRUE)
 })
 # fast method (about 10x slower)
 system.time({
-  DL.mle <- optimize(loglik.DL, interval = c(.01, .99), maximum = TRUE)
+  DL_mle <- optimize(loglik_DL, interval = c(.01, .99), maximum = TRUE)
 })
-c(GS = GS.mle$max, DL = DL.mle$max)
+c(GS = GS_mle$max, DL = DL_mle$max)
 
 # standard error calculation
 require(numDeriv)
-Hmle <- GS.mle$max
-Hse <- -hessian(func = loglik.GS, x = Hmle) # observed Fisher Information
+Hmle <- GS_mle$max
+Hse <- -hessian(func = loglik_GS, x = Hmle) # observed Fisher Information
 Hse <- sqrt(1/Hse[1])
 c(mle = Hmle, se = Hse)
 ```
 
-### Caution with `ReferenceClasses`
+### Caution with `R6` Classes
 
-In order to effectively manage memory in the underlying **C++** code, the `Toeplitz` class is implemented using **R**'s "Reference Classes".  Among other things, this means that when a `Toeplitz` object is passed to a function, the function does not make a copy of it: all modifications to the object inside the object are reflected on the object outside the function as well, as in the following example:
+In order to effectively manage memory in the underlying **C++** code, the `Toeplitz` class is implemented using [R6 classes](https://r6.r-lib.org/).  Among other things, this means that when a `Toeplitz` object is passed to a function, the function does not make a copy of it: all modifications to the object inside the object are reflected on the object outside the function as well, as in the following example:
 ```{r}
-T1 <- Toeplitz(n = N)
+T1 <- Toeplitz$new(N = N)
 T2 <- T1 # shallow copy: both of these point to the same memory location
 
 # affects both objects
-T1$setAcf(fbm.acf(.5))
+T1$set_acf(fbm_acf(.5))
 T1
 T2
 
-loglik <- function(H) {
-  T1$setAcf(acf = fbm.acf(H))
-  dSnorm(X = dX, acf = T1, log = TRUE)
+fbm_logdet <- function(H) {
+  T1$set_acf(acf = fbm_acf(H))
+  T1$log_det()
 }
 
 # affects both objects
-loglik(H = .3)
+fbm_logdet(H = .3)
 T1
 T2
+```
+To avoid this behavior, it is necessary to make a deep copy of the object:
+```{r}
+T3 <- T1$clone(deep = TRUE)
+T1
+T3
+
+# only affect T1
+fbm_logdet(H = .7)
+T1
+T3
 ```
 
 ## Superfast Newton-Raphson
 
-In addition to the superfast algorithm for Gaussian likelihood evaluations , **`SuperGauss`** provides such algorithms for the loglikelihood gradient and Hessian functions, leading to superfast versions of many inference algorithms such as Newton-Raphson and Hamiltonian Monte Carlo.  An example of the former is given below using the two-parameter exponential autocorrelation model
+In addition to the superfast algorithm for Gaussian likelihood evaluations , **SuperGauss** provides such algorithms for the loglikelihood gradient and Hessian functions, leading to superfast versions of many inference algorithms such as Newton-Raphson and Hamiltonian Monte Carlo.  An example of the former is given below using the two-parameter exponential autocorrelation model
 $$
 \acf_X(t \mid \lambda, \sigma) = \sigma^2 \exp(- |t/\lambda|).
 $$
 
 ```{r}
 # autocorrelation function
-exp.acf <- function(t, lambda, sigma) sigma^2 * exp(-abs(t/lambda))
+exp_acf <- function(t, lambda, sigma) sigma^2 * exp(-abs(t/lambda))
 # gradient, returned as a 2-column matrix
-exp.acf.grad <- function(t, lambda, sigma) {
-  ea <- exp.acf(t, lambda, 1)
+exp_acf_grad <- function(t, lambda, sigma) {
+  ea <- exp_acf(t, lambda, 1)
   cbind(abs(t)*(sigma/lambda)^2 * ea, # d_acf/d_lambda
         2*sigma * ea) # d_acf/d_sigma
 }
 # Hessian, returned as an array of size length(t) x 2 x 2
-exp.acf.hess <- function(t, lambda, sigma) {
-  ea <- exp.acf(t, lambda, 1)
+exp_acf_hess <- function(t, lambda, sigma) {
+  ea <- exp_acf(t, lambda, 1)
   sl2 <- sigma/lambda^2
   hess <- array(NA, dim = c(length(t), 2, 2))
   hess[,1,1] <- sl2^2*(t^2 - 2*abs(t)*lambda) * ea # d2_acf/d_lambda^2
@@ -226,36 +237,38 @@ exp.acf.hess <- function(t, lambda, sigma) {
 lambda <- runif(1, .5, 2)
 sigma <- runif(1, .5, 2)
 tseq <- (1:N-1)*dT
-acf <- exp.acf(t = tseq, lambda = lambda, sigma = sigma)
-Xt <- rSnorm(acf = acf)
+acf <- exp_acf(t = tseq, lambda = lambda, sigma = sigma)
+Xt <- rnormtz(acf = acf)
 
-Toep <- Toeplitz(n = N) # storage space
+Toep <- Toeplitz$new(N = N) # storage space
 
-# negative loglikelihood function of theta = (lambda, sigma)
-# include attributes for gradient and Hessian
-exp.negloglik <- function(theta) {
-  lambda <- theta[1]
-  sigma <- theta[2]
-  # acf, its gradient, and Hessian
-  Toep$setAcf(acf = exp.acf(tseq, lambda, sigma)) # use the Toeplitz class
-  dacf <- exp.acf.grad(tseq, lambda, sigma)
-  d2acf <- exp.acf.hess(tseq, lambda, sigma)
-  nll <- -1 * dSnorm(X = Xt, acf = Toep, log = TRUE)
-  attr(nll, "gradient") <- -1 * Snorm.grad(X = Xt, acf = Toep, dacf = dacf)
-  attr(nll, "hessian") <- -1 * Snorm.hess(X = Xt, acf = Toep,
-                                          dacf = dacf, d2acf = d2acf)
-  nll
-}
+## --- FIXME BELOW HERE ---
 
-# optimization
-system.time({
-  mle.fit <- nlm(f = exp.negloglik, p = c(1,1), hessian = TRUE)
-})
+## # negative loglikelihood function of theta = (lambda, sigma)
+## # include attributes for gradient and Hessian
+## exp_negloglik <- function(theta) {
+##   lambda <- theta[1]
+##   sigma <- theta[2]
+##   # acf, its gradient, and Hessian
+##   Toep$set_acf(acf = exp_acf(tseq, lambda, sigma)) # use the Toeplitz class
+##   dacf <- exp_acf_grad(tseq, lambda, sigma)
+##   d2acf <- exp_acf_hess(tseq, lambda, sigma)
+##   nll <- -1 * dnormtz(X = Xt, acf = Toep, log = TRUE)
+##   attr(nll, "gradient") <- -1 * Snorm.grad(X = Xt, acf = Toep, dacf = dacf)
+##   attr(nll, "hessian") <- -1 * Snorm.hess(X = Xt, acf = Toep,
+##                                           dacf = dacf, d2acf = d2acf)
+##   nll
+## }
 
-# display estimates with standard errors
-rbind(true = c(lambda = lambda, sigma = sigma),
-      est = mle.fit$estimate,
-      se = sqrt(diag(solve(mle.fit$hessian))))
+## # optimization
+## system.time({
+##   mle.fit <- nlm(f = exp.negloglik, p = c(1,1), hessian = TRUE)
+## })
+
+## # display estimates with standard errors
+## rbind(true = c(lambda = lambda, sigma = sigma),
+##       est = mle.fit$estimate,
+##       se = sqrt(diag(solve(mle.fit$hessian))))
 
 ```
 
