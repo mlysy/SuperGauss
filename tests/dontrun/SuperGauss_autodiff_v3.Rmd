@@ -1,0 +1,246 @@
+---
+title: "Superfast Likelihood Inference for Stationary Gaussian Time Series"
+author: "Martin Lysy"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: readable
+#bibliography: references.bib
+#csl: taylor-and-francis-harvard-x.csl
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{SuperGauss}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+\newcommand{\bm}[1]{\boldsymbol{#1}}
+\newcommand{\rv}[3][1]{#2_{#1},\ldots,#2_{#3}}
+\renewcommand{\aa}{\bm{a}}
+\newcommand{\bb}{\bm{b}}
+\newcommand{\ee}{\bm{e}}
+\newcommand{\xx}{\bm{x}}
+\newcommand{\yy}{\bm{y}}
+\newcommand{\X}{\bm{X}}
+\newcommand{\ZZ}{\bm{Z}}
+\newcommand{\cov}{\mathrm{cov}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\dt}{\Delta t}
+\newcommand{\msd}{\mathrm{\scriptsize MSD}}
+\newcommand{\acf}{\mathrm{\scriptsize ACF}}
+\newcommand{\dX}{\Delta\X}
+\newcommand{\VH}{\bm{V}_H}
+\newcommand{\bz}{\bm{0}}
+\newcommand{\TT}{\bm{T}}
+\newcommand{\YY}{\bm{Y}}
+\newcommand{\XX}{\bm{X}}
+\newcommand{\Toep}{\mathrm{Toeplitz}}
+\newcommand{\Circ}{\mathrm{Circulant}}
+\newcommand{\tr}{\mathrm{trace}}
+\newcommand{\mod}{\,\mathrm{mod}\,}
+\newcommand{\tth}{\bm{\theta}}
+\newcommand{\rrh}{\bm{\rho}}
+\newcommand{\kka}{\bm{\kappa}}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\gga}{\bm{\gamma}}
+\newcommand{\nnu}{\bm{\nu}}
+\newcommand{\SSi}{\bm{\Sigma}}
+\newcommand{\ud}{\mathrm{d}}
+\newcommand{\dGG}{\Delta\boldsymbol{G}}
+\newcommand{\Xm}{\XX_{\mathrm{miss}}}
+\newcommand{\Xc}{\XX_{(m)}}
+\newcommand{\fft}{\mathtt{fft}}
+\newcommand{\ifft}{\mathtt{ifft}}
+\newcommand{\Sh}{\mathtt{circ}}
+
+## Overview
+
+Let $\ZZ = (\rv 0 Z N)$ denote consecutive observations of a stationary time series, such that $E[Z_n] = 0$ and $\cov(Z_m, Z_n) = \cov(Z_0, Z_{|n-m|})$.  Then the variance matrix $\var(\ZZ)$ is a so-called [Toeplitz](https://en.wikipedia.org/wiki/Toeplitz_matrix) matrix:
+$$
+\var(\ZZ)  = \Toep(\gga) = 
+\begin{bmatrix} 
+\gamma_{0} & \gamma_{1} & \gamma_{2}& \cdots & \gamma_{N} \\
+\gamma_{1} & \gamma_{0} & \gamma_{1}& \cdots & \gamma_{N-1} \\
+\vdots & \ddots & \ddots & \ddots & \vdots \\
+\gamma_{N} & \gamma_{N-1} & \gamma_{N-2} & \cdots & \gamma_{0}
+\end{bmatrix}, \quad \mathrm{where} \quad \cov(Z_i, Z_j) = \gamma_|i-j|.
+$$
+Suppose in addition that the time series is Gaussian,
+$$
+\ZZ \sim \N(\bz, \SSi_\tth = \Toep(\gga_\tth)),
+$$
+and that the autocorrelation function $\gga_\tth = (\rv 0 \gamma N)$ is parametrized by an unknown parameter vector $\tth$.  The loglikelihood function for this problem is
+$$
+\ell(\tth \mid \ZZ) = -\tfrac 1 2 \big(\ZZ' \SSi_\tth^{-1} \ZZ + \log |\SSi|\big).
+$$
+Thus, each evaluation of the loglikelihood requires the inverse and log-determinant of $\SSi_\tth$. For general variance matrices these calculations scale as $\mathcal O(N^3)$, which is prohibitively expensive.  For structured matrices such as the Toeplitz, there are "fast" algorithms which are only $\mathcal O(N^2)$.  The [**SuperGauss**](https://CRAN.R-project.org/package=SuperGauss) R/C++ library implements a "superfast" algorithm which scales the computations as $\mathcal O(N \log^2 N)$.  Crossover with state-of-the-art fast algorithms happens around $N = 300$, and there is a tenfold difference in speed between the two around $N = 3000$.
+
+## The Problem
+
+Consider a model with arbitrary autocorrelation function
+$$
+\ZZ \sim \N(\bz, \Toep(\gga)).
+$$
+In addition to superfast loglikelihood evaluations, **SuperGauss** implements a superfast algorithm for the gradients of $\ell(\gga \mid \ZZ)$ wrt $\ZZ$ and $\gga$, such that it can be connected with any C++ autodiff library.  The library I'd like to use is [Stan](https://mc-stan.org/).  In addition to being an excellent autodiff library, Stan implements a state-of-the-art MCMC sampler for Bayesian inference (details below). The challenge is that, like most autodiff libraries, adding custom gradients is relatively complex.  On the other hand, backpropping through the superfast loglikelihood algorighm would be orders of magnitude slower than hooking in the custom gradient.
+
+### API
+
+Here's more or less what the stationary Gaussian loglikelihood (`NormalToeplitz`) class looks like on the C++ side.
+```{Rcpp, eval = FALSE}
+class NormalToeplitz {
+   public:
+   /// Constructor.
+   NormalToeplitz(int N);
+   /// Log-Density.
+   double logdens(const double* z, const double* acf);
+   /// Full gradient.
+   /// The outputs `dldz` and `dldacf` are each the length of `N`.
+   void grad(double* dldz, double* dldacf,
+             const double* z, const double* acf);
+};
+``` 
+
+## Application: Stochastic Differential Equations with Colored Noise
+
+Consider the colored-noise stochastic differential equation (cSDE)
+
+$$
+\ud X_t = \mu_{\tth}(X_t) \, \ud t + \sigma_{\tth} \, \ud G_t,
+$$
+
+where $G_t$ is a Gaussian continuous stationary increments (CSI) process, i.e, $\Delta G_t = G_{t+\dt} - G_t$ is a (Gaussian continuous) stationary process with autocorrelation function $\gamma_{\tth,\dt}(t) = \cov(\Delta G_s, \Delta G_{s + t})$.  Now suppose that the observed data is $\XX = (X_0, \ldots, X_N)$, where $X_n = X(n \cdot \dt)$ for some fixed interobservation time $\dt$.  
+<!-- $\YY = (Y_0, \ldots, Y_N)$, where $Y_n = g_{\tth}(X_{n \cdot \dt})$ for some fixed interobservation time $\dt$.   -->
+Then a simple Euler-type approximation to simulate $\XX$ is defined as follows.  Let $\dGG = (\Delta G_0, \ldots, G_{N-1})$ and let $\gga_{\tth} = (\gamma_{\tth,\dt}(0), \ldots, \gamma_{\tth,\dt}((N-1)\dt))$.  Then for given $X_0$ and $\tth$, we have
+
+$$
+\begin{aligned}
+\dGG & \sim \N(\bz, \Toep(\gga_{\tth})) \\
+X_{n+1} & = X_n + \mu_{\tth}(X_n) \dt + \sigma_{\tth} \Delta G_n
+\end{aligned}
+$$
+
+Data from this model can be simulated with the following R code:
+
+```r
+#' Generate cSDE observations.
+#'
+#' @param X0 Initial cSDE value at time `t = 0`.
+#' @param fft Whether to use fast (but sometimes less stable) FFT simulation method.  See [SuperGauss::rnormtz()].
+#' @return A vector of `N+1` cSDE observations recorded at intervals of `dt` starting from `X0`.
+csde_sim <- function(N, dt, X0, theta,
+                     mu_fun, sigma_fun, gamma_fun, fft = TRUE) {
+  sig <- sigma_fun(theta) # diffusion
+  gam <- gamma_fun(theta, dt, N) # autocorrelation
+  dG <- SuperGauss::rnormtz(acf = gam, fft = fft) # noise increments
+  Xt <- rep(NA, N+1) # cSDE time series
+  Xt[1] <- X0 # initialize
+  for(ii in 1:N) {
+    # recursion
+    Xt[ii+1] <- Xt[ii] + mu_fun(Xt[ii], theta) * dt + sig * dG[ii]
+  }
+  Xt
+}
+```
+
+
+In order to improve accuracy, consider an $m$-level Euler approximation which is exactly as above, except the data is simulated with interobservation time $\dt_m = \dt/m$ to get $\Xc = (X_{m,0}, \ldots, X_{m, Nm})$, and every $m$th value is kept to obtain $\XX = (X_{m,0}, X_{m,m}, \ldots, X_{m, Nm})$.
+
+Parameter inference is conducted via MCMC by sampling from the joint posterior 
+$$
+p(\tth, \Xm \mid \XX) \propto p(\Xc \mid \tth) \cdot \pi(\tth),
+$$
+where $\Xm = \Xc \setminus \XX$, and $\log p(\Xc \mid \tth)$ can be obtained from the following R code (hopefully it's clear and error-free):
+
+```r
+#' Log-density of cSDE observations.
+#'
+#' Calculates the log-density of `p(Xt | theta)`, where `Xt` are observations of a cSDE recorded at interobservation time `dt`.
+csde_logdens <- function(Xt, dt, theta,
+                         mu_fun, sigma_fun, gamma_fun) {
+  dX <- diff(Xt)
+  N <- length(dX)
+  mu <- mu_fun(Xt[1:N], theta) # drift
+  sig <- sigma_fun(theta) # diffusion
+  gam <- gamma_fun(theta, dt, N) # autocorrelation
+  dG <- (dX - mu * dt) / sig # noise increments
+  NTz <- SuperGauss::NormalToeplitz$new(N) # instantiate NTz distribution
+  ld <- NTz$logdens(dG, acf = gam)
+  ld - N * log(sig) # jacobian for change-of-variables dX <-> dG
+}
+```
+
+## Autodiff for Normals with Circulant Variance Matrix
+
+Consider a mean-zero multivariate normal with parametrized variance matrix,
+$$
+\ZZ \sim \N(\bz, \SSi_\tth).
+$$
+The likelihood and its gradients are given by
+$$
+\begin{aligned}
+\ell(\tth \mid \ZZ) & = - \tfrac 1 2 \ZZ'\SSi_{\tth}^{-1}\ZZ - \tfrac 1 2 \log \vert \SSi_{\tth} \vert, \\
+\tfrac{\partial}{\partial \ZZ} \ell(\tth \mid \ZZ) & = \SSi_{\tth}^{-1} \ZZ, \\
+\tfrac{\partial}{\partial \theta_i} \ell(\tth \mid \ZZ) & = \tfrac 1 2 \ZZ'\SSi_{\tth}^{-1} \SSi_{\tth}^{(i)} \SSi_{\tth}^{-1} \ZZ - \tfrac 1 2 \tr\left\{\SSi_{\tth}^{-1} \SSi_{\tth}^{(i)}\right\},
+\end{aligned}
+$$
+where $\SSi_{\nnu}^{(i)} = \tfrac{\partial}{\partial \theta_i} \SSi_{\tth}$.  The `NormalToeplitz` class in the **SuperGauss** library provides efficient methods for calculating these quantities for $\SSi_{\gga} = \Toep(\gga)$, a Toeplitz variance matrix with autocorrelation $\gga = (\gamma_0, \ldots, \gamma_N)$.  A subset of Toeplitz variance matrices is that of circulant variance matrices,
+$$
+\var(\ZZ) = \Circ(\nnu) = 
+\begin{bmatrix} 
+\nu_{0} & \nu_{1} & \nu_{2}& \cdots & \nu_{2} & \nu_1 \\
+\nu_{1} & \nu_{0} & \nu_{1}& \cdots & \nu_{3} & \nu_2 \\
+\vdots  & \ddots  & \ddots & \ddots &         & \vdots \\
+\nu_2   & \nu_3   & \nu_4 &  \cdots & \nu_0   & \nu_{1} \\
+\nu_{1} & \nu_{2} & \nu_{3} & \cdots & \nu_1 & \nu_{0}
+\end{bmatrix},
+$$
+where $\cov(Z_i, Z_j) = \nu_{|j-i| \mod (n+1)}$, where $n = \lfloor (N+1)/2 \rfloor$, such that $\nnu = (\rv 0 \nu n)$.  
+
+Let
+$$
+\Sh\{\nnu\} = \begin{cases} (\nnu_{0:n}, \nnu_{n-1:1}) & \textrm{$N$ even} \\
+(\nnu_{0:n}, \nnu_{n:1}) & \textrm{$N$ odd}, \end{cases}
+$$
+such that $\gga_{\nnu} = \Sh\{\nnu\}$ is the autocorrelation vector for which
+$$
+\SSi_{\nnu} = \Circ(\nnu) = \Toep(\gga_{\nnu}).
+$$
+Let $\fft(x)$ and $\ifft(x)$ denote the [discrete Fourier transform](https://en.wikipedia.org/wiki/Discrete_Fourier_transform) and its (normalized) inverse, such that $x = \ifft\{\fft(x)\}$.  Then for $\hat{\gga}_{\nnu} = \mathtt{fft}(\gga_{\nnu})$, we have the following $\mathcal O(N \log N)$ methods of calculating various quantities required above:
+
+- $\SSi_{\nnu} \ZZ = \ifft\{\hat{\gga}_{\nnu} \circ \fft(\ZZ)\}$, where $(\xx \circ \yy)_i = x_i y_i$ is elementwise multiplication.
+
+- $\log \vert \SSi_{\nnu} \vert = \sum_{i=0}^N \log \hat \gamma_{\nnu,i}$.
+
+- For any vectors $\aa = \aa_{0:N}$ and $\bb = \bb_{0:N}$, let $\rrh = \ifft\left\{\fft(\aa_{0:N}) \circ \fft(\bb_{N:0}) \right\}$.
+	<!-- $$ -->
+	<!-- \rrh = \left(\aa' \tfrac{\partial}{\partial \nu_0} \SSi_{\nnu}\bb, \aa', \ldots, \aa' \tfrac{\partial}{\partial \nu_n} \SSi_{\nnu}\bb\right), -->
+	<!-- $$ -->
+	<!-- and consider the vector -->
+	<!-- $$ -->
+	<!-- \rrh = \ifft\left\{\fft(\aa_{0:N}) \circ \fft(\bb_{N:0}) \right\}/(N+1). -->
+	<!-- $$ -->
+	Then we have
+	
+	$$
+	\aa' \SSi_{\nnu}^{(i)} \bb = 
+	\begin{cases} \rho_0 & i = 0 \\
+	2 \rho_i & 0 < i < n \\
+	\rho_n & \textrm{$i = n$ and $N$ is odd} \\
+	2 \rho_n & \textrm{$i = n$ and $N$ is even}.
+	\end{cases}
+	$$
+	
+	This can be used to efficiently calculate $\tfrac{\partial}{\partial \nnu} \ZZ'\SSi_{\nnu}^{-1}\ZZ = \left(\xx' \SSi_{\nnu}^{(0)} \xx, \ldots, \xx' \SSi_{\nnu}^{(n)} \xx\right)$, where $\xx = \SSi_{\nnu}^{-1} \ZZ$.
+	
+- Let $\kka = (N+1) \cdot \ifft\{\hat{\gga}_{\nnu}\}$.  Then we have
+
+	$$
+	\tr\left\{\SSi_{\nnu}^{-1} \SSi_{\nnu}^{(i)} \right\} = 
+	\begin{cases} \kappa_0 & i = 0 \\
+	2 \kappa_i & 0 < i < n \\
+	\kappa_n & \textrm{$i = n$ and $N$ is odd} \\
+	2 \kappa_n & \textrm{$i = n$ and $N$ is even}.
+	\end{cases}
+	$$
