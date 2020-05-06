@@ -10,11 +10,9 @@
 #include "GSchur.h"
 
 
-/// @brief Superfast linear algebra with Toeplitz matrices.
+/// @brief Toeplitz matrix class.
 ///
-/// Provides methods for Toeplitz computations including multiplication,
-/// inversion, determinant, and first and second derivatives of the
-/// log-determinant.
+/// Provides linear algebra methods for Toeplitz symmetric positive-definite (i.e., variance) matrices including matrix multiplication, inversion, determinant, and first and second derivatives of the log-determinant.
 class Toeplitz {
 private:
   typedef std::complex<double> dcomplex;
@@ -182,8 +180,9 @@ inline void Toeplitz::prod_setup() {
   if (N_ > 1) {
     std::copy(acf_, acf_ + N_, tzcirc_);
     tzcirc_[N_] = 0;
-    std::copy(acf_ + 1, acf_ + N_, tzcirc_ + N_ + 1);
-    std::reverse(tzcirc_ + N_ + 1, tzcirc_ + 2 * N_);
+    std::reverse_copy(acf_ + 1, acf_ + N_, tzcirc_ + N_ + 1);
+    // std::copy(acf_ + 1, acf_ + N_, tzcirc_ + N_ + 1);
+    // std::reverse(tzcirc_ + N_ + 1, tzcirc_ + 2 * N_);
     vfft_->fft(tzcirc_fft_, tzcirc_);
   }
   return;
@@ -367,8 +366,9 @@ inline void Toeplitz::prod(double* y, const double* x, const double* acf1) {
   // circulant embedding of acf1
   std::copy(acf1, acf1 + N_, z_);
   z_[N_] = 0;
-  std::copy(acf1 + 1, acf1 + N_, z_ + N_ + 1);
-  std::reverse(z_ + N_ + 1, z_ + 2 * N_);
+  std::reverse_copy(acf1 + 1, acf1 + N_, z_ + N_ + 1);
+  // std::copy(acf1 + 1, acf1 + N_, z_ + N_ + 1);
+  // std::reverse(z_ + N_ + 1, z_ + 2 * N_);
   vfft_->fft(z_fft_, z_);
   // y_ = ifft(fft(z_) * fft(x_))[1:N_]
   std::copy(x, x + N_, x_);

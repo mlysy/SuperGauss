@@ -1,9 +1,7 @@
 #' Constructor and methods for Toeplitz matrix objects.
 #'
 #' @name Toeplitz
-#' @usage Toeplitz$new(N, acf)
-#' @param N Size of Toeplitz matrix.
-#' @param acf Autocorrelation vector of length `N`.
+#'
 #' @param x An R object.
 #' @description The `Toeplitz` class contains efficient methods for linear algebra with symmetric positive definite (i.e., variance) Toeplitz matrices.
 #'
@@ -56,7 +54,7 @@ Toeplitz <- R6Class(
 
   public = list(
 
-    #' @description Class constructor
+    #' @description Class constructor.
     #'
     #' @param N Size of Toeplitz matrix.
     #' @param acf Autocorrelation vector of length `N`.
@@ -113,7 +111,7 @@ Toeplitz <- R6Class(
       .Toeplitz_has_acf(private$Tz_)
     },
 
-    #' @description Product between regular and Toeplitz matrix.
+    #' @description Toeplitz matrix-matrix product.
     #'
     #' @param x Vector or matrix with `N` rows.
     #' @return The matrix product `Tz %*% x`. `Tz %*% x` and `x %*% Tz` also work as expected.
@@ -264,7 +262,7 @@ dim.Toeplitz <- function(x) rep(x$size(), 2)
 
 # determinant
 #' @rdname Toeplitz
-#' @aliases determinant,Toeplitz-method
+#' @aliases determinant determinant,Toeplitz-method
 #' @export
 setMethod("determinant", "Toeplitz", function(x, logarithm = TRUE, ...) {
   ldT <- x$log_det()
@@ -274,29 +272,33 @@ setMethod("determinant", "Toeplitz", function(x, logarithm = TRUE, ...) {
 
 # solve
 #' @rdname Toeplitz
-#' @aliases solve,Toeplitz-method
+#' @aliases solve solve,Toeplitz-method
 #' @export
-setMethod("solve", "Toeplitz",
-          function(a, b, method = c("gschur", "pcg"), tol = 1e-10, ...) {
-            check_tz(has_acf = a$has_acf())
-            if(missing(b)) b <- diag(a$size())
-            vec_b <- is.vector(b)
-            if(vec_b) b <- as.matrix(b)
-            if(!is.matrix(b)) {
-              stop("b must be a matrix or vector.")
-            }
-            if(nrow(b) != a$size()) {
-              stop("Incompatible matrix solve dimensions.")
-            }
-            y <- a$solve(b, method, tol)
-            if(vec_b) y <- drop(y)
-            y
-})
+setMethod(
+  f = "solve",
+  signature = "Toeplitz",
+  definition = function(a, b, method = c("gschur", "pcg"), tol = 1e-10, ...) {
+    check_tz(has_acf = a$has_acf())
+    if(missing(b)) b <- diag(a$size())
+    vec_b <- is.vector(b)
+    if(vec_b) b <- as.matrix(b)
+    if(!is.matrix(b)) {
+      stop("b must be a matrix or vector.")
+    }
+    if(nrow(b) != a$size()) {
+      stop("Incompatible matrix solve dimensions.")
+    }
+    y <- a$solve(b, method, tol)
+    if(vec_b) y <- drop(y)
+    y
+  }
+)
 
 
 #--- helper functions ----------------------------------------------------------
 
 #' Check inputs to Toeplitz.
+#'
 #' @param acfs Named list of acfs.
 #' @param N Required size of each acf.
 #' @param has_acf Optional whether or not acf has been set.

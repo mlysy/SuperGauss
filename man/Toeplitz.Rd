@@ -8,13 +8,13 @@
 \alias{nrow,Toeplitz-method}
 \alias{\%*\%}
 \alias{determinant,Toeplitz,ANY-method}
+\alias{determinant}
 \alias{determinant,Toeplitz-method}
 \alias{solve,Toeplitz,ANY-method}
+\alias{solve}
 \alias{solve,Toeplitz-method}
 \title{Constructor and methods for Toeplitz matrix objects.}
 \usage{
-Toeplitz$new(N, acf)
-
 is.Toeplitz(x)
 
 as.Toeplitz(x)
@@ -31,10 +31,6 @@ x \%*\% y
 }
 \arguments{
 \item{x}{An R object.}
-
-\item{N}{Size of Toeplitz matrix.}
-
-\item{acf}{Autocorrelation vector of length \code{N}.}
 }
 \description{
 The \code{Toeplitz} class contains efficient methods for linear algebra with symmetric positive definite (i.e., variance) Toeplitz matrices.
@@ -87,7 +83,7 @@ determinant(Tz) # log-determinant
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-Class constructor
+Class constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Toeplitz$new(N, acf)}\if{html}{\out{</div>}}
 }
@@ -175,7 +171,7 @@ Logical; \code{TRUE} if \code{Toeplitz$set_acf()} has been called.
 \if{html}{\out{<a id="method-prod"></a>}}
 \if{latex}{\out{\hypertarget{method-prod}{}}}
 \subsection{Method \code{prod()}}{
-Product between regular and Toeplitz matrix.
+Toeplitz matrix-matrix product.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Toeplitz$prod(x)}\if{html}{\out{</div>}}
 }

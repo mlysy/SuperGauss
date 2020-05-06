@@ -2,32 +2,65 @@
 
 require(R6)
 require(fftw)
+
 # columnwise fft and inverse fft for real inputs
 fft <- function(x) {
   eV <- is.vector(x)
-  y <- apply(as.matrix(x), 2, fftw::FFT)
+  x <- as.matrix(x)
+  if(nrow(x) == 1) {
+    y <- x + 0i
+  }  else {
+    y <- apply(as.matrix(x), 2, fftw::FFT)
+  }
   if(eV) y <- drop(y)
   y
 }
 ifft <- function(x) {
   eV <- is.vector(x)
-  y <- apply(as.matrix(x), 2, fftw::FFT, inverse = TRUE)
+  x <- as.matrix(x)
+  if(nrow(x) == 1) {
+    y <- x + 0i
+  }  else {
+    y <- apply(as.matrix(x), 2, fftw::FFT, inverse = TRUE)
+  }
   y <- Re(y)/nrow(y)
   if(eV) y <- drop(y)
   y
 }
 
+# convert a truncated acf to full acf.
 t2acf <- function(N, tacf) {
   n <- length(tacf)
   if(n != floor(N/2) + 1) stop("tacf has wrong length.")
   acf <- rep(NA, N)
   acf[1:n] <- tacf
-  eN <- (2*n) == (N+2)
-  id <- n - eN + (2:n-1)
-  acf[n - eN + (2:n-1)] <- tacf[n:2]
+  if(N > 1) {
+    eN <- (2*n) == (N+2)
+    id <- n - eN + (2:n-1)
+    acf[n - eN + (2:n-1)] <- tacf[n:2]
+  }
   acf
 }
 
+#' Circulant matrix with first row `x`.
+circulant <- function(x) {
+  N <- length(x)
+  t(sapply(1:N-1, function(ii) x[(1:N-1 - ii) %% N + 1]))
+}
+
+#' Shift matrix.
+shift <- function(N, i) {
+  circulant(as.numeric(1:N == i))
+}
+
+#' Calculate the vector `(x' S_0 y, x' S_1 y, ..., x' S_N y)`, where `S_i` is the `i`th circulant shift matrix.
+shift_mult <- function(x, y) {
+  rev(ifft(fft(x) * fft(rev(y))))
+  ## N <- length(x)
+  ## rev(Re(FFT(FFT(x) * FFT(rev(y)), inverse = TRUE)/N))
+}
+
+# circulant matrix class.
 Circulant <- R6Class(
   classname = "Circulant",
   private = list(
@@ -147,137 +180,41 @@ Circulant <- R6Class(
   )
 )
 
+# Normal with circulant variance matrix.
+NormalCirculant <- R6Class(
+  classname = "NormalCirculant",
+  private = list(
+    Ct_ = NULL,
+    N_ = NA,
+    n_ = NA
+  ),
+  public = list(
+    initialize = function(N) {
+      private$N_ <- N
+      private$n_ <- (N %/% 2) + 1
+      private$Ct_ <- Circulant$new(N = N)
+    },
+    logdens = function(z, tacf) {
+      private$Ct_$set_acf(tacf)
+      ld <- sum(z*private$Ct_$solve(z)) + private$Ct_$log_det()
+      -.5 * (ld + private$N_ * log(2*pi))
+    },
+    grad_full = function(z, tacf) {
+      private$Ct_$set_acf(tacf)
+      # gradient wrt z
+      dz <- private$Ct_$solve(z)
+      # gradient wrt tacf
+      dip <- shift_mult(dz, dz) # gradient of inner product
+      dtr <- ifft(1/fft(t2acf(private$N_, tacf))) * private$N_ # gradient of trace
+      if(private$N_ > 2) {
+        eN <- (2*private$n_) == (private$N_+2)
+        id <- 2:(private$n_-eN)
+        dip[id] <- 2*dip[id]
+        dtr[id] <- 2*dtr[id]
+      }
+      dtacf <- .5 * (dip[1:private$n_] - dtr[1:private$n_])
+      list(dz = dz, dtacf = dtacf)
+    }
+  )
+)
 
-N <- 6
-n <- floor(N/2) + 1
-Ct <- Circulant$new(N = N, tacf = 1:n)
-Ct$get_acf()
-
-#--- power products with circulants --------------------------------------------
-
-
-N <- 6
-n <- floor(N/2) + 1
-Ct <- Circulant$new(N = N, tacf = n:1)
-Ct$get_acf()
-
-N <- sample(5:20,1)
-p <- sample(1:5, 1)
-n <- floor(N/2) + 1
-tacf <- rnorm(n)
-Ct <- Circulant$new(N = N, tacf = tacf)
-x <- matrix(rnorm(N*p), N, p)
-y <- toeplitz(Ct$get_acf()) %*% x
-y2 <- Ct$pow_prod(x)
-range(y-y2)
-y <- solve(toeplitz(Ct$get_acf()), x)
-y2 <- Ct$pow_prod(x, pow = -1)
-range(y - y2)
-
-#--- circulant convolution -----------------------------------------------------
-
-require(mvtnorm)
-require(numDeriv)
-
-N <- 5
-x <- rnorm(N)
-
-(1:N-1 + 0) %% N + 1
-
-#' Circulant matrix with first row `x`.
-circulant <- function(x) {
-  N <- length(x)
-  t(sapply(1:N-1, function(ii) x[(1:N-1 - ii) %% N + 1]))
-}
-
-#' Shift matrix.
-shift <- function(N, i) {
-  circulant(as.numeric(1:N == i))
-}
-
-#' Calculate the vector `(x' S_0 y, x' S_1 y, ..., x' S_N y)`, where `S_i` is the `i`th circulant shift matrix.
-shift_mult <- function(x, y) {
-  rev(ifft(fft(x) * fft(rev(y))))
-  ## N <- length(x)
-  ## rev(Re(FFT(FFT(x) * FFT(rev(y)), inverse = TRUE)/N))
-}
-
-shift(5, 2)
-
-N <- 10
-x <- rnorm(N)
-y <- rnorm(N)
-
-c1 <- sapply(1:N, function(i) crossprod(x, shift(N, i) %*% y))
-c2 <- rev(convolve(x, rev(y), conj = FALSE))
-c3 <- shift_mult(x, y)
-range(c1 - c2)
-range(c1 - c3)
-
-# ok let's try the gradient
-
-circ_ldens <- function(z, nu) {
-  Ct <- Circulant$new(N = length(z), tacf = nu)
-  ld <- sum(z*Ct$solve(z)) + Ct$log_det()
-  -.5 * ld
-}
-
-N <- 15
-n <- floor(N/2)+1
-psd <- rexp(n)
-gam <- Re(FFT(t2acf(N, psd)))
-nu <- gam[1:n]
-z <- rnorm(N)
-circ_ldens(z, nu) - dmvnorm(z, sigma = toeplitz(t2acf(N, nu)), log = TRUE)
-
-circ_ip <- function(z, nu) {
-  Ct <- Circulant$new(N = length(z), tacf = nu)
-  sum(z*Ct$solve(z))
-}
-
-circ_tr <- function(N, nu) {
-  Ct <- Circulant$new(N = N, tacf = nu)
-  Ct$log_det()
-}
-
-N <- sample(2:20,1)
-n <- floor(N/2)+1
-## nu <- Re(FFT(t2acf(N, rexp(n)*N), inverse = TRUE)[1:n]/N)
-psd <- rexp(n)*N
-nu <- ifft(t2acf(N, psd))[1:n]
-z <- rnorm(N)
-g1 <- grad(circ_ip, x = nu, z = z)
-y <- solve(toeplitz(t2acf(N, nu)), z)
-g2 <- -shift_mult(y, y)
-if(N > 2) {
-  eN <- (2*n) == (N+2)
-  id <- 2:(n-eN)
-  g2[id] <- 2*g2[id]
-}
-range(g1-g2[1:n])
-
-
-N <- sample(5:15, 1)
-n <- floor(N/2)+1
-psd <- rexp(n)*N
-## gam <- Re(FFT(t2acf(N, psd), inverse = TRUE))/N
-gam <- ifft(t2acf(N, psd))
-nu <- gam[1:n]
-V1 <- solve(toeplitz(gam))
-V2 <- toeplitz(ifft(t2acf(N, 1/psd)))
-range(V1 - V2)
-
-N <- sample(5:20,1)
-n <- floor(N/2)+1
-psd <- rexp(n)*N
-gam <- ifft(t2acf(N, psd))
-nu <- gam[1:n]
-g1 <- grad(circ_tr, x = nu, N = N)
-## g2 <- Re(FFT(1/Re(FFT(t2acf(N, nu))), inverse = TRUE))
-g2 <- ifft(1/fft(t2acf(N, nu))) * N
-if(N > 2) {
-  eN <- (2*n) == (N+2)
-  id <- 2:(n-eN)
-  g2[id] <- 2*g2[id]
-}
-range(g1-g2[1:n])

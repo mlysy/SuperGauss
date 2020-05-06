@@ -1,2 +1,0 @@
-PKG_CXXFLAGS=-I"../inst/include" -I"C:/fftw-64"
-PKG_LIBS=-L"C:/fftw-64/lib" -l fftw3

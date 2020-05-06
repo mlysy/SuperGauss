@@ -101,3 +101,54 @@ test_drift_grad <- function(mu, N){
 test_drift_hess <- function(mu, N){
   rep(2, N)
 }
+
+
+#--- circulant functions -------------------------------------------------------
+
+# columnwise fft for real inputs
+fft <- function(x) {
+  eV <- is.vector(x)
+  x <- as.matrix(x)
+  if(nrow(x) == 1) {
+    y <- x + 0i
+  }  else {
+    y <- apply(as.matrix(x), 2, fftw::FFT)
+  }
+  if(eV) y <- drop(y)
+  y
+}
+
+# columnwise normalized inverse fft for real input
+ifft <- function(x) {
+  eV <- is.vector(x)
+  x <- as.matrix(x)
+  if(nrow(x) == 1) {
+    y <- x + 0i
+  }  else {
+    y <- apply(as.matrix(x), 2, fftw::FFT, inverse = TRUE)
+  }
+  y <- Re(y)/nrow(y)
+  if(eV) y <- drop(y)
+  y
+}
+
+
+# convert uacf to full acf.
+unfold_acf <- function(N, uacf) {
+  n <- length(uacf)
+  if(n != floor(N/2) + 1) stop("uacf has wrong length.")
+  acf <- rep(NA, N)
+  acf[1:n] <- uacf
+  if(N > 1) {
+    eN <- (2*n) == (N+2)
+    id <- n - eN + (2:n-1)
+    acf[n - eN + (2:n-1)] <- uacf[n:2]
+  }
+  acf
+}
+
+#' Circulant matrix with first row `x`.
+circulant <- function(x) {
+  N <- length(x)
+  t(sapply(1:N-1, function(ii) x[(1:N-1 - ii) %% N + 1]))
+}

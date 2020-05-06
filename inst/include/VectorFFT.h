@@ -50,7 +50,6 @@ inline VectorFFT::VectorFFT(int n) {
   y_ = fftw_alloc_complex(n);
   planfwd_ = fftw_plan_dft_r2c_1d(n, x_, y_, FFTW_ESTIMATE);
   planback_ = fftw_plan_dft_c2r_1d(n, y_, x_, FFTW_ESTIMATE);
-  return;
 }
 
 inline VectorFFT::~VectorFFT() {
