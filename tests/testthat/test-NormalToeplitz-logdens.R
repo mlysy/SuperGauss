@@ -1,10 +1,9 @@
-library(SuperGauss)
-source("test-functions.R")
+source("SuperGauss-testfunctions.R")
 
-context("NormalToeplitz - Log-density.")
+context("NormalToeplitz - Log-Density.")
 
 nrep <- 10
-test_that("The GSchur algorithm returns the correct density", {
+test_that("NormalToeplitz$logdens gives correct result.", {
   replicate(n = nrep, expr = {
     N <- round(abs(rnorm(n = 1, mean = 20, sd = 5)))
     case.par <- expand.grid(type = c("fbm", "matern"))
@@ -15,7 +14,7 @@ test_that("The GSchur algorithm returns the correct density", {
       acf <- test_acf_func(N, type)
       X <- rnormtz(n = 1, acf = acf, fft = FALSE)
       Nt <- NormalToeplitz$new(N = N)
-      ld1 <- mvtnorm::dmvnorm(X, sigma = toeplitz(acf), log = TRUE)
+      ld1 <- toep_ldens(X, acf)
       ld2 <- Nt$logdens(X, acf)
       expect_equal(ld1, ld2)
     }

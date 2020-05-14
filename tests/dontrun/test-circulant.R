@@ -63,6 +63,9 @@ range(c1 - c3)
 
 #--- NormalCirculant distribution ----------------------------------------------
 
+require(mvtnorm)
+require(numDeriv)
+
 # density
 circ_ldens <- function(z, nu) {
   dmvnorm(z, sigma = toeplitz(t2acf(length(z), nu)), log = TRUE)
@@ -94,6 +97,27 @@ circ_tr <- function(N, nu) {
   Ct <- Circulant$new(N = N, tacf = nu)
   Ct$log_det()
 }
+
+# grad wrt z
+N <- sample(2:20,1)
+n <- floor(N/2)+1
+## nu <- Re(FFT(t2acf(N, rexp(n)*N), inverse = TRUE)[1:n]/N)
+psd <- rexp(n)*N
+nu <- ifft(t2acf(N, psd))[1:n]
+z <- rnorm(N)
+g1 <- grad(circ_ldens, x = z, nu = nu)
+NCt <- NormalCirculant$new(N = N)
+g2 <- NCt$grad_full(z = z, tacf = nu)$dz
+
+y <- Ct$solve(z)
+g2 <- -shift_mult(y, y)
+if(N > 2) {
+  eN <- (2*n) == (N+2)
+  id <- 2:(n-eN)
+  g2[id] <- 2*g2[id]
+}
+range(g1-g2[1:n])
+
 
 N <- sample(2:20,1)
 n <- floor(N/2)+1
@@ -166,6 +190,43 @@ range(g1 - g2)
 
 source("circulant-functions.R")
 require(SuperGauss)
+
+# NormalCirculant
+
+N <- sample(5:20, 1)
+Nu <- floor(N/2)+1
+upsd <- rexp(Nu) * N
+acf <- ifft(t2acf(N, upsd))
+uacf <- acf[1:Nu]
+
+NCt <- SuperGauss::NormalCirculant$new(N = N)
+NCt2 <- NormalCirculant$new(N = N)
+
+# log-density
+z <- rnorm(N)
+NCt$logdens(z = z, uacf = uacf)
+NCt2$logdens(z = z, tacf = uacf)
+
+# full gradient
+grad <- NCt$grad_full(z = z, uacf = uacf)
+grad2 <- NCt2$grad_full(z = z, tacf = uacf)
+
+# wrt z
+range(grad$dldz - grad2$dz)
+# wrt uacf
+range(grad$dldu - grad2$dtacf)
+
+## wrt z
+## dz <- -solve(toeplitz(acf), z)
+## range(grad$dldz - dz)
+
+## # check rho = ifft(fft(-dz) * fft(-rev(dz)))
+## shift_mult(-dz, -dz)
+## grad$dldu
+
+## # check kappa = N * ifft(1/fft(acf))
+## Re(N * ifft(1/fft(acf)))
+## grad$dldu
 
 dct <- function(x) {
   n <- length(x)

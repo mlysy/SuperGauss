@@ -1,4 +1,4 @@
-source("test-functions.R")
+source("SuperGauss-testfunctions.R")
 
 context("Circulant - Product.")
 

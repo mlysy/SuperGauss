@@ -201,7 +201,7 @@ NormalCirculant <- R6Class(
     },
     grad_full = function(z, tacf) {
       private$Ct_$set_acf(tacf)
-      # gradient wrt z
+      # (negative) gradient wrt z
       dz <- private$Ct_$solve(z)
       # gradient wrt tacf
       dip <- shift_mult(dz, dz) # gradient of inner product
@@ -213,7 +213,7 @@ NormalCirculant <- R6Class(
         dtr[id] <- 2*dtr[id]
       }
       dtacf <- .5 * (dip[1:private$n_] - dtr[1:private$n_])
-      list(dz = dz, dtacf = dtacf)
+      list(dz = -dz, dtacf = dtacf)
     }
   )
 )

@@ -57,6 +57,18 @@ even_fft <- function(x, inverse = FALSE) {
     .Call(`_SuperGauss_even_fft`, x, inverse)
 }
 
+NormalCirculant_ctor <- function(N) {
+    .Call(`_SuperGauss_NormalCirculant_ctor`, N)
+}
+
+NormalCirculant_logdens <- function(pNCt, z, uacf) {
+    .Call(`_SuperGauss_NormalCirculant_logdens`, pNCt, z, uacf)
+}
+
+NormalCirculant_grad_full <- function(pNCt, z, uacf, calc_dldz = TRUE, calc_dldu = TRUE) {
+    .Call(`_SuperGauss_NormalCirculant_grad_full`, pNCt, z, uacf, calc_dldz, calc_dldu)
+}
+
 .NormalToeplitz_constructor <- function(N) {
     .Call(`_SuperGauss_NormalToeplitz_constructor`, N)
 }

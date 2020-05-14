@@ -1,5 +1,5 @@
 library(SuperGauss)
-source("test-functions.R")
+source("SuperGauss-testfunctions.R")
 context("Toeplitz - Gradient Trace.")
 
 nrep <- 10

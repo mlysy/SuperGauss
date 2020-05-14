@@ -171,6 +171,45 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// NormalCirculant_ctor
+SEXP NormalCirculant_ctor(int N);
+RcppExport SEXP _SuperGauss_NormalCirculant_ctor(SEXP NSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    rcpp_result_gen = Rcpp::wrap(NormalCirculant_ctor(N));
+    return rcpp_result_gen;
+END_RCPP
+}
+// NormalCirculant_logdens
+double NormalCirculant_logdens(SEXP pNCt, NumericVector z, NumericVector uacf);
+RcppExport SEXP _SuperGauss_NormalCirculant_logdens(SEXP pNCtSEXP, SEXP zSEXP, SEXP uacfSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type pNCt(pNCtSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type z(zSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type uacf(uacfSEXP);
+    rcpp_result_gen = Rcpp::wrap(NormalCirculant_logdens(pNCt, z, uacf));
+    return rcpp_result_gen;
+END_RCPP
+}
+// NormalCirculant_grad_full
+List NormalCirculant_grad_full(SEXP pNCt, NumericVector z, NumericVector uacf, bool calc_dldz, bool calc_dldu);
+RcppExport SEXP _SuperGauss_NormalCirculant_grad_full(SEXP pNCtSEXP, SEXP zSEXP, SEXP uacfSEXP, SEXP calc_dldzSEXP, SEXP calc_dlduSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type pNCt(pNCtSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type z(zSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type uacf(uacfSEXP);
+    Rcpp::traits::input_parameter< bool >::type calc_dldz(calc_dldzSEXP);
+    Rcpp::traits::input_parameter< bool >::type calc_dldu(calc_dlduSEXP);
+    rcpp_result_gen = Rcpp::wrap(NormalCirculant_grad_full(pNCt, z, uacf, calc_dldz, calc_dldu));
+    return rcpp_result_gen;
+END_RCPP
+}
 // NormalToeplitz_constructor
 SEXP NormalToeplitz_constructor(int N);
 RcppExport SEXP _SuperGauss_NormalToeplitz_constructor(SEXP NSEXP) {
@@ -389,6 +428,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SuperGauss_DurbinLevinson_Eigen", (DL_FUNC) &_SuperGauss_DurbinLevinson_Eigen, 4},
     {"_SuperGauss_DurbinLevinson_Base", (DL_FUNC) &_SuperGauss_DurbinLevinson_Base, 4},
     {"_SuperGauss_even_fft", (DL_FUNC) &_SuperGauss_even_fft, 2},
+    {"_SuperGauss_NormalCirculant_ctor", (DL_FUNC) &_SuperGauss_NormalCirculant_ctor, 1},
+    {"_SuperGauss_NormalCirculant_logdens", (DL_FUNC) &_SuperGauss_NormalCirculant_logdens, 3},
+    {"_SuperGauss_NormalCirculant_grad_full", (DL_FUNC) &_SuperGauss_NormalCirculant_grad_full, 5},
     {"_SuperGauss_NormalToeplitz_constructor", (DL_FUNC) &_SuperGauss_NormalToeplitz_constructor, 1},
     {"_SuperGauss_NormalToeplitz_logdens", (DL_FUNC) &_SuperGauss_NormalToeplitz_logdens, 3},
     {"_SuperGauss_NormalToeplitz_grad", (DL_FUNC) &_SuperGauss_NormalToeplitz_grad, 6},

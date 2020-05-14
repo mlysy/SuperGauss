@@ -6,28 +6,20 @@
 \alias{as.Toeplitz}
 \alias{ncol,Toeplitz-method}
 \alias{nrow,Toeplitz-method}
+\alias{dim.Toeplitz}
 \alias{\%*\%}
-\alias{determinant,Toeplitz,ANY-method}
-\alias{determinant}
 \alias{determinant,Toeplitz-method}
-\alias{solve,Toeplitz,ANY-method}
-\alias{solve}
+\alias{determinant}
 \alias{solve,Toeplitz-method}
+\alias{solve}
+\alias{solve,Toeplitz,ANY-method}
 \title{Constructor and methods for Toeplitz matrix objects.}
 \usage{
 is.Toeplitz(x)
 
 as.Toeplitz(x)
 
-\S4method{ncol}{Toeplitz}(x)
-
-\S4method{nrow}{Toeplitz}(x)
-
-x \%*\% y
-
-\S4method{determinant}{Toeplitz,ANY}(x, logarithm = TRUE, ...)
-
-\S4method{solve}{Toeplitz,ANY}(a, b, method = c("gschur", "pcg"), tol = 1e-10, ...)
+\method{dim}{Toeplitz}(x)
 }
 \arguments{
 \item{x}{An R object.}

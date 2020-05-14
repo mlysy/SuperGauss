@@ -197,6 +197,7 @@ setOldClass("Toeplitz")
 # ncol
 #' @rdname Toeplitz
 #' @aliases ncol,Toeplitz-method
+#' @usage NULL
 #' @export
 setMethod("ncol", "Toeplitz", function(x) {
   x$size()
@@ -205,18 +206,21 @@ setMethod("ncol", "Toeplitz", function(x) {
 # nrow
 #' @rdname Toeplitz
 #' @aliases nrow,Toeplitz-method
+#' @usage NULL
 #' @export
 setMethod("nrow", "Toeplitz", function(x) {
   x$size()
 })
 
 # dim
+#' @rdname Toeplitz
 #' @export
 dim.Toeplitz <- function(x) rep(x$size(), 2)
 
 # Matrix multiplication
 #' @rdname Toeplitz
 #' @aliases %*%
+#' @usage NULL
 #' @export
 `%*%` <- function(x, y) UseMethod("%*%")
 
@@ -263,6 +267,7 @@ dim.Toeplitz <- function(x) rep(x$size(), 2)
 # determinant
 #' @rdname Toeplitz
 #' @aliases determinant determinant,Toeplitz-method
+#' @usage NULL
 #' @export
 setMethod("determinant", "Toeplitz", function(x, logarithm = TRUE, ...) {
   ldT <- x$log_det()
@@ -272,7 +277,8 @@ setMethod("determinant", "Toeplitz", function(x, logarithm = TRUE, ...) {
 
 # solve
 #' @rdname Toeplitz
-#' @aliases solve solve,Toeplitz-method
+#' @aliases solve solve,Toeplitz,ANY-method solve,Toeplitz-method
+#' @usage NULL
 #' @export
 setMethod(
   f = "solve",

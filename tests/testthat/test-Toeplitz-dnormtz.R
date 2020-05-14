@@ -1,11 +1,9 @@
-library(SuperGauss)
-library(mvtnorm)
-source("test-functions.R")
+source("SuperGauss-testfunctions.R")
 
-context("Toeplitz - Density function.")
+context("Toeplitz - Log-Density (dnormtz wrapper).")
 
 nrep <- 10
-test_that("The GSchur algorithm returns the correct density", {
+test_that("GSchur algorithm returns the correct density", {
   replicate(n = nrep, expr = {
     N <- round(abs(rnorm(n = 1, mean = 20, sd = 5)))
     d <- round(abs(rnorm(n = 1, mean = 10, sd = 3)))
@@ -18,10 +16,11 @@ test_that("The GSchur algorithm returns the correct density", {
       Mu <- matrix(rnorm(N * d), N, d)
       X <- rnormtz(n = d, acf = acf, fft = FALSE) + Mu
       ld1 <- dnormtz(X = X, mu = Mu, acf = acf, log = TRUE)
-      ld2 <- sapply(1:d, function(jj) {
-        dmvnorm(x = X[,jj], mean = Mu[,jj], sigma = toeplitz(acf),
-                log = TRUE)
-      })
+      ld2 <- apply(X-Mu, 2, toep_ldens, gamma = acf)
+      ## ld2 <- sapply(1:d, function(jj) {
+      ##   mvtnorm::dmvnorm(x = X[,jj], mean = Mu[,jj], sigma = toeplitz(acf),
+      ##           log = TRUE)
+      ## })
       expect_equal(ld1, ld2)
     }
   })
@@ -40,10 +39,11 @@ test_that("LTZ algorithm returns the correct density", {
       Mu <- matrix(rnorm(N * d), N, d)
       X <- rnormtz(n = d, acf = acf, fft = FALSE) + Mu
       ld1 <- dnormtz(X = X, mu = Mu, acf = acf, log = TRUE, method = "ltz")
-      ld2 <- sapply(1:d, function(jj) {
-        dmvnorm(x = X[,jj], mean = Mu[,jj], sigma = toeplitz(acf),
-                log = TRUE)
-      })
+      ld2 <- apply(X-Mu, 2, toep_ldens, gamma = acf)
+      ## ld2 <- sapply(1:d, function(jj) {
+      ##   mvtnorm::dmvnorm(x = X[,jj], mean = Mu[,jj], sigma = toeplitz(acf),
+      ##                    log = TRUE)
+      ## })
       expect_equal(ld1, ld2)
     }
   })

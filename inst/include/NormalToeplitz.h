@@ -1,4 +1,4 @@
-/// @file Toeplitz.h
+/// @file NormalToeplitz.h
 
 #ifndef NormalToeplitz_h
 #define NormalToeplitz_h 1

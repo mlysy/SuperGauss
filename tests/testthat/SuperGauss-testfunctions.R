@@ -102,6 +102,11 @@ test_drift_hess <- function(mu, N){
   rep(2, N)
 }
 
+# log-density of z ~ NormalToeplitz(gamma)
+toep_ldens <- function(z, gamma) {
+  mvtnorm::dmvnorm(x = z, sigma = toeplitz(gamma), log = TRUE)
+}
+
 
 #--- circulant functions -------------------------------------------------------
 
@@ -151,4 +156,10 @@ unfold_acf <- function(N, uacf) {
 circulant <- function(x) {
   N <- length(x)
   t(sapply(1:N-1, function(ii) x[(1:N-1 - ii) %% N + 1]))
+}
+
+# log-density of z ~ NormalCirculant(nu)
+circ_ldens <- function(z, nu) {
+  mvtnorm::dmvnorm(z, log = TRUE,
+                   sigma = toeplitz(unfold_acf(length(z), nu)))
 }

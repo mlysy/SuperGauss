@@ -1,12 +1,11 @@
-library(SuperGauss)
-source("test-functions.R")
+source("SuperGauss-testfunctions.R")
 
 context("Toeplitz - Determinant.")
 
 ## Test the determinant using Ammar-Gragg's GSchur algorithm.
 
 nrep <- 10
-test_that("Toeplitz determinant", {
+test_that("GSchur algorithm gives correct log-determinant.", {
   replicate(n = nrep, expr = {
     N <- round(abs(rnorm(n = 1, mean = 50, sd = 10)))
     Tz <- Toeplitz$new(N)

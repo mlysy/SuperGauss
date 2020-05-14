@@ -1,31 +1,32 @@
-library(SuperGauss)
-library(numDeriv)
-source("test-functions.R")
+## library(SuperGauss)
+## library(numDeriv)
+source("SuperGauss-testfunctions.R")
 
-context("NormalToeplitz - Full gradient for Auto-Diff algorithms.")
+context("NormalToeplitz - Loglikelihood Full Gradient (for autodiff).")
 
 nrep <- 10
-test_that("The GSchur algorithm returns the correct density", {
+test_that("NormalToeplitz$grad_full gives correct result.", {
   replicate(n = nrep, expr = {
-    test_logdens <- function(X, acf) {
-      mvtnorm::dmvnorm(X, sigma = toeplitz(acf), log = TRUE)
-    }
-    N <- round(abs(rnorm(n = 1, mean = 20, sd = 5)))
-    p <- 2
+    ## test_logdens <- function(X, acf) {
+    ##   mvtnorm::dmvnorm(X, sigma = toeplitz(acf), log = TRUE)
+    ## }
+    ## N <- round(abs(rnorm(n = 1, mean = 20, sd = 5)))
+    N <- sample(2:10, 1)
+    ## p <- 2
     dt <- runif(1,0,1)
     alpha <- runif(1,.2,.9)
     acf <- test_fbm_acf(alpha, dt, N)
-    X <- rnormtz(n = 1, acf = acf)
+    X <- rnormtz(n = 1, acf = acf, fft = FALSE)
     Nt <- NormalToeplitz$new(N = N)
-    ans_z <- Nt$grad_full(X, acf, calc_dldz = TRUE, calc_dlda = FALSE)
-    ans_a <- Nt$grad_full(X, acf, calc_dldz = FALSE, calc_dlda = TRUE)
-    ans_za <- Nt$grad_full(X, acf)
-    jac_z <- c(jacobian(test_logdens, x = X, acf = acf))
-    jac_a <- c(jacobian(test_logdens, x = acf, X = X))
-    expect_equal(jac_z, ans_z$dldz, tolerance = 1e-7)
-    expect_equal(jac_z, ans_za$dldz, tolerance = 1e-7)
-    expect_equal(jac_a, ans_a$dlda, tolerance = 1e-7)
-    expect_equal(jac_a, ans_za$dlda, tolerance = 1e-7)
+    g1_z <- Nt$grad_full(X, acf, calc_dldz = TRUE, calc_dlda = FALSE)
+    g1_a <- Nt$grad_full(X, acf, calc_dldz = FALSE, calc_dlda = TRUE)
+    g1_za <- Nt$grad_full(X, acf)
+    g2_z <- numDeriv::grad(toep_ldens, x = X, gamma = acf)
+    g2_a <- numDeriv::grad(toep_ldens, x = acf, z = X)
+    expect_equal(g2_z, g1_z$dldz, tolerance = 1e-7)
+    expect_equal(g2_z, g1_za$dldz, tolerance = 1e-7)
+    expect_equal(g2_a, g1_a$dlda, tolerance = 1e-7)
+    expect_equal(g2_a, g1_za$dlda, tolerance = 1e-7)
   })
 })
 
