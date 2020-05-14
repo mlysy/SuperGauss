@@ -2,7 +2,7 @@
 ## library(numDeriv)
 source("SuperGauss-testfunctions.R")
 
-context("NormalToeplitz - Loglikelihood Full Gradient (for autodiff).")
+context("NormalToeplitz - Loglikelihood Gradient (autodiff).")
 
 nrep <- 10
 test_that("NormalToeplitz$grad_full gives correct result.", {

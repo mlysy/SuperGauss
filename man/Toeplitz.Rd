@@ -8,11 +8,12 @@
 \alias{nrow,Toeplitz-method}
 \alias{dim.Toeplitz}
 \alias{\%*\%}
-\alias{determinant,Toeplitz-method}
+\alias{determinant,Toeplitz,ANY-method}
 \alias{determinant}
-\alias{solve,Toeplitz-method}
-\alias{solve}
+\alias{determinant,Toeplitz-method}
 \alias{solve,Toeplitz,ANY-method}
+\alias{solve}
+\alias{solve,Toeplitz-method}
 \title{Constructor and methods for Toeplitz matrix objects.}
 \usage{
 is.Toeplitz(x)

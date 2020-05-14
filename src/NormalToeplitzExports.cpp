@@ -2,9 +2,9 @@
 ///
 /// @brief `Rcpp` wapper functions to NormalToeplitz methods.
 
-#include "NormalToeplitz.h"
 #include <Rcpp.h>
 using namespace Rcpp;
+#include "SuperGauss/NormalToeplitz.h"
 
 
 /// NormalToeplitz class constructor.

@@ -7,7 +7,7 @@
 #ifndef GSchur_h
 #define GSchur_h 1
 
-#include "VectorFFT.h"
+#include "RealFFT.h"
 // #include "ComplexMult.h"
 #include <vector>
 #include <complex>
@@ -22,7 +22,7 @@ struct GSchur2K {
 private:
   typedef std::complex<double> dcomplex;
 public:
-  VectorFFT* FFT; ///< Memory for the FFT itself.
+  RealFFT* FFT; ///< Memory for the FFT itself.
   double* alpha0; ///< Coefficients of polynomial \f$\alpha_{0,2n}(x)\f$.
   dcomplex* alpha0_fft; ///< FFT of `alpha0`.
   double* alphan; ///< Coefficients of polynomial \f$\alpha_{n,n}(x)\f$.
@@ -56,7 +56,7 @@ public:
 
 /// @param[in] n Size of each GSchur polynomial.
 inline GSchur2K::GSchur2K(int n) {
-  FFT = new VectorFFT(n);
+  FFT = new RealFFT(n);
   alpha0 = new double[n];
   std::fill(alpha0, alpha0 + n, 0);
   alpha0_fft = new dcomplex[n];

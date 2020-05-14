@@ -53,6 +53,10 @@ DurbinLevinson_Base <- function(X, Y, acf, calcMode = 1L) {
     .Call(`_SuperGauss_DurbinLevinson_Base`, X, Y, acf, calcMode)
 }
 
+real_fft <- function(x, inverse = FALSE) {
+    .Call(`_SuperGauss_real_fft`, x, inverse)
+}
+
 even_fft <- function(x, inverse = FALSE) {
     .Call(`_SuperGauss_even_fft`, x, inverse)
 }

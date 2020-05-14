@@ -2,9 +2,9 @@
 ///
 /// @brief Rcpp wrappers for Circulant matrix class.
 
-#include "Circulant.h"
 #include <Rcpp.h>
 using namespace Rcpp;
+#include "SuperGauss/Circulant.h"
 
 /// Construct a Circulant matrix object.
 ///

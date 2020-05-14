@@ -1,5 +1,6 @@
 ^\.vscode$
 ^inst/doxygen$
+^inst/include/old$
 ^vignettes/Makefile$
 ^vignettes/old$
 ^config\.status$

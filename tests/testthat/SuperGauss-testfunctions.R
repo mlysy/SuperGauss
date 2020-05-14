@@ -1,3 +1,5 @@
+library(SuperGauss)
+
 test_fbm_acf <- function(alpha, dT, N) {
   msd <- fbm_msd(dT*(1:N), alpha/2)
   msd2acf(msd)

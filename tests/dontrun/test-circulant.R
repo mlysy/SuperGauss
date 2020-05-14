@@ -228,6 +228,14 @@ range(grad$dldu - grad2$dtacf)
 ## Re(N * ifft(1/fft(acf)))
 ## grad$dldu
 
+#--- fft/ifft ------------------------------------------------------------------
+
+N <- 10
+x <- rnorm(N)
+y1 <- fft(x)
+y2 <- SuperGauss:::real_fft(x, inverse = FALSE)
+x2 <- SuperGauss:::real_fft(y1, inverse = TRUE)
+
 dct <- function(x) {
   n <- length(x)
   sapply(1:n-1, function(k) {

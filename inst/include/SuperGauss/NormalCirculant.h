@@ -41,7 +41,7 @@ private:
   double* vec2_;
   dcomplex* vec1_fft_;
   dcomplex* vec2_fft_;
-  VectorFFT* rfft_;
+  RealFFT* rfft_;
   EvenFFT* efft_;
   /// Dot-product between vectors.
   double dot_prod(const double* v1, const double* v2);
@@ -70,7 +70,7 @@ inline NormalCirculant::NormalCirculant(int N) {
   vec2_ = new double[N_];
   vec1_fft_ = new dcomplex[N_];
   vec2_fft_ = new dcomplex[N_];
-  rfft_ = new VectorFFT(N_);
+  rfft_ = new RealFFT(N_);
   efft_ = new EvenFFT(N_);
 }
 

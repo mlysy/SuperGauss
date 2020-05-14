@@ -9,8 +9,8 @@
 using namespace Rcpp;
 #include <RcppEigen.h>
 // [[Rcpp::depends(RcppEigen)]]
-#include "DurbinLevinsonXZ.h"
-#include "DurbinLevinsonIP.h"
+#include "SuperGauss/DurbinLevinsonXZ.h"
+#include "SuperGauss/DurbinLevinsonIP.h"
 
 ////////////////////////////////////////////////////
 

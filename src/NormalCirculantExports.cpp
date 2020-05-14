@@ -2,9 +2,9 @@
 ///
 /// @brief `Rcpp` wapper functions to NormalCirculant methods.
 
-#include "NormalCirculant.h"
 #include <Rcpp.h>
 using namespace Rcpp;
+#include "SuperGauss/NormalCirculant.h"
 
 
 /// NormalCirculant class constructor.

@@ -1,11 +1,7 @@
-/// @file VectorFFT.h
+/// @file RealFFT.h
 
-///////////////////////////////////////////////
-// Fast Fourier Transformation and Inverse
-///////////////////////////////////////////////
-
-#ifndef VectorFFT_h
-#define VectorFFT_h 1
+#ifndef RealFFT_h
+#define RealFFT_h 1
 
 // usual header
 #include <complex>
@@ -19,7 +15,7 @@
 /// Allocates memory for the corresponding `fftw` operations within the object, copies memory in and out each time the FFT and iFFT members are called.
 ///
 /// The FFT of a real vector `x = (x_0, ..., x_{N-1})` produces a complex vector `y = (y_0, ..., y_{N-1})` such that `y_k = conj(y_{k mod N})`.  Therefore, `y` is completely determined from its first `Nu = floor(N/2)+1` elements, such that only these `Nu` elements are returned as FFT output and queried as iFFT input.
-class VectorFFT {
+class RealFFT {
 private:
   typedef std::complex<double> dcomplex; ///< Typedef for complex double
   fftw_plan planfwd_;  ///< Plan for forward FFT.
@@ -30,9 +26,9 @@ private:
   int Nu_; ///< Padded size of input.
 public:
   /// Constructor.
-  VectorFFT(int N);
+  RealFFT(int N);
   /// Destructor.
-  ~VectorFFT();
+  ~RealFFT();
   /// Perform the FFT on the input data.
   void fft(std::complex<double>* y, const double* x);
   /// Perform the inverse FFT on the input data.
@@ -42,7 +38,7 @@ public:
 };
 
 /// @param[in] N Size of FFT/iFFT to be computed.
-inline VectorFFT::VectorFFT(int N) {
+inline RealFFT::RealFFT(int N) {
   N_ = N;
   Nu_ = ceil((double)(N_ + 1) / 2);
   // x_ = new double[n];
@@ -54,7 +50,7 @@ inline VectorFFT::VectorFFT(int N) {
   planback_ = fftw_plan_dft_c2r_1d(N_, y_, x_, FFTW_ESTIMATE);
 }
 
-inline VectorFFT::~VectorFFT() {
+inline RealFFT::~RealFFT() {
   // delete[] x_;
   fftw_free(x_);
   fftw_free(y_);
@@ -66,7 +62,7 @@ inline VectorFFT::~VectorFFT() {
 ///
 /// @param[out] y Complex vector output of length `Nu = floor(N/2)+1`.
 /// @param[in] x  Real vector input of length `N`.
-inline void VectorFFT::fft(std::complex<double>* y,
+inline void RealFFT::fft(std::complex<double>* y,
 			   const double* x) {
   std::copy(x, x + N_, x_);
   fftw_execute(planfwd_);
@@ -80,7 +76,7 @@ inline void VectorFFT::fft(std::complex<double>* y,
 ///
 /// @param[out] x Real vector output of length `N`.
 /// @param[in] y Complex vector input of length `Nu = floor(N/2)+1`.
-inline void VectorFFT::ifft(double* x, const std::complex<double>* y) {
+inline void RealFFT::ifft(double* x, const std::complex<double>* y) {
   for (int ii = 0; ii < Nu_; ++ii) {
     y_[ii][0] = y[ii].real();
     y_[ii][1] = y[ii].imag();

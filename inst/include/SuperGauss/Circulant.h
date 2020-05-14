@@ -3,7 +3,7 @@
 #ifndef Circulant_h
 #define Circulant_h 1
 
-#include "VectorFFT.h"
+#include "RealFFT.h"
 #include "EvenFFT.h"
 #include <complex>
 #include <algorithm>
@@ -29,7 +29,7 @@ class Circulant {
   double* psd_; ///< FFT of the autocorrelation vector.
   double logdet_; ///< Storage for log-determinant of Circulant matrix.
   EvenFFT* efft_; ///< Object for acf FFT computations.
-  VectorFFT* rfft_; ///< Object for real-valued FFT computations.
+  RealFFT* rfft_; ///< Object for real-valued FFT computations.
   bool has_acf_;    ///< Wheter input argument `acf_` has been modified.
   bool has_psd_;   ///< Whether the PSD has been computed.
   bool has_logdet_;   ///< Whether log-determinant has been computed.
@@ -93,7 +93,7 @@ inline Circulant::Circulant(int N) {
   acf_ = new double[N_];
   psd_ = new double[N_];
   x_fft_ = new dcomplex[N_];
-  rfft_ = new VectorFFT(N_);
+  rfft_ = new RealFFT(N_);
   efft_ = new EvenFFT(N_);
   has_acf_ = false;
   has_psd_ = false;

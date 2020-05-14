@@ -159,6 +159,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// real_fft
+SEXP real_fft(SEXP x, bool inverse);
+RcppExport SEXP _SuperGauss_real_fft(SEXP xSEXP, SEXP inverseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
+    Rcpp::traits::input_parameter< bool >::type inverse(inverseSEXP);
+    rcpp_result_gen = Rcpp::wrap(real_fft(x, inverse));
+    return rcpp_result_gen;
+END_RCPP
+}
 // even_fft
 NumericVector even_fft(NumericVector x, bool inverse);
 RcppExport SEXP _SuperGauss_even_fft(SEXP xSEXP, SEXP inverseSEXP) {
@@ -427,6 +439,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SuperGauss_DurbinLevinson_ZX", (DL_FUNC) &_SuperGauss_DurbinLevinson_ZX, 2},
     {"_SuperGauss_DurbinLevinson_Eigen", (DL_FUNC) &_SuperGauss_DurbinLevinson_Eigen, 4},
     {"_SuperGauss_DurbinLevinson_Base", (DL_FUNC) &_SuperGauss_DurbinLevinson_Base, 4},
+    {"_SuperGauss_real_fft", (DL_FUNC) &_SuperGauss_real_fft, 2},
     {"_SuperGauss_even_fft", (DL_FUNC) &_SuperGauss_even_fft, 2},
     {"_SuperGauss_NormalCirculant_ctor", (DL_FUNC) &_SuperGauss_NormalCirculant_ctor, 1},
     {"_SuperGauss_NormalCirculant_logdens", (DL_FUNC) &_SuperGauss_NormalCirculant_logdens, 3},

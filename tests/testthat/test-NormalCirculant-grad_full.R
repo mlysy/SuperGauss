@@ -1,6 +1,6 @@
 source("SuperGauss-testfunctions.R")
 
-context("NormalCirculant - Full Gradient.")
+context("NormalCirculant - Loglikelihood Gradient (autodiff).")
 
 ntest <- 10
 test_that("NormalCirculant$grad_full gives correct result.", {

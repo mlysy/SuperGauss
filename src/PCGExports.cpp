@@ -1,6 +1,6 @@
 #include <Rcpp.h>
 using namespace Rcpp;
-#include "PCG.h"
+#include "SuperGauss/PCG.h"
 
 // R wapper functions to Toeplitz methods using XPtr
 
