@@ -293,3 +293,20 @@ sapply(EFFT_type, SuperGauss:::even_fft, x = x)
 fft(t2acf(N, x))
 
 
+#--- autodiff ------------------------------------------------------------------
+
+# circulant
+N <- 6
+Nu <- N%/%2 + 1
+i <- 1
+e <- rep(0, Nu)
+e[i+1] <- 1
+toeplitz(t2acf(N, e))
+
+# toeplitz
+i <- 2
+e <- rep(0, N)
+e[i+1] <- 1
+toeplitz(e)
+
+fft(t2acf(N, e))

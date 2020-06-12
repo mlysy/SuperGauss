@@ -18,6 +18,7 @@
 #' @export
 rnormtz <- function(n = 1, acf, Z, fft = TRUE, nkeep, tol = 1e-6) {
   if(missing(nkeep)) nkeep <- length(acf)
+  if(length(acf) <= 2) fft <- FALSE
   if(!fft) {
     if(missing(Z)) {
       N <- length(acf)
@@ -28,7 +29,11 @@ rnormtz <- function(n = 1, acf, Z, fft = TRUE, nkeep, tol = 1e-6) {
         stop("Z has incompatible dimensions with n and length(acf).")
       }
     }
-    X <- DurbinLevinson_ZX(Z = Z, acf = acf)
+    if(N == 1) {
+      X <- sqrt(acf) * Z
+    } else {
+      X <- DurbinLevinson_ZX(Z = Z, acf = acf)
+    }
     X <- X[1:nkeep,]
     #if(n == 1) X <- c(X)
   } else {
@@ -42,9 +47,9 @@ rnormtz <- function(n = 1, acf, Z, fft = TRUE, nkeep, tol = 1e-6) {
         stop("Z has incompatible dimensions with n and acf.")
       }
     }
-    if(N == 0) {
-      return(sqrt(acf) * Z[1:(N+1)])
-    }
+    ## if(N == 0) {
+    ##   return(sqrt(acf) * Z[1:(N+1)])
+    ## }
     #if(debug) browser()
     # get eigenvalues of circulant embedding
     fft_plan <- planFFT(n = NN)
