@@ -56,7 +56,8 @@ NormalToeplitz <- R6Class(
     #' @param acf A vector of length `N` containing the autocorrelation (i.e., first row/column) of the Toeplitz variance matrix.
     #' @return A scalar or vector of length `n_obs` containing the log-density of the NTz evaluated at its arguments.
     logdens = function(z, acf) {
-      check_ntz(z, N = private$N_, varname = "z")
+      z <- as.matrix(z)
+      check_ntz(z[,1], N = private$N_, varname = "z")
       check_ntz(acf, N = private$N_, varname = "acf")
       .NormalToeplitz_logdens(private$NTz_, z, acf)
     },

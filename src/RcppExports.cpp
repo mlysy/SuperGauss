@@ -234,13 +234,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // NormalToeplitz_logdens
-double NormalToeplitz_logdens(SEXP NTz_ptr, NumericVector z, NumericVector acf);
+NumericVector NormalToeplitz_logdens(SEXP NTz_ptr, NumericMatrix z, NumericVector acf);
 RcppExport SEXP _SuperGauss_NormalToeplitz_logdens(SEXP NTz_ptrSEXP, SEXP zSEXP, SEXP acfSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type NTz_ptr(NTz_ptrSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type z(zSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type z(zSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type acf(acfSEXP);
     rcpp_result_gen = Rcpp::wrap(NormalToeplitz_logdens(NTz_ptr, z, acf));
     return rcpp_result_gen;

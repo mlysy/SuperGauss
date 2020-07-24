@@ -102,7 +102,7 @@ inline double NormalCirculant::dot_prod(const double* v1, const double* v2) {
 
 /// @param[in] z Observation vector of length `N`.
 /// @param[in] uacf Unique autocorrelation elements: a vector of length `Nu = floor(N/2)+1`.
-/// @param[out] Scalar value of the log-density.
+/// @return Scalar value of the log-density.
 inline double NormalCirculant::logdens(const double* z, const double* uacf) {
   const double LOG_2PI = 1.837877066409345483560659472811; // log(2pi)
   double ldens = 0.0;

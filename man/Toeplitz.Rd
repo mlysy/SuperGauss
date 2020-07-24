@@ -8,11 +8,12 @@
 \alias{nrow,Toeplitz-method}
 \alias{dim.Toeplitz}
 \alias{\%*\%}
-\alias{determinant,Toeplitz-method}
+\alias{determinant,Toeplitz,ANY-method}
 \alias{determinant}
-\alias{solve,Toeplitz-method}
-\alias{solve}
+\alias{determinant,Toeplitz-method}
 \alias{solve,Toeplitz,ANY-method}
+\alias{solve}
+\alias{solve,Toeplitz-method}
 \title{Constructor and methods for Toeplitz matrix objects.}
 \usage{
 is.Toeplitz(x)
@@ -113,7 +114,7 @@ Get the size of the Toeplitz matrix.
 }
 
 \subsection{Returns}{
-Size of the Toeplitz matrix.  \code{\link[base:ncol]{ncol()}}, \code{\link[base:nrow]{nrow()}}, and \code{\link[base:dim]{dim()}} methods for \code{Toeplitz} objects also work as expected.
+Size of the Toeplitz matrix.  \code{\link[base:nrow]{ncol()}}, \code{\link[base:nrow]{nrow()}}, and \code{\link[base:dim]{dim()}} methods for \code{Toeplitz} objects also work as expected.
 }
 }
 \if{html}{\out{<hr>}}

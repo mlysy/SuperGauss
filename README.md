@@ -71,12 +71,18 @@ TBD
 
 ### TODO
 
-- Fix R documentation for `Toeplitz` class.
+- [x] Fix R documentation for `Toeplitz` class.
 
-- Reimplement R-level `NormalToeplitz` convenience functions `dSnorm()`, `dSnorm.grad()`, etc.
+- [ ] Create `set_acf()` and `has_acf()` methods to `NormalToeplitz` and `NormalCirculant`, to make `logdens()`, `grad()`, etc are more efficient for multiple `z` with same `acf`.
 
-- Convert R `.` to `_` and rename other things.
+- [ ] Have `grad_full()` output the log-density as well.
 
-- Update vignette with new API.
+- [ ] Reimplement R-level `NormalToeplitz` convenience functions `dSnorm()`, `dSnorm.grad()`, etc.
 
-- Finish this `README.md`.
+	In fact, we'll only provide convenience functions `rnormtz()` and `dnormtz()`.  For the gradient and Hessian let's just use the `NormalToeplitz` class.
+
+- [x] Convert R `.` to `_` and rename other things.
+
+- [ ] Update vignette with new API.
+
+- [ ] Finish this `README.md`.

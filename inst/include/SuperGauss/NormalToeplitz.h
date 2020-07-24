@@ -38,19 +38,39 @@ public:
   ~NormalToeplitz();
   /// Size of NormalToeplitz random vector.
   int size();
+  /// Set the NormalToeplitz acf.
+  void set_acf(const double* acf);
+  /// Get the NormalToeplitz acf.
+  void get_acf(double* acf);  
+  /// Check whether the acf has been set.
+  bool has_acf();
   /// Log-density of NormalToeplitz distribution.
   double logdens(const double* z, const double* acf);
-  /// Gradient of NormalToeplitz loglikelihood.
+  /// Log-density with internal acf.
+  double logdens(const double* z);
+  /// Gradient of NormalToeplitz log-density.
   void grad(double* dldt, const double* z, const double* dzdt,
 	    const double* acf, const double* dadt, int n_theta);
-  /// Hessian of NormalToeplitz loglikelihood.
+  /// Gradient with internal acf.
+  void grad(double* dldt, const double* z, const double* dzdt,
+	    const double* dadt, int n_theta);
+  /// Hessian of NormalToeplitz log-density.
   void hess(double* d2ldt,
 	    const double* z, const double* dzdt, const double* d2zdt,
 	    const double* acf, const double* dadt, const double* d2adt,
 	    int n_theta);
+  /// Hessian with internal acf.
+  void hess(double* d2ldt,
+	    const double* z, const double* dzdt, const double* d2zdt,
+	    const double* dadt, const double* d2adt,
+	    int n_theta);
   /// Full gradient of NormalToeplitz log-density.
   void grad_full(double* dldz, double* dlda,
 		 const double* z, const double* acf,
+		 bool calc_dldz, bool calc_dlda);
+  /// Full gradient with internal acf.
+  void grad_full(double* dldz, double* dlda,
+		 const double* z,
 		 bool calc_dldz, bool calc_dlda);
 };
 
@@ -89,14 +109,45 @@ inline double NormalToeplitz::dot_prod(const double* v1, const double* v2) {
   return ans;
 }
 
+/// @param[in] acf Autocorrelation vector of length `N`.
+///
+/// @note For `logdens()`, `grad()`, `grad_full`, and `hess()` methods with multiple `z` but common `acf`, the expensive call to `Toeplitz::solve()` needn't be recomputed.
+inline void NormalToeplitz::set_acf(const double* acf) {
+  Tz_->set_acf(acf);
+  return;
+}
+
+/// @param[in] acf Autocorrelation vector of length `N`.
+inline void NormalToeplitz::get_acf(double* acf) {
+  Tz_->get_acf(acf);
+  return;
+}
+
+inline bool NormalToeplitz::has_acf() { 
+  return Tz_->has_acf(); 
+}
 
 /// @param[in] z Observation vector of length `N`.
 /// @param[in] acf Autocorrelation vector of length `N`.
-/// @param[out] Scalar value of the log-density.
+/// @return Scalar value of the log-density.
 inline double NormalToeplitz::logdens(const double* z, const double* acf) {
+  // const double LOG_2PI = 1.837877066409345483560659472811; // log(2pi)
+  // double ldens = 0.0;
+  // Tz_->set_acf(acf); // Tz = Toeplitz(acf)
+  // Tz_->solve(vec1, z); // vec1 = Tz^{-1} * z
+  // ldens = dot_prod(z, vec1); // ldens = t(z) * Tz^{-1} * z
+  // ldens += Tz_->log_det() + N_ * LOG_2PI;
+  // ldens *= -0.5;
+  // return ldens;
+  Tz_->set_acf(acf); // Tz = Toeplitz(acf)
+  return logdens(z);
+}
+
+/// @warning This version will crash if `set_acf()` has not been called yet.
+inline double NormalToeplitz::logdens(const double* z) {
   const double LOG_2PI = 1.837877066409345483560659472811; // log(2pi)
   double ldens = 0.0;
-  Tz_->set_acf(acf); // Tz = Toeplitz(acf)
+  // Tz_->set_acf(acf); // Tz = Toeplitz(acf)
   Tz_->solve(vec1, z); // vec1 = Tz^{-1} * z
   ldens = dot_prod(z, vec1); // ldens = t(z) * Tz^{-1} * z
   ldens += Tz_->log_det() + N_ * LOG_2PI;
@@ -119,7 +170,25 @@ inline void NormalToeplitz::grad(double* dldt,
 				 const double* z, const double* dzdt, 
 				 const double* acf, const double* dadt,
 				 int n_theta) {
+  // Tz_->set_acf(acf); // Tz = Toeplitz(acf)
+  // Tz_->solve(vec1, z); // vec1 = Tz^{-1} * z
+  // for(int ii = 0; ii < n_theta; ++ii) {
+  //   Tz_->prod(vec2, vec1, &dadt[ii * N_]);
+  //   dldt[ii] = .5 * dot_prod(vec1, vec2);
+  //   dldt[ii] -= dot_prod(&dzdt[ii * N_], vec1);
+  //   dldt[ii] -= .5 * Tz_->trace_grad(&dadt[ii * N_]);
+  // }
+  // return;
   Tz_->set_acf(acf); // Tz = Toeplitz(acf)
+  grad(dldt, z, dzdt, dadt, n_theta);
+}
+
+/// @warning In this version `dadt` must still be supplied.  This version will crash if `set_acf()` has not been called yet.
+inline void NormalToeplitz::grad(double* dldt,
+				 const double* z, const double* dzdt, 
+				 const double* dadt,
+				 int n_theta) {
+  // Tz_->set_acf(acf); // Tz = Toeplitz(acf)
   Tz_->solve(vec1, z); // vec1 = Tz^{-1} * z
   for(int ii = 0; ii < n_theta; ++ii) {
     Tz_->prod(vec2, vec1, &dadt[ii * N_]);
@@ -153,7 +222,52 @@ inline void NormalToeplitz::hess(double* d2ldt,
 				 const double* dadt,
 				 const double* d2adt,
 				 int n_theta) {
+  // Tz_->set_acf(acf);
+  // Tz_->solve(vec1, z);
+  // double ans;
+  // std::fill(d2ldt, d2ldt + n_theta * n_theta, 0.0);
+  // for(int ii = 0; ii < n_theta; ++ii) {
+  //   for(int jj = 0; jj <= ii; ++jj) {
+  //     Tz_->prod(vec4, vec1, &dadt[jj * N_]);
+  //     Tz_->prod(vec3, vec1, &dadt[ii * N_]);
+  //     ans = dot_prod(&d2zdt[(ii * n_theta + jj) * N_], vec1);
+  //     Tz_->solve(vec2, vec4);
+  //     ans -= dot_prod(&dzdt[ii * N_], vec2);
+  //     ans += dot_prod(vec3, vec2);
+  //     Tz_->solve(vec2, vec3);
+  //     ans -= dot_prod(&dzdt[jj * N_], vec2);
+  //     Tz_->solve(vec2, &dzdt[jj * N_]);
+  //     ans += dot_prod(&dzdt[ii * N_], vec2);
+  //     ans *= 2.0;
+  //     Tz_->prod(vec2, vec1, &d2adt[(ii * n_theta + jj) * N_]);
+  //     ans -= dot_prod(vec1, vec2);
+  //     ans += Tz_->trace_grad(&d2adt[(ii * n_theta + jj) * N_]);
+  //     ans -= Tz_->trace_hess(&dadt[ii * N_], &dadt[jj * N_]);
+  //     d2ldt[ii * n_theta + jj] = -.5 * ans;
+  //   }
+  // }
+  // if(n_theta > 1) {
+  //   // copy other triangular half of hessian
+  //   for(int ii = 0; ii < n_theta; ++ii) {
+  //     for(int jj = ii + 1; jj < n_theta; ++jj) {
+  // 	d2ldt[ii * n_theta + jj] = d2ldt[jj * n_theta + ii];
+  //     }
+  //   }
+  // }
   Tz_->set_acf(acf);
+  hess(d2ldt, z, dzdt, d2zdt, dadt, d2adt, n_theta);
+  return;
+}
+
+/// @warning In this version `dadt` and `d2adt` must still be supplied.  This version will crash if `set_acf()` has not been called yet.
+inline void NormalToeplitz::hess(double* d2ldt,
+				 const double* z,
+				 const double* dzdt,
+				 const double* d2zdt,
+				 const double* dadt,
+				 const double* d2adt,
+				 int n_theta) {
+  // Tz_->set_acf(acf);
   Tz_->solve(vec1, z);
   double ans;
   std::fill(d2ldt, d2ldt + n_theta * n_theta, 0.0);
@@ -188,6 +302,7 @@ inline void NormalToeplitz::hess(double* d2ldt,
   return;
 }
 
+
 /// Calculates the gradient with respect to each element of `z` and `acf` of the log-density corresponding to `z ~ NormalToeplitz(acf)`.
 ///
 /// @param[out] dldz Gradient with respect to `z`.  A vector of length `N`.
@@ -200,21 +315,79 @@ inline void NormalToeplitz::grad_full(double* dldz, double* dlda,
 				      const double* z, const double* acf,
 				      bool calc_dldz = true,
 				      bool calc_dlda = true) {
+  // if(calc_dldz || calc_dlda) {
+  //   Tz_->set_acf(acf);
+  //   Tz_->solve(vec1, z);	
+  // }
+  // if(calc_dldz) {
+  //   // gradient with respect to z
+  //   // Tz_->solve(dldz, z);
+  //   for (int ii = 0; ii < N_; ii++) {
+  //     // dldz[ii] = -dldz[ii];
+  //     dldz[ii] = -vec1[ii];
+  //   }
+  // }
+  // if(calc_dlda) {
+  //   // gradient with respect to acf
+  //   // Tz_->solve(vec1, z);	
+  //   vec2[0] = 1.0;
+  //   std::fill(vec2 + 1, vec2 + N_, 0.0);
+  //   Tz_->solve(vec3, vec2);
+  //   // dlda = upper.toep(Vz) %*% Vz = ip
+  //   double tau1 = vec3[0];
+  //   std::fill(phi, phi + N_, 0.0);
+  //   phi[0] = vec1[0];
+  //   Tz_->prod(dlda, vec1, phi, vec1);
+  //   // vec2 = (N_:1 * tau)
+  //   vec4[0] = 0.0;
+  //   for (int ii = 1; ii < N_; ++ii) {
+  //     vec4[ii] = vec3[N_ - ii];
+  //   }
+  //   for (int ii = 0; ii < N_; ++ii) {
+  //     vec2[ii] = (N_ - ii) * vec3[ii];
+  //   }
+  //   // vec1 = upper.toep(tau) %*% (N_:1 * tau) = tr
+  //   phi[0] = vec3[0];
+  //   Tz_->prod(vec1, vec2, phi, vec3); 
+  //   // vec2 = (N_:1 * tau2)
+  //   for (int ii = 0; ii < N_; ++ii) {
+  //     vec2[ii] = (N_ - ii) * vec4[ii];
+  //   } 
+  //   // vec3 = upper.toep(tau2) %*% (N_:1 * tau2)
+  //   phi[0] = vec4[0];
+  //   Tz_->prod(vec3, vec2, phi, vec4); 
+  //   // vec1 = (vec1 - vec3) / tau[1] = tr, dlda = ip - tr
+  //   for (int ii = 0; ii < N_; ++ii) {
+  //     vec1[ii] -= vec3[ii];
+  //     vec1[ii] /= tau1;
+  //     dlda[ii] -= vec1[ii];
+  //   }
+  //   dlda[0] *= .5;
+  // }
   if(calc_dldz || calc_dlda) {
     Tz_->set_acf(acf);
+  }
+  grad_full(dldz, dlda, z, calc_dldz, calc_dlda);
+  return;
+}
+
+/// @warning This version will crash if `set_acf()` has not been called yet.
+inline void NormalToeplitz::grad_full(double* dldz, double* dlda,
+				      const double* z,
+				      bool calc_dldz = true,
+				      bool calc_dlda = true) {
+  if(calc_dldz || calc_dlda) {
+    // Tz_->set_acf(acf);
     Tz_->solve(vec1, z);	
   }
   if(calc_dldz) {
     // gradient with respect to z
-    // Tz_->solve(dldz, z);
     for (int ii = 0; ii < N_; ii++) {
-      // dldz[ii] = -dldz[ii];
       dldz[ii] = -vec1[ii];
     }
   }
   if(calc_dlda) {
     // gradient with respect to acf
-    // Tz_->solve(vec1, z);	
     vec2[0] = 1.0;
     std::fill(vec2 + 1, vec2 + N_, 0.0);
     Tz_->solve(vec3, vec2);
@@ -251,7 +424,6 @@ inline void NormalToeplitz::grad_full(double* dldz, double* dlda,
   }
   return;
 }
-
 
 /*
 

@@ -24,15 +24,24 @@ SEXP NormalToeplitz_constructor(int N) {
 /// Log-density of NormalToeplitz distribution.
 ///
 /// @param[in] NTz_ptr `Rcpp::XPtr` pointer to a NormalToeplitz object.
-/// @param[in] z Observation vector of length `N`.
+/// @param[in] z Observation matrix of size `N x n_z`, where each column is an observation.
 /// @param[in] acf Autocorrelation vector of length `N`.
 ///
-/// @return Scalar value of the log-density.
+/// @return Vector value of the log-density at each column of `z`.
 //[[Rcpp::export(".NormalToeplitz_logdens")]]
-double NormalToeplitz_logdens(SEXP NTz_ptr, NumericVector z,
-			      NumericVector acf) {
+NumericVector NormalToeplitz_logdens(SEXP NTz_ptr, NumericMatrix z,
+				     NumericVector acf) {
   XPtr<NormalToeplitz> NTz(NTz_ptr);
-  return NTz->logdens(REAL(z), REAL(acf));
+  int n_z = z.ncol();
+  int N = z.nrow();
+  NumericVector ldens(n_z);
+  double *z_ = REAL(z);
+  NTz->set_acf(REAL(acf));
+  for(int ii=0; ii<n_z; ii++) {
+    REAL(ldens)[ii] = NTz->logdens(&z_[ii*N]);
+  }
+  return ldens;
+  // return NTz->logdens(REAL(z), REAL(acf));
 }
 
 /// Gradient of NormalToeplitz loglikelihood.
@@ -59,8 +68,9 @@ NumericVector NormalToeplitz_grad(SEXP NTz_ptr,
 				  int n_theta) {
   XPtr<NormalToeplitz> NTz(NTz_ptr);
   NumericVector dldt(n_theta);
+  NTz->set_acf(REAL(acf));
   NTz->grad(REAL(dldt), REAL(z), REAL(dzdt),
-	    REAL(acf), REAL(dadt), n_theta);
+	    REAL(dadt), n_theta);
   return dldt;
 }
 
@@ -92,8 +102,9 @@ NumericMatrix NormalToeplitz_hess(SEXP NTz_ptr,
 				  int n_theta) {
   XPtr<NormalToeplitz> NTz(NTz_ptr);
   NumericMatrix d2ldt(n_theta, n_theta);
+  NTz->set_acf(REAL(acf));
   NTz->hess(REAL(d2ldt), REAL(z), REAL(dzdt), REAL(d2zdt), 
-	    REAL(acf), REAL(dadt), REAL(d2adt), n_theta);
+	    REAL(dadt), REAL(d2adt), n_theta);
   return d2ldt;
 }
 
@@ -117,7 +128,8 @@ List NormalToeplitz_grad_full(SEXP NTz_ptr,
   int N = NTz->size();
   NumericVector dldz(calc_dldz ? N : 1);
   NumericVector dlda(calc_dlda ? N : 1);
-  NTz->grad_full(REAL(dldz), REAL(dlda), REAL(z), REAL(acf),
+  NTz->set_acf(REAL(acf));
+  NTz->grad_full(REAL(dldz), REAL(dlda), REAL(z),
 		 calc_dldz, calc_dlda);
   List out;
   if(calc_dldz) out["dldz"] = dldz;
