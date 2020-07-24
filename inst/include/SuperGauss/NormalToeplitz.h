@@ -23,8 +23,8 @@ class NormalToeplitz {
 private:
   int N_; ///< Size of multivariate normal.
   Toeplitz* Tz_; ///< Toeplitz variance matrix.
+  double* zsol_; ///< Solution of `Tz_^{-1} z`.
   // storages for temporary vectors
-  double* vec1;
   double* vec2;
   double* vec3;
   double* vec4;
@@ -78,7 +78,7 @@ public:
 inline NormalToeplitz::NormalToeplitz(int N) {
   N_ = N;
   Tz_ = new Toeplitz(N_);
-  vec1 = new double[N_];
+  zsol_ = new double[N_];
   vec2 = new double[N_];
   vec3 = new double[N_];
   vec4 = new double[N_];
@@ -87,7 +87,7 @@ inline NormalToeplitz::NormalToeplitz(int N) {
 
 inline NormalToeplitz::~NormalToeplitz() {
   delete Tz_;
-  delete[] vec1;
+  delete[] zsol_;
   delete[] vec2;
   delete[] vec3;
   delete[] vec4;
@@ -131,14 +131,6 @@ inline bool NormalToeplitz::has_acf() {
 /// @param[in] acf Autocorrelation vector of length `N`.
 /// @return Scalar value of the log-density.
 inline double NormalToeplitz::logdens(const double* z, const double* acf) {
-  // const double LOG_2PI = 1.837877066409345483560659472811; // log(2pi)
-  // double ldens = 0.0;
-  // Tz_->set_acf(acf); // Tz = Toeplitz(acf)
-  // Tz_->solve(vec1, z); // vec1 = Tz^{-1} * z
-  // ldens = dot_prod(z, vec1); // ldens = t(z) * Tz^{-1} * z
-  // ldens += Tz_->log_det() + N_ * LOG_2PI;
-  // ldens *= -0.5;
-  // return ldens;
   Tz_->set_acf(acf); // Tz = Toeplitz(acf)
   return logdens(z);
 }
@@ -148,8 +140,8 @@ inline double NormalToeplitz::logdens(const double* z) {
   const double LOG_2PI = 1.837877066409345483560659472811; // log(2pi)
   double ldens = 0.0;
   // Tz_->set_acf(acf); // Tz = Toeplitz(acf)
-  Tz_->solve(vec1, z); // vec1 = Tz^{-1} * z
-  ldens = dot_prod(z, vec1); // ldens = t(z) * Tz^{-1} * z
+  Tz_->solve(zsol_, z); // zsol_ = Tz^{-1} * z
+  ldens = dot_prod(z, zsol_); // ldens = t(z) * Tz^{-1} * z
   ldens += Tz_->log_det() + N_ * LOG_2PI;
   ldens *= -0.5;
   return ldens;
@@ -170,15 +162,6 @@ inline void NormalToeplitz::grad(double* dldt,
 				 const double* z, const double* dzdt, 
 				 const double* acf, const double* dadt,
 				 int n_theta) {
-  // Tz_->set_acf(acf); // Tz = Toeplitz(acf)
-  // Tz_->solve(vec1, z); // vec1 = Tz^{-1} * z
-  // for(int ii = 0; ii < n_theta; ++ii) {
-  //   Tz_->prod(vec2, vec1, &dadt[ii * N_]);
-  //   dldt[ii] = .5 * dot_prod(vec1, vec2);
-  //   dldt[ii] -= dot_prod(&dzdt[ii * N_], vec1);
-  //   dldt[ii] -= .5 * Tz_->trace_grad(&dadt[ii * N_]);
-  // }
-  // return;
   Tz_->set_acf(acf); // Tz = Toeplitz(acf)
   grad(dldt, z, dzdt, dadt, n_theta);
 }
@@ -189,11 +172,11 @@ inline void NormalToeplitz::grad(double* dldt,
 				 const double* dadt,
 				 int n_theta) {
   // Tz_->set_acf(acf); // Tz = Toeplitz(acf)
-  Tz_->solve(vec1, z); // vec1 = Tz^{-1} * z
+  Tz_->solve(zsol_, z); // zsol_ = Tz^{-1} * z
   for(int ii = 0; ii < n_theta; ++ii) {
-    Tz_->prod(vec2, vec1, &dadt[ii * N_]);
-    dldt[ii] = .5 * dot_prod(vec1, vec2);
-    dldt[ii] -= dot_prod(&dzdt[ii * N_], vec1);
+    Tz_->prod(vec2, zsol_, &dadt[ii * N_]);
+    dldt[ii] = .5 * dot_prod(vec2, zsol_);
+    dldt[ii] -= dot_prod(&dzdt[ii * N_], zsol_);
     dldt[ii] -= .5 * Tz_->trace_grad(&dadt[ii * N_]);
   }
   return;
@@ -222,38 +205,6 @@ inline void NormalToeplitz::hess(double* d2ldt,
 				 const double* dadt,
 				 const double* d2adt,
 				 int n_theta) {
-  // Tz_->set_acf(acf);
-  // Tz_->solve(vec1, z);
-  // double ans;
-  // std::fill(d2ldt, d2ldt + n_theta * n_theta, 0.0);
-  // for(int ii = 0; ii < n_theta; ++ii) {
-  //   for(int jj = 0; jj <= ii; ++jj) {
-  //     Tz_->prod(vec4, vec1, &dadt[jj * N_]);
-  //     Tz_->prod(vec3, vec1, &dadt[ii * N_]);
-  //     ans = dot_prod(&d2zdt[(ii * n_theta + jj) * N_], vec1);
-  //     Tz_->solve(vec2, vec4);
-  //     ans -= dot_prod(&dzdt[ii * N_], vec2);
-  //     ans += dot_prod(vec3, vec2);
-  //     Tz_->solve(vec2, vec3);
-  //     ans -= dot_prod(&dzdt[jj * N_], vec2);
-  //     Tz_->solve(vec2, &dzdt[jj * N_]);
-  //     ans += dot_prod(&dzdt[ii * N_], vec2);
-  //     ans *= 2.0;
-  //     Tz_->prod(vec2, vec1, &d2adt[(ii * n_theta + jj) * N_]);
-  //     ans -= dot_prod(vec1, vec2);
-  //     ans += Tz_->trace_grad(&d2adt[(ii * n_theta + jj) * N_]);
-  //     ans -= Tz_->trace_hess(&dadt[ii * N_], &dadt[jj * N_]);
-  //     d2ldt[ii * n_theta + jj] = -.5 * ans;
-  //   }
-  // }
-  // if(n_theta > 1) {
-  //   // copy other triangular half of hessian
-  //   for(int ii = 0; ii < n_theta; ++ii) {
-  //     for(int jj = ii + 1; jj < n_theta; ++jj) {
-  // 	d2ldt[ii * n_theta + jj] = d2ldt[jj * n_theta + ii];
-  //     }
-  //   }
-  // }
   Tz_->set_acf(acf);
   hess(d2ldt, z, dzdt, d2zdt, dadt, d2adt, n_theta);
   return;
@@ -268,14 +219,14 @@ inline void NormalToeplitz::hess(double* d2ldt,
 				 const double* d2adt,
 				 int n_theta) {
   // Tz_->set_acf(acf);
-  Tz_->solve(vec1, z);
+  Tz_->solve(zsol_, z);
   double ans;
   std::fill(d2ldt, d2ldt + n_theta * n_theta, 0.0);
   for(int ii = 0; ii < n_theta; ++ii) {
     for(int jj = 0; jj <= ii; ++jj) {
-      Tz_->prod(vec4, vec1, &dadt[jj * N_]);
-      Tz_->prod(vec3, vec1, &dadt[ii * N_]);
-      ans = dot_prod(&d2zdt[(ii * n_theta + jj) * N_], vec1);
+      Tz_->prod(vec4, zsol_, &dadt[jj * N_]);
+      Tz_->prod(vec3, zsol_, &dadt[ii * N_]);
+      ans = dot_prod(&d2zdt[(ii * n_theta + jj) * N_], zsol_);
       Tz_->solve(vec2, vec4);
       ans -= dot_prod(&dzdt[ii * N_], vec2);
       ans += dot_prod(vec3, vec2);
@@ -284,8 +235,8 @@ inline void NormalToeplitz::hess(double* d2ldt,
       Tz_->solve(vec2, &dzdt[jj * N_]);
       ans += dot_prod(&dzdt[ii * N_], vec2);
       ans *= 2.0;
-      Tz_->prod(vec2, vec1, &d2adt[(ii * n_theta + jj) * N_]);
-      ans -= dot_prod(vec1, vec2);
+      Tz_->prod(vec2, zsol_, &d2adt[(ii * n_theta + jj) * N_]);
+      ans -= dot_prod(zsol_, vec2);
       ans += Tz_->trace_grad(&d2adt[(ii * n_theta + jj) * N_]);
       ans -= Tz_->trace_hess(&dadt[ii * N_], &dadt[jj * N_]);
       d2ldt[ii * n_theta + jj] = -.5 * ans;
@@ -315,55 +266,6 @@ inline void NormalToeplitz::grad_full(double* dldz, double* dlda,
 				      const double* z, const double* acf,
 				      bool calc_dldz = true,
 				      bool calc_dlda = true) {
-  // if(calc_dldz || calc_dlda) {
-  //   Tz_->set_acf(acf);
-  //   Tz_->solve(vec1, z);	
-  // }
-  // if(calc_dldz) {
-  //   // gradient with respect to z
-  //   // Tz_->solve(dldz, z);
-  //   for (int ii = 0; ii < N_; ii++) {
-  //     // dldz[ii] = -dldz[ii];
-  //     dldz[ii] = -vec1[ii];
-  //   }
-  // }
-  // if(calc_dlda) {
-  //   // gradient with respect to acf
-  //   // Tz_->solve(vec1, z);	
-  //   vec2[0] = 1.0;
-  //   std::fill(vec2 + 1, vec2 + N_, 0.0);
-  //   Tz_->solve(vec3, vec2);
-  //   // dlda = upper.toep(Vz) %*% Vz = ip
-  //   double tau1 = vec3[0];
-  //   std::fill(phi, phi + N_, 0.0);
-  //   phi[0] = vec1[0];
-  //   Tz_->prod(dlda, vec1, phi, vec1);
-  //   // vec2 = (N_:1 * tau)
-  //   vec4[0] = 0.0;
-  //   for (int ii = 1; ii < N_; ++ii) {
-  //     vec4[ii] = vec3[N_ - ii];
-  //   }
-  //   for (int ii = 0; ii < N_; ++ii) {
-  //     vec2[ii] = (N_ - ii) * vec3[ii];
-  //   }
-  //   // vec1 = upper.toep(tau) %*% (N_:1 * tau) = tr
-  //   phi[0] = vec3[0];
-  //   Tz_->prod(vec1, vec2, phi, vec3); 
-  //   // vec2 = (N_:1 * tau2)
-  //   for (int ii = 0; ii < N_; ++ii) {
-  //     vec2[ii] = (N_ - ii) * vec4[ii];
-  //   } 
-  //   // vec3 = upper.toep(tau2) %*% (N_:1 * tau2)
-  //   phi[0] = vec4[0];
-  //   Tz_->prod(vec3, vec2, phi, vec4); 
-  //   // vec1 = (vec1 - vec3) / tau[1] = tr, dlda = ip - tr
-  //   for (int ii = 0; ii < N_; ++ii) {
-  //     vec1[ii] -= vec3[ii];
-  //     vec1[ii] /= tau1;
-  //     dlda[ii] -= vec1[ii];
-  //   }
-  //   dlda[0] *= .5;
-  // }
   if(calc_dldz || calc_dlda) {
     Tz_->set_acf(acf);
   }
@@ -378,12 +280,12 @@ inline void NormalToeplitz::grad_full(double* dldz, double* dlda,
 				      bool calc_dlda = true) {
   if(calc_dldz || calc_dlda) {
     // Tz_->set_acf(acf);
-    Tz_->solve(vec1, z);	
+    Tz_->solve(zsol_, z);	
   }
   if(calc_dldz) {
     // gradient with respect to z
     for (int ii = 0; ii < N_; ii++) {
-      dldz[ii] = -vec1[ii];
+      dldz[ii] = -zsol_[ii];
     }
   }
   if(calc_dlda) {
@@ -394,8 +296,8 @@ inline void NormalToeplitz::grad_full(double* dldz, double* dlda,
     // dlda = upper.toep(Vz) %*% Vz = ip
     double tau1 = vec3[0];
     std::fill(phi, phi + N_, 0.0);
-    phi[0] = vec1[0];
-    Tz_->prod(dlda, vec1, phi, vec1);
+    phi[0] = zsol_[0];
+    Tz_->prod(dlda, zsol_, phi, zsol_);
     // vec2 = (N_:1 * tau)
     vec4[0] = 0.0;
     for (int ii = 1; ii < N_; ++ii) {
@@ -406,175 +308,28 @@ inline void NormalToeplitz::grad_full(double* dldz, double* dlda,
     }
     // vec1 = upper.toep(tau) %*% (N_:1 * tau) = tr
     phi[0] = vec3[0];
-    Tz_->prod(vec1, vec2, phi, vec3); 
+    // Tz_->prod(vec1, vec2, phi, vec3);
+    Tz_->prod(vec3, vec2, phi, vec3);
     // vec2 = (N_:1 * tau2)
     for (int ii = 0; ii < N_; ++ii) {
       vec2[ii] = (N_ - ii) * vec4[ii];
     } 
     // vec3 = upper.toep(tau2) %*% (N_:1 * tau2)
     phi[0] = vec4[0];
-    Tz_->prod(vec3, vec2, phi, vec4); 
+    // Tz_->prod(vec3, vec2, phi, vec4);
+    Tz_->prod(vec4, vec2, phi, vec4);
     // vec1 = (vec1 - vec3) / tau[1] = tr, dlda = ip - tr
     for (int ii = 0; ii < N_; ++ii) {
-      vec1[ii] -= vec3[ii];
-      vec1[ii] /= tau1;
-      dlda[ii] -= vec1[ii];
+      // vec1[ii] -= vec3[ii];
+      // vec1[ii] /= tau1;
+      // dlda[ii] -= vec1[ii];
+      vec3[ii] -= vec4[ii];
+      vec3[ii] /= tau1;
+      dlda[ii] -= vec3[ii];
     }
     dlda[0] *= .5;
   }
   return;
 }
-
-/*
-
-//////////////////////////////// overloaded version //////////////////////////////////////////
-
-/// Overloaded Log-Density.
-///
-/// @param[in] z length-N vector of observation.
-/// @param[in] Tz size-N Toeplitz object with acf inputed.
-/// @param[out] double number of the log-density.
-inline double NormalToeplitz::logdens(double* z, Toeplitz* Tz) {
-double ldens = 0;
-// acf is already stored in Tz
-Tz->solveVec(vec1, z); // vec1 = Tz^{-1} * z
-ldens = dot_prod(z, vec1, N_); // ldens = t(z) * Tz^{-1} * z
-ldens += Tz->log_det() + N_ * log2Pi;
-ldens *= -0.5;
-return ldens;
-}
-
-/// Overloaded Log-likelihood Gradient.
-///
-/// @param[out] dldt length-p vector of the gradient.
-/// @param[in] z length-N vector of observation.
-/// @param[in] dzdt length-N*p vector of observation derivatives, elememts dzdt[0:N + ii*N] is the derivative of z with respect to the ii-th parameter.
-/// @param[in] Tz size-N Toeplitz object with acf inputed.
-/// @param[in] dadt length-N*p vector of observation derivatives, elememts dadt[0:N + ii*N] is the derivative of acf with respect to the ii-th parameter.
-inline void NormalToeplitz::grad(double* dldt, double* z, double* dzdt,
-Toeplitz* Tz, double* dadt) {
-// acf is already stored in Tz
-Tz->solveVec(vec1, z); // vec1 = Tz^{-1} * z
-double tmp;
-for (int ii = 0; ii < n_theta; ++ii) {
-T2_->set_acf(&dadt[ii * N_]);
-T2_->multVec(vec2, vec1);
-dldt[ii] = dot_prod(vec1, vec2, N_) / 2;
-dldt[ii] -= dot_prod(&dzdt[ii * N_], vec1, N_);
-dldt[ii] -= Tz->traceProd(&dadt[ii * N_]) / 2;
-}
-}
-
-/// Overloaded function for the Hessian matrix of Log-likelihood.
-///
-/// @param[out] d2ldt length-p*p vector of the Hessian, elememts d2ldt[0:p + ii*p] is the (ii+1)-th column of Hessian matrix.
-/// @param[in] z length-N vector of observation.
-/// @param[in] dzdt length-N*p vector of observation derivatives, elememts dzdt[0:N + ii*N] is the derivative of z with respect to the ii-th parameter.
-/// @param[in] d2zdt length-N*p*p vector of observation derivatives, elememts d2zdt[0:N + (ii*p+jj)*N] is the second derivative of z with respect to the ii-th parameter and then the jj-th parameter.
-/// @param[in] Tz size-N Toeplitz object with acf inputed.
-/// @param[in] dadt length-N*p vector of observation derivatives, elememts dadt[0:N + ii*N] is the derivative of acf with respect to the ii-th parameter.
-/// @param[in] d2adt length-N*p*p vector of observation derivatives, elememts d2adt[0:N + (ii*p+jj)*N] is the second derivative of acf with respect to the ii-th parameter and then the jj-th parameter.
-inline void NormalToeplitz::hess(double* d2ldt,
-double* z, double* dzdt, double* d2zdt,
-Toeplitz* Tz, double* dadt, double* d2adt) {
-// acf is already stored in Tz
-Tz->solveVec(vec1, z);
-double ans;
-for (int ii = 0; ii < n_theta; ++ii) {
-for (int jj = 0; jj <= ii; ++jj) {
-T2_->set_acf(&dadt[jj * N_]);
-T2_->multVec(vec4, vec1);
-T2_->set_acf(&dadt[ii * N_]);
-T2_->multVec(vec3, vec1);
-
-ans = dot_prod(&d2zdt[(ii * n_theta + jj) * N_], vec1, N_);
-// temp0 = solve(Tz, temp2)
-Tz->solveVec(vec2, vec4);
-ans -= dot_prod(&dzdt[ii * N_], vec2, N_);
-ans += dot_prod(vec3, vec2, N_);
-// temp0 = solve(Tz, temp1)
-Tz->solveVec(vec2, vec3);
-ans -= dot_prod(&dzdt[jj * N_], vec2, N_);
-// temp0 = solve(Tz, dZ[,jj])
-Tz->solveVec(vec2, &dzdt[jj * N_]);
-ans += dot_prod(&dzdt[ii * N_], vec2, N_);
-ans *= 2;
-
-T2_->set_acf(&d2adt[(ii * n_theta + jj) * N_]);
-T2_->multVec(vec2, vec1);
-ans -= dot_prod(vec1, vec2, N_);
-ans += Tz->traceProd(&d2adt[(ii * n_theta + jj) * N_]);
-ans -= Tz->traceDeriv(&dadt[ii * N_], &dadt[jj * N_]);
-
-d2ldt[ii * n_theta + jj] = -ans / 2;
-}
-}
-
-if (n_theta > 1) {
-for (int ii = 0; ii < n_theta; ++ii) {
-for (int jj = ii + 1; jj < n_theta; ++jj) {
-d2ldt[ii * n_theta + jj] = d2ldt[jj * n_theta + ii];
-}
-}
-}
-
-}
-
-/// Overloaded function for the Full Gradient of the Log-Density for Auto-Differentiation Algorithms.
-///
-/// @param[out] dldz length-N vector of the log-density with respect to the observation z.
-/// @param[out] dlda length-N vector of the log-density with respect to the auto-covariance acf.
-/// @param[in] z length-N vector of observation.
-/// @param[in] Tz size-N Toeplitz object with acf inputed.
-inline void NormalToeplitz::grad_full(double* dldz, double* dlda,
-double* z, Toeplitz* Tz) {
-// acf is already stored in Tz
-
-// gradient with respect to z
-Tz->solveVec(dldz, z);
-for (int ii = 0; ii < N_; ii++) {
-dldz[ii] = -dldz[ii];
-}
-
-// gradient with respect to acf
-Tz->solveVec(vec1, z); // vec1 = Vz
-
-vec2[0] = 1;
-std::fill(vec2 + 1, vec2 + N_, 0); // vec2 = [1,0,0,...,0]
-Tz->solveVec(vec3, vec2); // vec3 = tau
-double tau1 = vec3[0];
-
-T2_->set_acf(vec1);
-T2_->mult0Vec(dlda, vec1); // dlda = upper.toep(Vz) %*% Vz = ip
-
-vec4[0] = 0;
-for (int ii = 1; ii < N_; ++ii) {
-vec4[ii] = vec3[N_ - ii];
-} // vec4 = tau2
-
-for (int ii = 0; ii < N_; ++ii) {
-vec2[ii] = (N_ - ii) * vec3[ii];
-} // vec2 = (N_:1 * tau)
-
-T2_->set_acf(vec3);
-T2_->mult0Vec(vec1, vec2); // vec1 = upper.toep(tau) %*% (N_:1 * tau) = tr
-
-for (int ii = 0; ii < N_; ++ii) {
-vec2[ii] = (N_ - ii) * vec4[ii];
-} // vec2 = (N_:1 * tau2)
-T2_->set_acf(vec4);
-T2_->mult0Vec(vec3, vec2); // vec3 = upper.toep(tau2) %*% (N_:1 * tau2)
-
-for (int ii = 0; ii < N_; ++ii) {
-vec1[ii] -= vec3[ii];
-vec1[ii] /= tau1;
-dlda[ii] -= vec1[ii];
-} // vec1 = (vec1 - vec3) / tau[1] = tr
-// dlda = ip - tr
-
-dlda[0] /= 2;
-}
-
-*/
 
 #endif

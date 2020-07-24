@@ -355,6 +355,7 @@ inline double Toeplitz::trace_inv() {
 /// @param[out] y Vector of length `N` containing the output `y = Tz * x`.
 /// @param[in] x Input vector of length `N`.
 /// @param[in] acf1 Vector of length `N` specifying the first row/column of the Toeplitz matrix `Tz = Toeplitz(acf1)`.
+/// @note Returns the correct result in-place, i.e., if `y = x` and/or `y = acf1`.
 inline void Toeplitz::prod(double* y, const double* x, const double* acf1) {
   // Pointers to temporary storage: x_, x_fft_, z_, z_fft_, y_.
   double* x_ = vec1_;
@@ -384,6 +385,7 @@ inline void Toeplitz::prod(double* y, const double* x, const double* acf1) {
 /// @param[in] x Input vector of length `N`.
 /// @param[in] col1 Vector of length `N` specifying the first column of `Tz`.
 /// @param[in] row1 Vector of length `N` specifying the first row of `Tz`.
+/// @note Returns the correct result in-place, i.e., if `y = x` and/or `y = col1` and/or `y = row1`.
 inline void Toeplitz::prod(double* y, const double* x,
 			      const double* col1, const double* row1) {
   // Pointers to temporary storage: x_, x_fft_, z_, z_fft_, y_.
