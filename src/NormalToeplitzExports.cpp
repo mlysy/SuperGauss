@@ -65,8 +65,8 @@ NumericVector NormalToeplitz_grad(SEXP NTz_ptr,
 				  NumericVector z,
 				  NumericMatrix dzdt, 
 				  NumericVector acf,
-				  NumericMatrix dadt,
-				  int n_theta) {
+				  NumericMatrix dadt) {
+  int n_theta = dzdt.ncol();
   XPtr<NormalToeplitz> NTz(NTz_ptr);
   NumericVector dldt(n_theta);
   NTz->set_acf(REAL(acf));
@@ -99,8 +99,8 @@ NumericMatrix NormalToeplitz_hess(SEXP NTz_ptr,
 				  NumericMatrix d2zdt,
 				  NumericVector acf,
 				  NumericMatrix dadt,
-				  NumericMatrix d2adt,
-				  int n_theta) {
+				  NumericMatrix d2adt) {
+  int n_theta = dzdt.ncol();
   XPtr<NormalToeplitz> NTz(NTz_ptr);
   NumericMatrix d2ldt(n_theta, n_theta);
   NTz->set_acf(REAL(acf));

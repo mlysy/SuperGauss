@@ -75,8 +75,8 @@ NormalToeplitz <- R6Class(
       if(ncol(dz) != ncol(dacf)) {
         stop("dz and dacf must have the same number of columns.")
       }
-      n_theta <- ncol(dz)
-      .NormalToeplitz_grad(private$NTz_, z, dz, acf, dacf, n_theta)
+      ## n_theta <- ncol(dz)
+      .NormalToeplitz_grad(private$NTz_, z, dz, acf, dacf)
     },
 
     #' @description Hessian of log-density with respect to parameters.
@@ -102,8 +102,7 @@ NormalToeplitz <- R6Class(
       .NormalToeplitz_hess(private$NTz_, z, dz,
                            matrix(d2z, private$N_, n_theta*n_theta),
                            acf, dacf,
-                           matrix(d2acf, private$N_, n_theta*n_theta),
-                           n_theta)
+                           matrix(d2acf, private$N_, n_theta*n_theta))
     },
 
     #' @description Full gradient of log-density function.
@@ -112,7 +111,12 @@ NormalToeplitz <- R6Class(
     #' @param acf A vector of length `N` containing the autocorrelation of the Toeplitz variance matrix.
     #' @param calc_dldz Whether or not to calculate the gradient with respect to `z`.
     #' @param calc_dlda Whether or not to calculate the gradient with respect to `acf`.
-    #' @return A list with one or both elements `dldz` and `dlda`, corresponding to the length `N` gradient vectors with respect to `z` and `acf`, respectively.
+    #' @return A list with elements:
+    #' \describe{
+    #'   \item{`ldens`}{The log-density evaluated at `z` and `acf`.}
+    #'   \item{`dldz`}{The length-`N` gradient vector with respect to `z`, if `calc_dldz = TRUE`.}
+    #'   \item{`dlda`}{The length-`N` gradient vector with respect to `acf`, if `calc_dlda = TRUE`.}
+    #' }
     grad_full = function(z, acf, calc_dldz = TRUE, calc_dlda = TRUE) {
       if(!calc_dldz && !calc_dlda) {
         stop("At least one of calc_dldz or calc_dlda must be TRUE.")

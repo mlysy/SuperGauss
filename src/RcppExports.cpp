@@ -247,8 +247,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // NormalToeplitz_grad
-NumericVector NormalToeplitz_grad(SEXP NTz_ptr, NumericVector z, NumericMatrix dzdt, NumericVector acf, NumericMatrix dadt, int n_theta);
-RcppExport SEXP _SuperGauss_NormalToeplitz_grad(SEXP NTz_ptrSEXP, SEXP zSEXP, SEXP dzdtSEXP, SEXP acfSEXP, SEXP dadtSEXP, SEXP n_thetaSEXP) {
+NumericVector NormalToeplitz_grad(SEXP NTz_ptr, NumericVector z, NumericMatrix dzdt, NumericVector acf, NumericMatrix dadt);
+RcppExport SEXP _SuperGauss_NormalToeplitz_grad(SEXP NTz_ptrSEXP, SEXP zSEXP, SEXP dzdtSEXP, SEXP acfSEXP, SEXP dadtSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -257,14 +257,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericMatrix >::type dzdt(dzdtSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type acf(acfSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type dadt(dadtSEXP);
-    Rcpp::traits::input_parameter< int >::type n_theta(n_thetaSEXP);
-    rcpp_result_gen = Rcpp::wrap(NormalToeplitz_grad(NTz_ptr, z, dzdt, acf, dadt, n_theta));
+    rcpp_result_gen = Rcpp::wrap(NormalToeplitz_grad(NTz_ptr, z, dzdt, acf, dadt));
     return rcpp_result_gen;
 END_RCPP
 }
 // NormalToeplitz_hess
-NumericMatrix NormalToeplitz_hess(SEXP NTz_ptr, NumericVector z, NumericMatrix dzdt, NumericMatrix d2zdt, NumericVector acf, NumericMatrix dadt, NumericMatrix d2adt, int n_theta);
-RcppExport SEXP _SuperGauss_NormalToeplitz_hess(SEXP NTz_ptrSEXP, SEXP zSEXP, SEXP dzdtSEXP, SEXP d2zdtSEXP, SEXP acfSEXP, SEXP dadtSEXP, SEXP d2adtSEXP, SEXP n_thetaSEXP) {
+NumericMatrix NormalToeplitz_hess(SEXP NTz_ptr, NumericVector z, NumericMatrix dzdt, NumericMatrix d2zdt, NumericVector acf, NumericMatrix dadt, NumericMatrix d2adt);
+RcppExport SEXP _SuperGauss_NormalToeplitz_hess(SEXP NTz_ptrSEXP, SEXP zSEXP, SEXP dzdtSEXP, SEXP d2zdtSEXP, SEXP acfSEXP, SEXP dadtSEXP, SEXP d2adtSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -275,8 +274,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type acf(acfSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type dadt(dadtSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type d2adt(d2adtSEXP);
-    Rcpp::traits::input_parameter< int >::type n_theta(n_thetaSEXP);
-    rcpp_result_gen = Rcpp::wrap(NormalToeplitz_hess(NTz_ptr, z, dzdt, d2zdt, acf, dadt, d2adt, n_theta));
+    rcpp_result_gen = Rcpp::wrap(NormalToeplitz_hess(NTz_ptr, z, dzdt, d2zdt, acf, dadt, d2adt));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -446,8 +444,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SuperGauss_NormalCirculant_grad_full", (DL_FUNC) &_SuperGauss_NormalCirculant_grad_full, 5},
     {"_SuperGauss_NormalToeplitz_constructor", (DL_FUNC) &_SuperGauss_NormalToeplitz_constructor, 1},
     {"_SuperGauss_NormalToeplitz_logdens", (DL_FUNC) &_SuperGauss_NormalToeplitz_logdens, 3},
-    {"_SuperGauss_NormalToeplitz_grad", (DL_FUNC) &_SuperGauss_NormalToeplitz_grad, 6},
-    {"_SuperGauss_NormalToeplitz_hess", (DL_FUNC) &_SuperGauss_NormalToeplitz_hess, 8},
+    {"_SuperGauss_NormalToeplitz_grad", (DL_FUNC) &_SuperGauss_NormalToeplitz_grad, 5},
+    {"_SuperGauss_NormalToeplitz_hess", (DL_FUNC) &_SuperGauss_NormalToeplitz_hess, 7},
     {"_SuperGauss_NormalToeplitz_grad_full", (DL_FUNC) &_SuperGauss_NormalToeplitz_grad_full, 5},
     {"_SuperGauss_PCG_constructor", (DL_FUNC) &_SuperGauss_PCG_constructor, 1},
     {"_SuperGauss_PCG_solve", (DL_FUNC) &_SuperGauss_PCG_solve, 4},

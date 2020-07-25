@@ -155,7 +155,12 @@ Full gradient of log-density function.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A list with one or both elements \code{dldz} and \code{dlda}, corresponding to the length \code{N} gradient vectors with respect to \code{z} and \code{acf}, respectively.
+A list with elements:
+\describe{
+\item{\code{ldens}}{The log-density evaluated at \code{z} and \code{acf}.}
+\item{\code{dldz}}{The length-\code{N} gradient vector with respect to \code{z}, if \code{calc_dldz = TRUE}.}
+\item{\code{dlda}}{The length-\code{N} gradient vector with respect to \code{acf}, if \code{calc_dlda = TRUE}.}
+}
 }
 }
 \if{html}{\out{<hr>}}
