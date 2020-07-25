@@ -38,7 +38,8 @@ NumericVector NormalToeplitz_logdens(SEXP NTz_ptr, NumericMatrix z,
   double *z_ = REAL(z);
   NTz->set_acf(REAL(acf));
   for(int ii=0; ii<n_z; ii++) {
-    REAL(ldens)[ii] = NTz->logdens(&z_[ii*N]);
+    NTz->set_z(&z_[ii*N]);
+    REAL(ldens)[ii] = NTz->logdens();
   }
   return ldens;
   // return NTz->logdens(REAL(z), REAL(acf));
@@ -69,8 +70,8 @@ NumericVector NormalToeplitz_grad(SEXP NTz_ptr,
   XPtr<NormalToeplitz> NTz(NTz_ptr);
   NumericVector dldt(n_theta);
   NTz->set_acf(REAL(acf));
-  NTz->grad(REAL(dldt), REAL(z), REAL(dzdt),
-	    REAL(dadt), n_theta);
+  NTz->set_z(REAL(z));
+  NTz->grad(REAL(dldt), REAL(dzdt), REAL(dadt), n_theta);
   return dldt;
 }
 
@@ -103,7 +104,8 @@ NumericMatrix NormalToeplitz_hess(SEXP NTz_ptr,
   XPtr<NormalToeplitz> NTz(NTz_ptr);
   NumericMatrix d2ldt(n_theta, n_theta);
   NTz->set_acf(REAL(acf));
-  NTz->hess(REAL(d2ldt), REAL(z), REAL(dzdt), REAL(d2zdt), 
+  NTz->set_z(REAL(z));
+  NTz->hess(REAL(d2ldt), REAL(dzdt), REAL(d2zdt), 
 	    REAL(dadt), REAL(d2adt), n_theta);
   return d2ldt;
 }
@@ -118,7 +120,10 @@ NumericMatrix NormalToeplitz_hess(SEXP NTz_ptr,
 /// @param[in] calc_dldz Whether to calculate the gradient with respect to `z`.
 /// @param[in] calc_dlda Whether or to calculate the gradient with respect to `acf`.
 ///
-/// @return `Rcpp::List` with one or both elements `dldz` and `dlda`, corresponding to the length `N` gradient vectors with respect to `z` and `acf`, respectively.
+/// @return `Rcpp::List` with elements:
+/// - `ldens`: The log-density evaluated at `z` and `acf`.
+/// - `dldz`: The gradient with respect to `z`, if `calc_dldz = true`.
+/// - `dlda`: The gradient with respect to `acf`, if `calc_dlda = true`.
 //
 //[[Rcpp::export(".NormalToeplitz_grad_full")]]
 List NormalToeplitz_grad_full(SEXP NTz_ptr,
@@ -126,14 +131,15 @@ List NormalToeplitz_grad_full(SEXP NTz_ptr,
 			      bool calc_dldz = true, bool calc_dlda = true) {
   XPtr<NormalToeplitz> NTz(NTz_ptr);
   int N = NTz->size();
+  double ldens;
   NumericVector dldz(calc_dldz ? N : 1);
   NumericVector dlda(calc_dlda ? N : 1);
   NTz->set_acf(REAL(acf));
-  NTz->grad_full(REAL(dldz), REAL(dlda), REAL(z),
-		 calc_dldz, calc_dlda);
+  NTz->set_z(REAL(z));
+  ldens = NTz->grad_full(REAL(dldz), REAL(dlda), calc_dldz, calc_dlda);
   List out;
+  out["ldens"] = ldens;
   if(calc_dldz) out["dldz"] = dldz;
   if(calc_dlda) out["dlda"] = dlda;
-  // List::create(Named("dldz") = dldz, _["dlda"] = dlda);
   return out;
 }
