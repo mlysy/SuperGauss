@@ -41,11 +41,16 @@ test_that("NormalToeplitz$hess gives correct result.", {
     ## h12 <- h21 <- grad(func = test_logdens_grad, x = alpha, mu = mu, X = X)
     ## h22 <- hessian(func = test_logdens, x = alpha, mu = mu, X = X)
     ## hmat1 <- matrix(c(h11, h12, h21, h22), 2, 2)
-    hmat1 <- numDeriv::hessian(test_logdens, x = c(mu, alpha), X = X)
-    hmat2 <- Nt$hess(z = X - f,
-                     dz = dz, d2z = d2z,
-                     acf = acf, dacf = dacf, d2acf = d2acf)
-    expect_equal(hmat1, hmat2, tolerance = 1e-4)
+    h1 <- numDeriv::hessian(test_logdens, x = c(mu, alpha), X = X)
+    g1 <- numDeriv::grad(test_logdens, x = c(mu, alpha), X = X)
+    l1 <- test_logdens(theta = c(mu, alpha), X = X)
+    h1b <- list(ldens = l1, grad = g1, hess = h1)
+    h2 <- Nt$hess(z = X - f, dz = dz, d2z = d2z,
+                  acf = acf, dacf = dacf, d2acf = d2acf)
+    h2b <- Nt$hess(z = X - f, dz = dz, d2z = d2z,
+                   acf = acf, dacf = dacf, d2acf = d2acf, full_out = TRUE)
+    expect_equal(h1, h2, tolerance = 1e-4)
+    expect_equal(h1b, h2b, tolerance = 1e-4)
   })
 })
 

@@ -81,12 +81,12 @@ NormalCirculant_grad_full <- function(pNCt, z, uacf, calc_dldz = TRUE, calc_dldu
     .Call(`_SuperGauss_NormalToeplitz_logdens`, NTz_ptr, z, acf)
 }
 
-.NormalToeplitz_grad <- function(NTz_ptr, z, dzdt, acf, dadt) {
-    .Call(`_SuperGauss_NormalToeplitz_grad`, NTz_ptr, z, dzdt, acf, dadt)
+.NormalToeplitz_grad <- function(NTz_ptr, z, dzdt, acf, dadt, full_out = FALSE) {
+    .Call(`_SuperGauss_NormalToeplitz_grad`, NTz_ptr, z, dzdt, acf, dadt, full_out)
 }
 
-.NormalToeplitz_hess <- function(NTz_ptr, z, dzdt, d2zdt, acf, dadt, d2adt) {
-    .Call(`_SuperGauss_NormalToeplitz_hess`, NTz_ptr, z, dzdt, d2zdt, acf, dadt, d2adt)
+.NormalToeplitz_hess <- function(NTz_ptr, z, dzdt, d2zdt, acf, dadt, d2adt, full_out = FALSE) {
+    .Call(`_SuperGauss_NormalToeplitz_hess`, NTz_ptr, z, dzdt, d2zdt, acf, dadt, d2adt, full_out)
 }
 
 .NormalToeplitz_grad_full <- function(NTz_ptr, z, acf, calc_dldz = TRUE, calc_dlda = TRUE) {

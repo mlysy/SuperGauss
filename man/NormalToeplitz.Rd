@@ -82,7 +82,7 @@ A scalar or vector of length \code{n_obs} containing the log-density of the NTz 
 \subsection{Method \code{grad()}}{
 Gradient of the log-density with respect to parameters.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{NormalToeplitz$grad(z, dz, acf, dacf)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{NormalToeplitz$grad(z, dz, acf, dacf, full_out = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -95,11 +95,13 @@ Gradient of the log-density with respect to parameters.
 \item{\code{acf}}{A vector of length \code{N} containing the autocorrelation of the Toeplitz variance matrix.}
 
 \item{\code{dacf}}{An \verb{N x n_theta} matrix containing the gradient \code{dacf/dtheta}.}
+
+\item{\code{full_out}}{If \code{TRUE}, returns the log-density as well (see 'Value').}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A vector of length \code{n_theta} containing the gradient of the NTz log-density with respect to \code{theta}.
+A vector of length \code{n_theta} containing the gradient of the NTz log-density with respect to \code{theta}, or a list with elements \code{ldens} and \code{grad} consisting of the log-density and the gradient vector.
 }
 }
 \if{html}{\out{<hr>}}
@@ -108,7 +110,7 @@ A vector of length \code{n_theta} containing the gradient of the NTz log-density
 \subsection{Method \code{hess()}}{
 Hessian of log-density with respect to parameters.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{NormalToeplitz$hess(z, dz, d2z, acf, dacf, d2acf)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{NormalToeplitz$hess(z, dz, d2z, acf, dacf, d2acf, full_out = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -125,11 +127,13 @@ Hessian of log-density with respect to parameters.
 \item{\code{dacf}}{An \verb{N x n_theta} matrix containing the gradient \code{dacf/dtheta}.}
 
 \item{\code{d2acf}}{An \verb{N x n_theta x n_theta} array containing the Hessian \code{dacf^2/dtheta^2}.}
+
+\item{\code{full_out}}{If \code{TRUE}, returns the log-density and its gradient as well (see 'Value').}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-An \verb{n_theta x n_theta} matrix containing the Hessian of the NTz log-density with respect to \code{theta}.
+An \verb{n_theta x n_theta} matrix containing the Hessian of the NTz log-density with respect to \code{theta}, or a list with elements \code{ldens}, \code{grad}, and \code{hess} consisting of the log-density, its gradient (a vector of size \code{n_theta}), and the Hessian matrix, respectively.
 }
 }
 \if{html}{\out{<hr>}}

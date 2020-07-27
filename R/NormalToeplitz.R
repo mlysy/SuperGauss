@@ -68,15 +68,16 @@ NormalToeplitz <- R6Class(
     #' @param dz An `N x n_theta` matrix containing the gradient `dz/dtheta`.
     #' @param acf A vector of length `N` containing the autocorrelation of the Toeplitz variance matrix.
     #' @param dacf An `N x n_theta` matrix containing the gradient `dacf/dtheta`.
-    #' @return A vector of length `n_theta` containing the gradient of the NTz log-density with respect to `theta`.
-    grad = function(z, dz, acf, dacf) {
+    #' @param full_out If `TRUE`, returns the log-density as well (see 'Value').
+    #' @return A vector of length `n_theta` containing the gradient of the NTz log-density with respect to `theta`, or a list with elements `ldens` and `grad` consisting of the log-density and the gradient vector.
+    grad = function(z, dz, acf, dacf, full_out = FALSE) {
       check_ntz(z, dx = dz, N = private$N_, varname = "z")
       check_ntz(acf, dx = dacf, N = private$N_, varname = "acf")
       if(ncol(dz) != ncol(dacf)) {
         stop("dz and dacf must have the same number of columns.")
       }
       ## n_theta <- ncol(dz)
-      .NormalToeplitz_grad(private$NTz_, z, dz, acf, dacf)
+      .NormalToeplitz_grad(private$NTz_, z, dz, acf, dacf, full_out)
     },
 
     #' @description Hessian of log-density with respect to parameters.
@@ -87,8 +88,9 @@ NormalToeplitz <- R6Class(
     #' @param acf A vector of length `N` containing the autocorrelation of the Toeplitz variance matrix.
     #' @param dacf An `N x n_theta` matrix containing the gradient `dacf/dtheta`.
     #' @param d2acf An `N x n_theta x n_theta` array containing the Hessian `dacf^2/dtheta^2`.
-    #' @return An `n_theta x n_theta` matrix containing the Hessian of the NTz log-density with respect to `theta`.
-    hess = function(z, dz, d2z, acf, dacf, d2acf) {
+    #' @param full_out If `TRUE`, returns the log-density and its gradient as well (see 'Value').
+    #' @return An `n_theta x n_theta` matrix containing the Hessian of the NTz log-density with respect to `theta`, or a list with elements `ldens`, `grad`, and `hess` consisting of the log-density, its gradient (a vector of size `n_theta`), and the Hessian matrix, respectively.
+    hess = function(z, dz, d2z, acf, dacf, d2acf, full_out = FALSE) {
       check_ntz(z, dx = dz, d2x = d2z, N = private$N_, varname = "z")
       check_ntz(acf, dx = dacf, d2x = d2acf, N = private$N_,
                 varname = "acf")
@@ -102,7 +104,8 @@ NormalToeplitz <- R6Class(
       .NormalToeplitz_hess(private$NTz_, z, dz,
                            matrix(d2z, private$N_, n_theta*n_theta),
                            acf, dacf,
-                           matrix(d2acf, private$N_, n_theta*n_theta))
+                           matrix(d2acf, private$N_, n_theta*n_theta),
+                           full_out)
     },
 
     #' @description Full gradient of log-density function.

@@ -58,21 +58,28 @@ NumericVector NormalToeplitz_logdens(SEXP NTz_ptr, NumericMatrix z,
 /// @param[in] dzdt Gradient of `z` with respect to `theta`.  A matrix of size `N x n_theta`.
 /// @param[in] acf Autocorrelation vector of length `N`.
 /// @param[in] dadt Gradient of `acf` with respect to `theta`.  A matrix of size `N x n_theta`.
+/// @param[in] full_out If `true`, returns the log-density as well.
 ///
-/// @return Gradient of the loglikelihood.  A vector of length `n_theta`.
+/// @return Gradient of the loglikelihood.  A vector of length `n_theta`, or a list with elements `ldens` for the log-density (a scalar) and `grad` for the gradient vector.
 //[[Rcpp::export(".NormalToeplitz_grad")]]
-NumericVector NormalToeplitz_grad(SEXP NTz_ptr,
-				  NumericVector z,
-				  NumericMatrix dzdt, 
-				  NumericVector acf,
-				  NumericMatrix dadt) {
+SEXP NormalToeplitz_grad(SEXP NTz_ptr,
+			 NumericVector z,
+			 NumericMatrix dzdt, 
+			 NumericVector acf,
+			 NumericMatrix dadt,
+			 bool full_out = false) {
   int n_theta = dzdt.ncol();
   XPtr<NormalToeplitz> NTz(NTz_ptr);
   NumericVector dldt(n_theta);
   NTz->set_acf(REAL(acf));
   NTz->set_z(REAL(z));
   NTz->grad(REAL(dldt), REAL(dzdt), REAL(dadt), n_theta);
-  return dldt;
+  if(full_out) {
+    double ldens = NTz->logdens();
+    return List::create(_["ldens"] = ldens, _["grad"] = dldt);
+  } else {
+    return dldt;
+  }
 }
 
 /// Hessian of NormalToeplitz loglikelihood.
@@ -90,16 +97,17 @@ NumericVector NormalToeplitz_grad(SEXP NTz_ptr,
 /// @param[in] acf Autocorrelation vector of length `N`.
 /// @param[in] dadt Gradient of `acf` with respect to `theta`.  A matrix of size `N x n_theta`.
 /// @param[in] d2adt Hessian of `acf` with respect to `theta`.  A matrix of size `N x (n_theta * n_theta)` corresponding to the Hessian tensor of size `N x n_theta x n_theta` flattened in column-major order.
-///
-/// @return Hessian of the loglikelihood.  A matrix of size `n_theta x n_theta`.
+/// @param[in] full_out If `true`, returns the log-density and gradient as well.///
+/// @return Hessian of the loglikelihood.  A matrix of size `n_theta x n_theta`, or a list with elements `ldens`, `grad`, and `hess` consisting of the log-density (scalar), the gradient vector (of size `n_theta`) and the hessian matrix, respectively.
 //[[Rcpp::export(".NormalToeplitz_hess")]]
-NumericMatrix NormalToeplitz_hess(SEXP NTz_ptr,
-				  NumericVector z,
-				  NumericMatrix dzdt,
-				  NumericMatrix d2zdt,
-				  NumericVector acf,
-				  NumericMatrix dadt,
-				  NumericMatrix d2adt) {
+SEXP NormalToeplitz_hess(SEXP NTz_ptr,
+			 NumericVector z,
+			 NumericMatrix dzdt,
+			 NumericMatrix d2zdt,
+			 NumericVector acf,
+			 NumericMatrix dadt,
+			 NumericMatrix d2adt,
+			 bool full_out = false) {
   int n_theta = dzdt.ncol();
   XPtr<NormalToeplitz> NTz(NTz_ptr);
   NumericMatrix d2ldt(n_theta, n_theta);
@@ -107,7 +115,16 @@ NumericMatrix NormalToeplitz_hess(SEXP NTz_ptr,
   NTz->set_z(REAL(z));
   NTz->hess(REAL(d2ldt), REAL(dzdt), REAL(d2zdt), 
 	    REAL(dadt), REAL(d2adt), n_theta);
-  return d2ldt;
+  if(full_out) {
+    double ldens = NTz->logdens();
+    NumericVector dldt(n_theta);
+    NTz->grad(REAL(dldt), REAL(dzdt), REAL(dadt), n_theta);
+    return List::create(_["ldens"] = ldens,
+			_["grad"] = dldt,
+			_["hess"] = d2ldt);
+  } else {
+    return d2ldt;
+  }
 }
 
 /// Full gradient of NormalToeplitz log-density.
