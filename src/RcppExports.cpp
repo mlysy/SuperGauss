@@ -131,31 +131,29 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// DurbinLevinson_Eigen
-Rcpp::List DurbinLevinson_Eigen(Eigen::MatrixXd X, Eigen::MatrixXd Y, Eigen::VectorXd acf, int calcMode);
-RcppExport SEXP _SuperGauss_DurbinLevinson_Eigen(SEXP XSEXP, SEXP YSEXP, SEXP acfSEXP, SEXP calcModeSEXP) {
+// DurbinLevinson_crossprod
+Rcpp::List DurbinLevinson_crossprod(Eigen::MatrixXd X, Eigen::MatrixXd Y, Eigen::VectorXd acf, int calc_mode);
+RcppExport SEXP _SuperGauss_DurbinLevinson_crossprod(SEXP XSEXP, SEXP YSEXP, SEXP acfSEXP, SEXP calc_modeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Eigen::MatrixXd >::type X(XSEXP);
     Rcpp::traits::input_parameter< Eigen::MatrixXd >::type Y(YSEXP);
     Rcpp::traits::input_parameter< Eigen::VectorXd >::type acf(acfSEXP);
-    Rcpp::traits::input_parameter< int >::type calcMode(calcModeSEXP);
-    rcpp_result_gen = Rcpp::wrap(DurbinLevinson_Eigen(X, Y, acf, calcMode));
+    Rcpp::traits::input_parameter< int >::type calc_mode(calc_modeSEXP);
+    rcpp_result_gen = Rcpp::wrap(DurbinLevinson_crossprod(X, Y, acf, calc_mode));
     return rcpp_result_gen;
 END_RCPP
 }
-// DurbinLevinson_Base
-Rcpp::List DurbinLevinson_Base(NumericMatrix X, NumericMatrix Y, NumericVector acf, int calcMode);
-RcppExport SEXP _SuperGauss_DurbinLevinson_Base(SEXP XSEXP, SEXP YSEXP, SEXP acfSEXP, SEXP calcModeSEXP) {
+// DurbinLevinson_solve
+Eigen::MatrixXd DurbinLevinson_solve(Eigen::MatrixXd X, Eigen::VectorXd acf);
+RcppExport SEXP _SuperGauss_DurbinLevinson_solve(SEXP XSEXP, SEXP acfSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type acf(acfSEXP);
-    Rcpp::traits::input_parameter< int >::type calcMode(calcModeSEXP);
-    rcpp_result_gen = Rcpp::wrap(DurbinLevinson_Base(X, Y, acf, calcMode));
+    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type X(XSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd >::type acf(acfSEXP);
+    rcpp_result_gen = Rcpp::wrap(DurbinLevinson_solve(X, acf));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -437,8 +435,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SuperGauss_Circulant_log_det", (DL_FUNC) &_SuperGauss_Circulant_log_det, 1},
     {"_SuperGauss_DurbinLevinson_XZ", (DL_FUNC) &_SuperGauss_DurbinLevinson_XZ, 2},
     {"_SuperGauss_DurbinLevinson_ZX", (DL_FUNC) &_SuperGauss_DurbinLevinson_ZX, 2},
-    {"_SuperGauss_DurbinLevinson_Eigen", (DL_FUNC) &_SuperGauss_DurbinLevinson_Eigen, 4},
-    {"_SuperGauss_DurbinLevinson_Base", (DL_FUNC) &_SuperGauss_DurbinLevinson_Base, 4},
+    {"_SuperGauss_DurbinLevinson_crossprod", (DL_FUNC) &_SuperGauss_DurbinLevinson_crossprod, 4},
+    {"_SuperGauss_DurbinLevinson_solve", (DL_FUNC) &_SuperGauss_DurbinLevinson_solve, 2},
     {"_SuperGauss_real_fft", (DL_FUNC) &_SuperGauss_real_fft, 2},
     {"_SuperGauss_even_fft", (DL_FUNC) &_SuperGauss_even_fft, 2},
     {"_SuperGauss_NormalCirculant_ctor", (DL_FUNC) &_SuperGauss_NormalCirculant_ctor, 1},

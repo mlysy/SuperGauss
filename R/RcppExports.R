@@ -45,12 +45,12 @@ DurbinLevinson_ZX <- function(Z, acf) {
     .Call(`_SuperGauss_DurbinLevinson_ZX`, Z, acf)
 }
 
-DurbinLevinson_Eigen <- function(X, Y, acf, calcMode = 1L) {
-    .Call(`_SuperGauss_DurbinLevinson_Eigen`, X, Y, acf, calcMode)
+DurbinLevinson_crossprod <- function(X, Y, acf, calc_mode = 1L) {
+    .Call(`_SuperGauss_DurbinLevinson_crossprod`, X, Y, acf, calc_mode)
 }
 
-DurbinLevinson_Base <- function(X, Y, acf, calcMode = 1L) {
-    .Call(`_SuperGauss_DurbinLevinson_Base`, X, Y, acf, calcMode)
+DurbinLevinson_solve <- function(X, acf) {
+    .Call(`_SuperGauss_DurbinLevinson_solve`, X, acf)
 }
 
 real_fft <- function(x, inverse = FALSE) {

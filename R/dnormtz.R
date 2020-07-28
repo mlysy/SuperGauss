@@ -25,8 +25,8 @@ dnormtz <- function(X, mu, acf, log = FALSE, method = c("gschur", "ltz")) {
     ldV <- determinant(Tz)
   } else if(method == "ltz") {
     # fixme: use LTZ instead of DL!
-    DL <- DurbinLevinson_Eigen(X = Z, Y = Z, acf = acf, calcMode = 2L)
-    IP <- drop(DL$IP)
+    DL <- DurbinLevinson_crossprod(X = Z, Y = Z, acf = acf, calc_mode = 2L)
+    IP <- DL$IP
     ldV <- DL$ldV
   }
   ld <- -.5 * (IP + ldV + N * log(2 * pi))
