@@ -3,7 +3,8 @@ source("SuperGauss-testfunctions.R")
 context("NormalCirculant - Log-Density.")
 
 test_that("NormalCirculant$logdens gives correct result.", {
-  case_par <- expand.grid(N = c(1, sample(2:20, 10)))
+  case_par <- expand.grid(N = c(1, sample(2:20, 10)),
+                          n_obs = 1:3)
   ncase <- nrow(case_par)
   for(ii in 1:ncase) {
     list2env(case_par[ii,,drop=FALSE], envir = environment())
@@ -11,10 +12,11 @@ test_that("NormalCirculant$logdens gives correct result.", {
     upsd <- rexp(Nu) * N
     acf <- ifft(unfold_acf(N, upsd))
     uacf <- acf[1:Nu]
-    z <- rnormtz(n = 1, acf = acf, fft = FALSE)
-    ld1 <- circ_ldens(z, uacf)
+    Z <- rnormtz(n = n_obs, acf = acf, fft = FALSE)
+    if(N == 1) Z <- t(Z)
+    ld1 <- circ_ldens(t(Z), uacf)
     NCt <- NormalCirculant$new(N = N)
-    ld2 <- NCt$logdens(z, uacf)
+    ld2 <- NCt$logdens(Z, uacf)
     expect_equal(ld1, ld2)
   }
 })

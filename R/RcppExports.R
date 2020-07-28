@@ -73,67 +73,67 @@ NormalCirculant_grad_full <- function(pNCt, z, uacf, calc_dldz = TRUE, calc_dldu
     .Call(`_SuperGauss_NormalCirculant_grad_full`, pNCt, z, uacf, calc_dldz, calc_dldu)
 }
 
-.NormalToeplitz_constructor <- function(N) {
-    .Call(`_SuperGauss_NormalToeplitz_constructor`, N)
+NormalToeplitz_ctor <- function(N) {
+    .Call(`_SuperGauss_NormalToeplitz_ctor`, N)
 }
 
-.NormalToeplitz_logdens <- function(NTz_ptr, z, acf) {
+NormalToeplitz_logdens <- function(NTz_ptr, z, acf) {
     .Call(`_SuperGauss_NormalToeplitz_logdens`, NTz_ptr, z, acf)
 }
 
-.NormalToeplitz_grad <- function(NTz_ptr, z, dzdt, acf, dadt, full_out = FALSE) {
+NormalToeplitz_grad <- function(NTz_ptr, z, dzdt, acf, dadt, full_out = FALSE) {
     .Call(`_SuperGauss_NormalToeplitz_grad`, NTz_ptr, z, dzdt, acf, dadt, full_out)
 }
 
-.NormalToeplitz_hess <- function(NTz_ptr, z, dzdt, d2zdt, acf, dadt, d2adt, full_out = FALSE) {
+NormalToeplitz_hess <- function(NTz_ptr, z, dzdt, d2zdt, acf, dadt, d2adt, full_out = FALSE) {
     .Call(`_SuperGauss_NormalToeplitz_hess`, NTz_ptr, z, dzdt, d2zdt, acf, dadt, d2adt, full_out)
 }
 
-.NormalToeplitz_grad_full <- function(NTz_ptr, z, acf, calc_dldz = TRUE, calc_dlda = TRUE) {
+NormalToeplitz_grad_full <- function(NTz_ptr, z, acf, calc_dldz = TRUE, calc_dlda = TRUE) {
     .Call(`_SuperGauss_NormalToeplitz_grad_full`, NTz_ptr, z, acf, calc_dldz, calc_dlda)
 }
 
-.PCG_constructor <- function(n) {
-    .Call(`_SuperGauss_PCG_constructor`, n)
+PCG_ctor <- function(n) {
+    .Call(`_SuperGauss_PCG_ctor`, n)
 }
 
-.PCG_solve <- function(PCG_ptr, acf, y, tol) {
+PCG_solve <- function(PCG_ptr, acf, y, tol) {
     .Call(`_SuperGauss_PCG_solve`, PCG_ptr, acf, y, tol)
 }
 
-.Toeplitz_constructor <- function(n) {
-    .Call(`_SuperGauss_Toeplitz_constructor`, n)
+Toeplitz_ctor <- function(n) {
+    .Call(`_SuperGauss_Toeplitz_ctor`, n)
 }
 
-.Toeplitz_set_acf <- function(Toep_ptr, acf) {
+Toeplitz_set_acf <- function(Toep_ptr, acf) {
     invisible(.Call(`_SuperGauss_Toeplitz_set_acf`, Toep_ptr, acf))
 }
 
-.Toeplitz_get_acf <- function(Toep_ptr) {
+Toeplitz_get_acf <- function(Toep_ptr) {
     .Call(`_SuperGauss_Toeplitz_get_acf`, Toep_ptr)
 }
 
-.Toeplitz_prod <- function(Toep_ptr, X) {
+Toeplitz_prod <- function(Toep_ptr, X) {
     .Call(`_SuperGauss_Toeplitz_prod`, Toep_ptr, X)
 }
 
-.Toeplitz_solve <- function(Toep_ptr, X) {
+Toeplitz_solve <- function(Toep_ptr, X) {
     .Call(`_SuperGauss_Toeplitz_solve`, Toep_ptr, X)
 }
 
-.Toeplitz_log_det <- function(Toep_ptr) {
+Toeplitz_log_det <- function(Toep_ptr) {
     .Call(`_SuperGauss_Toeplitz_log_det`, Toep_ptr)
 }
 
-.Toeplitz_trace_grad <- function(Toep_ptr, acf2) {
+Toeplitz_trace_grad <- function(Toep_ptr, acf2) {
     .Call(`_SuperGauss_Toeplitz_trace_grad`, Toep_ptr, acf2)
 }
 
-.Toeplitz_trace_hess <- function(Toep_ptr, acf2, acf3) {
-    .Call(`_SuperGauss_Toeplitz_traceT4`, Toep_ptr, acf2, acf3)
+Toeplitz_trace_hess <- function(Toep_ptr, acf2, acf3) {
+    .Call(`_SuperGauss_Toeplitz_trace_hess`, Toep_ptr, acf2, acf3)
 }
 
-.Toeplitz_has_acf <- function(Toep_ptr) {
+Toeplitz_has_acf <- function(Toep_ptr) {
     .Call(`_SuperGauss_Toeplitz_has_acf`, Toep_ptr)
 }
 

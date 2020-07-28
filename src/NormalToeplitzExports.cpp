@@ -14,8 +14,8 @@ using namespace Rcpp;
 /// @param N Size of NormalToeplitz random vector.
 ///
 /// @return The `Rcpp::XPtr` pointer to the instantiated NormalToeplitz object.
-//[[Rcpp::export(".NormalToeplitz_constructor")]]
-SEXP NormalToeplitz_constructor(int N) {
+//[[Rcpp::export]]
+SEXP NormalToeplitz_ctor(int N) {
   NormalToeplitz *NTz = new NormalToeplitz(N);
   XPtr<NormalToeplitz> NTz_ptr(NTz, true);
   return NTz_ptr;
@@ -28,7 +28,7 @@ SEXP NormalToeplitz_constructor(int N) {
 /// @param[in] acf Autocorrelation vector of length `N`.
 ///
 /// @return Vector value of the log-density at each column of `z`.
-//[[Rcpp::export(".NormalToeplitz_logdens")]]
+//[[Rcpp::export]]
 NumericVector NormalToeplitz_logdens(SEXP NTz_ptr, NumericMatrix z,
 				     NumericVector acf) {
   XPtr<NormalToeplitz> NTz(NTz_ptr);
@@ -61,7 +61,7 @@ NumericVector NormalToeplitz_logdens(SEXP NTz_ptr, NumericMatrix z,
 /// @param[in] full_out If `true`, returns the log-density as well.
 ///
 /// @return Gradient of the loglikelihood.  A vector of length `n_theta`, or a list with elements `ldens` for the log-density (a scalar) and `grad` for the gradient vector.
-//[[Rcpp::export(".NormalToeplitz_grad")]]
+//[[Rcpp::export]]
 SEXP NormalToeplitz_grad(SEXP NTz_ptr,
 			 NumericVector z,
 			 NumericMatrix dzdt, 
@@ -99,7 +99,7 @@ SEXP NormalToeplitz_grad(SEXP NTz_ptr,
 /// @param[in] d2adt Hessian of `acf` with respect to `theta`.  A matrix of size `N x (n_theta * n_theta)` corresponding to the Hessian tensor of size `N x n_theta x n_theta` flattened in column-major order.
 /// @param[in] full_out If `true`, returns the log-density and gradient as well.///
 /// @return Hessian of the loglikelihood.  A matrix of size `n_theta x n_theta`, or a list with elements `ldens`, `grad`, and `hess` consisting of the log-density (scalar), the gradient vector (of size `n_theta`) and the hessian matrix, respectively.
-//[[Rcpp::export(".NormalToeplitz_hess")]]
+//[[Rcpp::export]]
 SEXP NormalToeplitz_hess(SEXP NTz_ptr,
 			 NumericVector z,
 			 NumericMatrix dzdt,
@@ -142,7 +142,7 @@ SEXP NormalToeplitz_hess(SEXP NTz_ptr,
 /// - `dldz`: The gradient with respect to `z`, if `calc_dldz = true`.
 /// - `dlda`: The gradient with respect to `acf`, if `calc_dlda = true`.
 //
-//[[Rcpp::export(".NormalToeplitz_grad_full")]]
+//[[Rcpp::export]]
 List NormalToeplitz_grad_full(SEXP NTz_ptr,
 			      NumericVector z, NumericVector acf,
 			      bool calc_dldz = true, bool calc_dlda = true) {

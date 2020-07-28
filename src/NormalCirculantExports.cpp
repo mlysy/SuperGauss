@@ -24,15 +24,25 @@ SEXP NormalCirculant_ctor(int N) {
 /// Log-density of NormalCirculant distribution.
 ///
 /// @param[in] pNCt `Rcpp::XPtr` pointer to a NormalCirculant object.
-/// @param[in] z Observation vector of length `N`.
+/// @param[in] z Observation matrix of size `N x n_z`, where each column is an observation.
 /// @param[in] uacf Half-autocorrelation vector of length `Nu = floor(N/2)+1`.
 ///
-/// @return Scalar value of the log-density.
+/// @return Vector value of the log-density at each column of `z`.
 // [[Rcpp::export]]
-double NormalCirculant_logdens(SEXP pNCt, NumericVector z,
-			      NumericVector uacf) {
+NumericVector NormalCirculant_logdens(SEXP pNCt, NumericMatrix z,
+				      NumericVector uacf) {
   XPtr<NormalCirculant> NCt(pNCt);
-  return NCt->logdens(REAL(z), REAL(uacf));
+  int n_z = z.ncol();
+  int N = z.nrow();
+  NumericVector ldens(n_z);
+  double *z_ = REAL(z);
+  NCt->set_acf(REAL(uacf));
+  for(int ii=0; ii<n_z; ii++) {
+    NCt->set_z(&z_[ii*N]);
+    REAL(ldens)[ii] = NCt->logdens();
+  }
+  return ldens;
+  // return NCt->logdens(REAL(z), REAL(uacf));
 }
 
 /// Full gradient of NormalCirculant log-density.
@@ -45,7 +55,10 @@ double NormalCirculant_logdens(SEXP pNCt, NumericVector z,
 /// @param[in] calc_dldz Whether to calculate the gradient with respect to `z`.
 /// @param[in] calc_dldu Whether or to calculate the gradient with respect to `uacf`.
 ///
-/// @return `Rcpp::List` with one or both elements `dldz` and `dldu`, corresponding to the length `N` gradient vector with respect to `z` and the length `Nu = floor(N/2)+1` gradient vector with respect to `uacf`.
+/// @return `Rcpp::List` with elements:
+/// - `ldens`: The log-density evaluated at `z` and `uacf`.
+/// - `dldz`: The gradient with respect to `z`, if `calc_dldz = true`.
+/// - `dldu`: The gradient with respect to `uacf`, if `calc_dldu = true`.
 //
 // [[Rcpp::export]]
 List NormalCirculant_grad_full(SEXP pNCt,
@@ -55,11 +68,13 @@ List NormalCirculant_grad_full(SEXP pNCt,
   XPtr<NormalCirculant> NCt(pNCt);
   int N = NCt->size();
   int Nu = N/2 + 1;
+  double ldens;
   NumericVector dldz(calc_dldz ? N : 1);
   NumericVector dldu(calc_dldu ? Nu : 1);
-  NCt->grad_full(REAL(dldz), REAL(dldu), REAL(z), REAL(uacf),
-		 calc_dldz, calc_dldu);
+  ldens = NCt->grad_full(REAL(dldz), REAL(dldu), REAL(z), REAL(uacf),
+				calc_dldz, calc_dldu);
   List out;
+  out["ldens"] = ldens;
   if(calc_dldz) out["dldz"] = dldz;
   if(calc_dldu) out["dldu"] = dldu;
   return out;

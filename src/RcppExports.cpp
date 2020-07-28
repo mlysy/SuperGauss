@@ -193,13 +193,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // NormalCirculant_logdens
-double NormalCirculant_logdens(SEXP pNCt, NumericVector z, NumericVector uacf);
+NumericVector NormalCirculant_logdens(SEXP pNCt, NumericMatrix z, NumericVector uacf);
 RcppExport SEXP _SuperGauss_NormalCirculant_logdens(SEXP pNCtSEXP, SEXP zSEXP, SEXP uacfSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type pNCt(pNCtSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type z(zSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type z(zSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type uacf(uacfSEXP);
     rcpp_result_gen = Rcpp::wrap(NormalCirculant_logdens(pNCt, z, uacf));
     return rcpp_result_gen;
@@ -220,14 +220,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// NormalToeplitz_constructor
-SEXP NormalToeplitz_constructor(int N);
-RcppExport SEXP _SuperGauss_NormalToeplitz_constructor(SEXP NSEXP) {
+// NormalToeplitz_ctor
+SEXP NormalToeplitz_ctor(int N);
+RcppExport SEXP _SuperGauss_NormalToeplitz_ctor(SEXP NSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type N(NSEXP);
-    rcpp_result_gen = Rcpp::wrap(NormalToeplitz_constructor(N));
+    rcpp_result_gen = Rcpp::wrap(NormalToeplitz_ctor(N));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -293,14 +293,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// PCG_constructor
-SEXP PCG_constructor(int n);
-RcppExport SEXP _SuperGauss_PCG_constructor(SEXP nSEXP) {
+// PCG_ctor
+SEXP PCG_ctor(int n);
+RcppExport SEXP _SuperGauss_PCG_ctor(SEXP nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(PCG_constructor(n));
+    rcpp_result_gen = Rcpp::wrap(PCG_ctor(n));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -318,14 +318,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Toeplitz_constructor
-SEXP Toeplitz_constructor(int n);
-RcppExport SEXP _SuperGauss_Toeplitz_constructor(SEXP nSEXP) {
+// Toeplitz_ctor
+SEXP Toeplitz_ctor(int n);
+RcppExport SEXP _SuperGauss_Toeplitz_ctor(SEXP nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(Toeplitz_constructor(n));
+    rcpp_result_gen = Rcpp::wrap(Toeplitz_ctor(n));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -398,16 +398,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Toeplitz_traceT4
-double Toeplitz_traceT4(SEXP Toep_ptr, NumericVector acf2, NumericVector acf3);
-RcppExport SEXP _SuperGauss_Toeplitz_traceT4(SEXP Toep_ptrSEXP, SEXP acf2SEXP, SEXP acf3SEXP) {
+// Toeplitz_trace_hess
+double Toeplitz_trace_hess(SEXP Toep_ptr, NumericVector acf2, NumericVector acf3);
+RcppExport SEXP _SuperGauss_Toeplitz_trace_hess(SEXP Toep_ptrSEXP, SEXP acf2SEXP, SEXP acf3SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type Toep_ptr(Toep_ptrSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type acf2(acf2SEXP);
     Rcpp::traits::input_parameter< NumericVector >::type acf3(acf3SEXP);
-    rcpp_result_gen = Rcpp::wrap(Toeplitz_traceT4(Toep_ptr, acf2, acf3));
+    rcpp_result_gen = Rcpp::wrap(Toeplitz_trace_hess(Toep_ptr, acf2, acf3));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -442,21 +442,21 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SuperGauss_NormalCirculant_ctor", (DL_FUNC) &_SuperGauss_NormalCirculant_ctor, 1},
     {"_SuperGauss_NormalCirculant_logdens", (DL_FUNC) &_SuperGauss_NormalCirculant_logdens, 3},
     {"_SuperGauss_NormalCirculant_grad_full", (DL_FUNC) &_SuperGauss_NormalCirculant_grad_full, 5},
-    {"_SuperGauss_NormalToeplitz_constructor", (DL_FUNC) &_SuperGauss_NormalToeplitz_constructor, 1},
+    {"_SuperGauss_NormalToeplitz_ctor", (DL_FUNC) &_SuperGauss_NormalToeplitz_ctor, 1},
     {"_SuperGauss_NormalToeplitz_logdens", (DL_FUNC) &_SuperGauss_NormalToeplitz_logdens, 3},
     {"_SuperGauss_NormalToeplitz_grad", (DL_FUNC) &_SuperGauss_NormalToeplitz_grad, 6},
     {"_SuperGauss_NormalToeplitz_hess", (DL_FUNC) &_SuperGauss_NormalToeplitz_hess, 8},
     {"_SuperGauss_NormalToeplitz_grad_full", (DL_FUNC) &_SuperGauss_NormalToeplitz_grad_full, 5},
-    {"_SuperGauss_PCG_constructor", (DL_FUNC) &_SuperGauss_PCG_constructor, 1},
+    {"_SuperGauss_PCG_ctor", (DL_FUNC) &_SuperGauss_PCG_ctor, 1},
     {"_SuperGauss_PCG_solve", (DL_FUNC) &_SuperGauss_PCG_solve, 4},
-    {"_SuperGauss_Toeplitz_constructor", (DL_FUNC) &_SuperGauss_Toeplitz_constructor, 1},
+    {"_SuperGauss_Toeplitz_ctor", (DL_FUNC) &_SuperGauss_Toeplitz_ctor, 1},
     {"_SuperGauss_Toeplitz_set_acf", (DL_FUNC) &_SuperGauss_Toeplitz_set_acf, 2},
     {"_SuperGauss_Toeplitz_get_acf", (DL_FUNC) &_SuperGauss_Toeplitz_get_acf, 1},
     {"_SuperGauss_Toeplitz_prod", (DL_FUNC) &_SuperGauss_Toeplitz_prod, 2},
     {"_SuperGauss_Toeplitz_solve", (DL_FUNC) &_SuperGauss_Toeplitz_solve, 2},
     {"_SuperGauss_Toeplitz_log_det", (DL_FUNC) &_SuperGauss_Toeplitz_log_det, 1},
     {"_SuperGauss_Toeplitz_trace_grad", (DL_FUNC) &_SuperGauss_Toeplitz_trace_grad, 2},
-    {"_SuperGauss_Toeplitz_traceT4", (DL_FUNC) &_SuperGauss_Toeplitz_traceT4, 3},
+    {"_SuperGauss_Toeplitz_trace_hess", (DL_FUNC) &_SuperGauss_Toeplitz_trace_hess, 3},
     {"_SuperGauss_Toeplitz_has_acf", (DL_FUNC) &_SuperGauss_Toeplitz_has_acf, 1},
     {NULL, NULL, 0}
 };

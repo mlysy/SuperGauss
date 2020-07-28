@@ -20,7 +20,7 @@ NormalToeplitz <- R6Class(
     deep_clone = function(name, value) {
       switch(name,
              NTz_ = {
-               NTz_new <- .NormalToeplitz_constructor(private$N_)
+               NTz_new <- NormalToeplitz_ctor(private$N_)
                ## if(self$has_acf()) {
                ##   .Toeplitz_set_acf(Tz_new, self$get_acf())
                ## }
@@ -39,7 +39,7 @@ NormalToeplitz <- R6Class(
     #' @param N Size of the NTz random vector.
     #' @return A `NormalToeplitz` object.
     initialize = function(N) {
-      private$NTz_ <- .NormalToeplitz_constructor(N)
+      private$NTz_ <- NormalToeplitz_ctor(N)
       private$N_ <- N
     },
 
@@ -59,7 +59,7 @@ NormalToeplitz <- R6Class(
       z <- as.matrix(z)
       check_ntz(z[,1], N = private$N_, varname = "z")
       check_ntz(acf, N = private$N_, varname = "acf")
-      .NormalToeplitz_logdens(private$NTz_, z, acf)
+      NormalToeplitz_logdens(private$NTz_, z, acf)
     },
 
     #' @description Gradient of the log-density with respect to parameters.
@@ -77,7 +77,7 @@ NormalToeplitz <- R6Class(
         stop("dz and dacf must have the same number of columns.")
       }
       ## n_theta <- ncol(dz)
-      .NormalToeplitz_grad(private$NTz_, z, dz, acf, dacf, full_out)
+      NormalToeplitz_grad(private$NTz_, z, dz, acf, dacf, full_out)
     },
 
     #' @description Hessian of log-density with respect to parameters.
@@ -101,11 +101,11 @@ NormalToeplitz <- R6Class(
         stop("d2z and d2acf must have the same dimensions.")
       }
       n_theta <- ncol(dz)
-      .NormalToeplitz_hess(private$NTz_, z, dz,
-                           matrix(d2z, private$N_, n_theta*n_theta),
-                           acf, dacf,
-                           matrix(d2acf, private$N_, n_theta*n_theta),
-                           full_out)
+      NormalToeplitz_hess(private$NTz_, z, dz,
+                          matrix(d2z, private$N_, n_theta*n_theta),
+                          acf, dacf,
+                          matrix(d2acf, private$N_, n_theta*n_theta),
+                          full_out)
     },
 
     #' @description Full gradient of log-density function.
@@ -126,7 +126,7 @@ NormalToeplitz <- R6Class(
       }
       check_ntz(z, N = private$N_, varname = "z")
       check_ntz(acf, N = private$N_, varname = "acf")
-      .NormalToeplitz_grad_full(private$NTz_, z, acf, calc_dldz, calc_dlda)
+      NormalToeplitz_grad_full(private$NTz_, z, acf, calc_dldz, calc_dlda)
     }
   )
 

@@ -4,21 +4,21 @@ using namespace Rcpp;
 
 // R wapper functions to Toeplitz methods using XPtr
 
-//[[Rcpp::export(".Toeplitz_constructor")]]
-SEXP Toeplitz_constructor(int n) {
+// [[Rcpp::export]]
+SEXP Toeplitz_ctor(int n) {
   Toeplitz *Toep = new Toeplitz(n);
   XPtr<Toeplitz> Toep_ptr(Toep, true);
   return Toep_ptr;
 }
 
-//[[Rcpp::export(".Toeplitz_set_acf")]]
+// [[Rcpp::export]]
 void Toeplitz_set_acf(SEXP Toep_ptr, NumericVector acf) {
   XPtr<Toeplitz> Toep(Toep_ptr);
   Toep->set_acf(REAL(acf));
   return;
 }
 
-//[[Rcpp::export(".Toeplitz_get_acf")]]
+// [[Rcpp::export]]
 NumericVector Toeplitz_get_acf(SEXP Toep_ptr) {
   XPtr<Toeplitz> Toep(Toep_ptr);
   NumericVector acf(Toep->size());
@@ -34,7 +34,7 @@ NumericVector Toeplitz_get_acf(SEXP Toep_ptr) {
 //   return phi;
 // }
 
-//[[Rcpp::export(".Toeplitz_prod")]]
+// [[Rcpp::export]]
 NumericMatrix Toeplitz_prod(SEXP Toep_ptr, NumericMatrix X) {
   XPtr<Toeplitz> Toep(Toep_ptr);
   int p = X.ncol();
@@ -46,7 +46,7 @@ NumericMatrix Toeplitz_prod(SEXP Toep_ptr, NumericMatrix X) {
   return Y;
 }
 
-//[[Rcpp::export(".Toeplitz_solve")]]
+// [[Rcpp::export]]
 NumericMatrix Toeplitz_solve(SEXP Toep_ptr, NumericMatrix X) {
   XPtr<Toeplitz> Toep(Toep_ptr);
   int p = X.ncol();
@@ -58,25 +58,26 @@ NumericMatrix Toeplitz_solve(SEXP Toep_ptr, NumericMatrix X) {
   return Y;
 }
 
-//[[Rcpp::export(".Toeplitz_log_det")]]
+// [[Rcpp::export]]
 double Toeplitz_log_det(SEXP Toep_ptr) {
   XPtr<Toeplitz> Toep(Toep_ptr);
   return Toep->log_det();
 }
 
-//[[Rcpp::export(".Toeplitz_trace_grad")]]
+// [[Rcpp::export]]
 double Toeplitz_trace_grad(SEXP Toep_ptr, NumericVector acf2) {
   XPtr<Toeplitz> Toep(Toep_ptr);
   return Toep->trace_grad(REAL(acf2));
 }
 
-//[[Rcpp::export(".Toeplitz_trace_hess")]]
-double Toeplitz_traceT4(SEXP Toep_ptr, NumericVector acf2, NumericVector acf3) {
+// [[Rcpp::export]]
+double Toeplitz_trace_hess(SEXP Toep_ptr,
+			   NumericVector acf2, NumericVector acf3) {
   XPtr<Toeplitz> Toep(Toep_ptr);
   return Toep->trace_hess(REAL(acf2), REAL(acf3));
 }
 
-//[[Rcpp::export(".Toeplitz_has_acf")]]
+// [[Rcpp::export]]
 bool Toeplitz_has_acf(SEXP Toep_ptr) {
   XPtr<Toeplitz> Toep(Toep_ptr);
   return Toep->has_acf();

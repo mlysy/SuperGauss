@@ -58,7 +58,8 @@ NormalCirculant <- R6Class(
     #' @param uacf A vector of length `Nu = floor(N/2)` containing the first half of the autocorrelation (i.e., first row/column) of the Circulant variance matrix.
     #' @return A scalar or vector of length `n_obs` containing the log-density of the NCt evaluated at its arguments.
     logdens = function(z, uacf) {
-      check_ntz(z, N = private$N_, varname = "z")
+      z <- as.matrix(z)
+      check_ntz(z[,1], N = private$N_, varname = "z")
       check_ntz(uacf, N = private$Nu_, varname = "uacf")
       NormalCirculant_logdens(private$NCt_, z, uacf)
     },
@@ -69,7 +70,12 @@ NormalCirculant <- R6Class(
     #' @param uacf A vector of length `Nu = floor(N/2)` containing the first half of the autocorrelation (i.e., first row/column) of the Circulant variance matrix.
     #' @param calc_dldz Whether or not to calculate the gradient with respect to `z`.
     #' @param calc_dldu Whether or not to calculate the gradient with respect to `uacf`.
-    #' @return A list with one or both elements `dldz` and `dldu`, corresponding to the length `N` gradient vector with respect to `z` and the length `Nu = floor(N/2)+1` gradient vector with respect to `uacf`.
+    #' @return A list with elements:
+    #' \describe{
+    #'   \item{`ldens`}{The log-density evaluated at `z` and `uacf`.}
+    #'   \item{`dldz`}{The length-`N` gradient vector with respect to `z`, if `calc_dldz = TRUE`.}
+    #'   \item{`dldu`}{The length-`Nu = floor(N/2)+1` gradient vector with respect to `uacf`, if `calc_dldu = TRUE`.}
+    #' }
     grad_full = function(z, uacf, calc_dldz = TRUE, calc_dldu = TRUE) {
       if(!calc_dldz && !calc_dldu) {
         stop("At least one of calc_dldz or calc_dldu must be TRUE.")

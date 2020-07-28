@@ -162,6 +162,7 @@ circulant <- function(x) {
 
 # log-density of z ~ NormalCirculant(nu)
 circ_ldens <- function(z, nu) {
+  N <- if(is.matrix(z)) ncol(z) else length(z)
   mvtnorm::dmvnorm(z, log = TRUE,
-                   sigma = toeplitz(unfold_acf(length(z), nu)))
+                   sigma = toeplitz(unfold_acf(N, nu)))
 }

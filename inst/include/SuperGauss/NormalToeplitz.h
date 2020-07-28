@@ -26,7 +26,7 @@ private:
   double* z_; ///< Toeplitz density argument.
   double* zsol_; ///< Solution of `Tz_^{-1} z`.
   bool has_z_; ///< Whether z has been set.
-  bool has_zsol_; ///< Whether zsol_ has been computed
+  bool has_zsol_; ///< Whether zsol_ has been computed.
   // storages for temporary vectors
   double* vec2;
   double* vec3;

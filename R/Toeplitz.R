@@ -40,13 +40,13 @@ Toeplitz <- R6Class(
     deep_clone = function(name, value) {
       switch(name,
              Tz_ = {
-               Tz_new <- .Toeplitz_constructor(private$N_)
+               Tz_new <- Toeplitz_ctor(private$N_)
                if(self$has_acf()) {
-                 .Toeplitz_set_acf(Tz_new, self$get_acf())
+                 Toeplitz_set_acf(Tz_new, self$get_acf())
                }
                Tz_new
              },
-             PCG_ = .PCG_constructor(private$N_),
+             PCG_ = PCG_ctor(private$N_),
              value)
     }
 
@@ -63,8 +63,8 @@ Toeplitz <- R6Class(
     initialize = function(N, acf) {
       if(missing(N)) N <- length(acf)
       private$N_ <- N
-      private$Tz_ <- .Toeplitz_constructor(N)
-      private$PCG_ <- .PCG_constructor(N)
+      private$Tz_ <- Toeplitz_ctor(N)
+      private$PCG_ <- PCG_ctor(N)
       if(!missing(acf)) self$set_acf(acf)
     },
 
@@ -93,7 +93,7 @@ Toeplitz <- R6Class(
     #' @param acf Autocorrelation vector of length `N`.
     set_acf = function(acf) {
       check_tz(acfs = list(acf = acf), N = private$N_)
-      .Toeplitz_set_acf(private$Tz_, acf)
+      Toeplitz_set_acf(private$Tz_, acf)
     },
 
     #' @description Get the autocorrelation of the Toeplitz matrix.
@@ -101,14 +101,14 @@ Toeplitz <- R6Class(
     #' @return The autocorrelation vector of length `N`.
     get_acf = function() {
       check_tz(has_acf = self$has_acf())
-      .Toeplitz_get_acf(private$Tz_)
+      Toeplitz_get_acf(private$Tz_)
     },
 
     #' @description Check whether the autocorrelation of the Toeplitz matrix has been set.
     #'
     #' @return Logical; `TRUE` if `Toeplitz$set_acf()` has been called.
     has_acf = function() {
-      .Toeplitz_has_acf(private$Tz_)
+      Toeplitz_has_acf(private$Tz_)
     },
 
     #' @description Toeplitz matrix-matrix product.
@@ -124,7 +124,7 @@ Toeplitz <- R6Class(
       if(nrow(x) != private$N_) {
         stop("Incompatible matrix multiplication dimensions.")
       }
-      .Toeplitz_prod(private$Tz_, x)
+      Toeplitz_prod(private$Tz_, x)
     },
 
     #' @description Solve a Toeplitz system of equations.
@@ -146,8 +146,8 @@ Toeplitz <- R6Class(
         stop("Incompatible matrix solve dimensions.")
       }
       y <- switch(method,
-                  gschur = .Toeplitz_solve(private$Tz_, x),
-                  pcg = .PCG_solve(private$PCG_, self$get_acf(), x, tol))
+                  gschur = Toeplitz_solve(private$Tz_, x),
+                  pcg = PCG_solve(private$PCG_, self$get_acf(), x, tol))
       if(vec_x) y <- drop(y)
       y
     },
@@ -157,7 +157,7 @@ Toeplitz <- R6Class(
     #' @return The log-determinant `log(det(Tz))`.  `determinant(Tz)` also works as expected.
     log_det = function() {
       check_tz(has_acf = self$has_acf())
-      .Toeplitz_log_det(private$Tz_)
+      Toeplitz_log_det(private$Tz_)
     },
 
     #' @description Computes the trace-gradient with respect to Toeplitz matrices.
@@ -170,7 +170,7 @@ Toeplitz <- R6Class(
     trace_grad = function(acf2) {
       check_tz(acfs = list(acf2 = acf2), N = private$N_,
                has_acf = self$has_acf())
-      .Toeplitz_trace_grad(private$Tz_, acf2)
+      Toeplitz_trace_grad(private$Tz_, acf2)
     },
 
     #' @description Computes the trace-Hessian with respect to Toeplitz matrices.
@@ -185,7 +185,7 @@ Toeplitz <- R6Class(
     trace_hess = function(acf2, acf3) {
       check_tz(acfs = list(acf2 = acf2, acf3 = acf3),
                N = private$N_, has_acf = self$has_acf())
-      .Toeplitz_trace_hess(private$Tz_, acf2, acf3)
+      Toeplitz_trace_hess(private$Tz_, acf2, acf3)
     }
 
   )

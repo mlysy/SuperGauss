@@ -4,14 +4,14 @@ using namespace Rcpp;
 
 // R wapper functions to Toeplitz methods using XPtr
 
-//[[Rcpp::export(".PCG_constructor")]]
-SEXP PCG_constructor(int n) {
+// [[Rcpp::export]]
+SEXP PCG_ctor(int n) {
   PCG *P1 = new PCG(n);
   XPtr<PCG> PCG_ptr(P1, true);
   return PCG_ptr;
 }
 
-//[[Rcpp::export(".PCG_solve")]]
+// [[Rcpp::export]]
 NumericMatrix PCG_solve(SEXP PCG_ptr, NumericVector acf, NumericMatrix y, double tol) {
   XPtr<PCG> P1(PCG_ptr);
   int N = y.nrow();

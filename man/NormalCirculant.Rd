@@ -99,7 +99,12 @@ Full gradient of log-density function.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A list with one or both elements \code{dldz} and \code{dldu}, corresponding to the length \code{N} gradient vector with respect to \code{z} and the length \code{Nu = floor(N/2)+1} gradient vector with respect to \code{uacf}.
+A list with elements:
+\describe{
+\item{\code{ldens}}{The log-density evaluated at \code{z} and \code{uacf}.}
+\item{\code{dldz}}{The length-\code{N} gradient vector with respect to \code{z}, if \code{calc_dldz = TRUE}.}
+\item{\code{dldu}}{The length-\code{Nu = floor(N/2)+1} gradient vector with respect to \code{uacf}, if \code{calc_dldu = TRUE}.}
+}
 }
 }
 \if{html}{\out{<hr>}}

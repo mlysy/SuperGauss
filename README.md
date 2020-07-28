@@ -73,13 +73,15 @@ TBD
 
 - [x] Fix R documentation for `Toeplitz` class.
 
-- [ ] Create `set_acf()` and `has_acf()` methods to `NormalToeplitz` and `NormalCirculant`, to make `logdens()`, `grad()`, etc are more efficient for multiple `z` with same `acf`.
+- [x] Create `set_acf()` and `has_acf()` methods to `NormalToeplitz` and `NormalCirculant`, to make `logdens()`, `grad()`, etc are more efficient for multiple `z` with same `acf`.
 
-- [ ] Have `grad()`, etc. output the log-density as well.
+- [x] Have `grad()`, etc. output the log-density as well.
 
 - [x] Reimplement R-level `NormalToeplitz` convenience functions `dSnorm()`, `dSnorm.grad()`, etc.
 
 	In fact, we'll only provide convenience functions `rnormtz()` and `dnormtz()`.  For the gradient and Hessian let's just use the `NormalToeplitz` class.
+	
+- [x] Create class for Durbin-Levinson methods and add LTZ solve method.
 
 - [x] Convert R `.` to `_` and rename other things.
 
