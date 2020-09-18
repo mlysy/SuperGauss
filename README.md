@@ -85,6 +85,12 @@ TBD
 
 - [x] Convert R `.` to `_` and rename other things.
 
-- [ ] Update vignette with new API.
+- [x] Update vignette with new API.
+
+- [ ] Document `src/*Exports.cpp`.
+
+- [ ] Document PCG class.
+
+- [ ] Remove `using namespace` from header files.  Probably by wrapping the whole C++ library into a namespace.
 
 - [ ] Finish this `README.md`.

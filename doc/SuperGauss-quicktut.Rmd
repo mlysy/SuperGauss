@@ -26,7 +26,7 @@ vignette: >
 
 This vignette illustrates the basic functionality of the **SuperGauss** package by simulating a few stochastic processes and estimating their parameters from regularly spaced data.
 
-## Simulation of fractional Brownian motion
+## Simulation of Fractional Brownian Motion
 
 A one-dimensional fractional Brownian motion (fBM) $X_t = X(t)$ is a continuous Gaussian process with $E[X_t] = 0$ and $\cov(X_t, X_s) = \tfrac 1 2 (|t|^{2H} + |s|^{2H} - |t-s|^{2H})$, for $0 < H < 1$.  fBM is not stationary but has stationary increments, such that $(X_{t+\dt} - X_t) \stackrel{D}{=} (X_{s+\dt} - X_s)$ for any $s,t$.  As such, its covariance function is completely determined its mean squared displacement (MSD)
 $$
@@ -37,7 +37,7 @@ When the Hurst parameter $H = \tfrac 1 2$, fBM reduces to ordinary Brownian moti
 ```{r fbmsim, include = FALSE}
 require(SuperGauss)
 
-N <- 3000 # number of observations
+N <- 5000 # number of observations
 dT <- 1/60 # time between observations (seconds)
 H <- .3 # Hurst parameter
 
@@ -78,7 +78,7 @@ for(ii in 1:npaths) {
 }
 ```
 
-## Inference for the Hurst parameter
+## Inference for the Hurst Parameter
 
 Suppose that $\X = (\rv [0] X N)$ are equally spaced observations of an fBM process with $X_i = X(i \dt)$, and let $\dX = (\rv [0] {\Delta X} {N-1})$ denote the corresponding increments, $\Delta X_i = X_{i+1} - X_i$.  Then the loglikelihood function for $H$ is
 $$
@@ -94,43 +94,50 @@ $$
 $$
 Thus, each evaluation of the loglikelihood requires the inverse and log-determinant of a Toeplitz matrix, which scales as $\mathcal O(N^2)$ with the Durbin-Levinson algorithm.  The **SuperGauss** package implements an extended version of the Generalized Schur algorithm of @ammar.gragg88, which scales these computations as $\mathcal O(N \log^2 N)$.  With careful memory management and extensive use of the **FFTW** library [@frigo.johnson05], the **SuperGauss** implementation crosses over Durbin-Levinson at around $N = 300$.
 
-### The `Toeplitz` matrix class
+### The `Toeplitz` Matrix Class
 
 The bulk of the likelihood calculations in **SuperGauss** are handled by the `Toeplitz` matrix class.  A `Toeplitz` object is created as follows:
 ```{r}
 # allocate and assign in one step
-Toep <- Toeplitz$new(acf = acf)
-Toep
+Tz <- Toeplitz$new(acf = acf)
+Tz
 
 # allocate memory only
-Toep <- Toeplitz$new(N = N)
-Toep
-Toep$set_acf(acf = acf) # assign later
+Tz <- Toeplitz$new(N = N)
+Tz
+Tz$set_acf(acf = acf) # assign later
 ```
 Its primary methods are illustrated below:
 ```{r}
-all(acf == Toep$get_acf()) # extract acf
+all(acf == Tz$get_acf()) # extract acf
 
 # matrix multiplication
 z <- rnorm(N)
 x1 <- toeplitz(acf) %*% z # regular way
-x2 <- Toep %*% z # with Toeplitz class
+x2 <- Tz$prod(z) # with Toeplitz class
+x3 <- Tz %*% z # with Toeplitz class overloading the `%*%` operator
 range(x1-x2)
+range(x2-x3)
 
 # system of equations
 y1 <- solve(toeplitz(acf), z) # regular way
-y2 <- solve(Toep, z) # with Toeplitz class
+y2 <- Tz$solve(z) # with Toeplitz class
+y2 <- solve(Tz, z) # same thing but overloading `solve()`
 range(y1-y2)
 
 # log-determinant
 ld1 <- determinant(toeplitz(acf))$mod
-ld2 <- determinant(Toep) # note: no $mod
+ld2 <- Tz$log_det() # with Toeplitz class
+ld2 <- determinant(Tz) # same thing but overloading `determinant()`
+                         # note: no $mod
 c(ld1, ld2)
 ```
 
-### Maximum likelihood calculation
+### Maximum Likelihood Calculation
 
-The following code shows how to obtain the maximum likelihood of $H$ and its standard error for a given fBM path.  For speed comparisons, the optimization is done both using the superfast Generalized Schur algorithm and the fast Durbin-Levinson algorithm.
+The following code shows how to obtain the maximum likelihood of $H$ and its standard error for a given fBM path.  The log-PDF of the Gaussian with Toeplitz variance matrix is obtained either with `SuperGauss::dnormtz()`, or using the `NormalToeplitz` class.  The advantage of the latter is that it does not reallocate memory for the underlying `Toeplitz` object at every likelihood evaulation.
+
+For speed comparisons, the optimization underlying the MLE calculation is done both using the superfast Generalized Schur algorithm and the fast Durbin-Levinson algorithm.
 ```{r}
 dX <- diff(Xt[,1]) # obtain the increments of a given path
 N <- length(dX)
@@ -142,10 +149,9 @@ fbm_acf <- function(H) {
 }
 
 # loglikelihood using generalized Schur algorithm
-Toep <- Toeplitz$new(N = N) # pre-allocate memory
+NTz <- NormalToeplitz$new(N = N) # pre-allocate memory
 loglik_GS <- function(H) {
-  Toep$set_acf(acf = fbm_acf(H))
-  dnormtz(X = dX, acf = Toep, log = TRUE)
+  NTz$logdens(z = dX, acf = fbm_acf(H))
 }
 
 # loglikelihood using Durbin-Levinson algorithm
@@ -207,10 +213,11 @@ T3
 
 ## Superfast Newton-Raphson
 
-In addition to the superfast algorithm for Gaussian likelihood evaluations , **SuperGauss** provides such algorithms for the loglikelihood gradient and Hessian functions, leading to superfast versions of many inference algorithms such as Newton-Raphson and Hamiltonian Monte Carlo.  An example of the former is given below using the two-parameter exponential autocorrelation model
+In addition to the superfast algorithm for Gaussian likelihood evaluations, **SuperGauss** provides such algorithms for the loglikelihood gradient and Hessian functions, leading to superfast versions of many inference algorithms such as Newton-Raphson and Hamiltonian Monte Carlo.  These are provided by the `NormalToeplitz$grad()` and `NormalToeplitz$hess()` methods.  Both of these methods optionally return the lower order derivatives as well, reusing common computations to improve performance.  An example of Newton-Raphson is given below using the two-parameter exponential autocorrelation model
 $$
 \acf_X(t \mid \lambda, \sigma) = \sigma^2 \exp(- |t/\lambda|).
 $$
+The example uses `stats::nlm()` for optimization, which requires the derivatives to be passsed as attributes to the (negative) loglikelihood.
 
 ```{r}
 # autocorrelation function
@@ -240,35 +247,41 @@ tseq <- (1:N-1)*dT
 acf <- exp_acf(t = tseq, lambda = lambda, sigma = sigma)
 Xt <- rnormtz(acf = acf)
 
-Toep <- Toeplitz$new(N = N) # storage space
+NTz <- NormalToeplitz$new(N = N) # storage space
 
-## --- FIXME BELOW HERE ---
+# negative loglikelihood function of theta = (lambda, sigma)
+# include attributes for gradient and Hessian
+exp_negloglik <- function(theta) {
+  lambda <- theta[1]
+  sigma <- theta[2]
+  # acf, its gradient, and Hessian
+  acf <- exp_acf(tseq, lambda, sigma)
+  dacf <- exp_acf_grad(tseq, lambda, sigma)
+  d2acf <- exp_acf_hess(tseq, lambda, sigma)
+  # derivatives of NormalToeplitz up to order 2
+  derivs <- NTz$hess(z = Xt,
+                     dz = matrix(0, N, 2),
+                     d2z = array(0, dim = c(N, 2, 2)),
+                     acf = acf,
+                     dacf = dacf,
+                     d2acf = d2acf,
+                     full_out = TRUE)
+  # negative loglikelihood with derivatives as attributes
+  nll <- -1 * derivs$ldens
+  attr(nll, "gradient") <- -1 * derivs$grad
+  attr(nll, "hessian") <- -1 * derivs$hess
+  nll
+}
 
-## # negative loglikelihood function of theta = (lambda, sigma)
-## # include attributes for gradient and Hessian
-## exp_negloglik <- function(theta) {
-##   lambda <- theta[1]
-##   sigma <- theta[2]
-##   # acf, its gradient, and Hessian
-##   Toep$set_acf(acf = exp_acf(tseq, lambda, sigma)) # use the Toeplitz class
-##   dacf <- exp_acf_grad(tseq, lambda, sigma)
-##   d2acf <- exp_acf_hess(tseq, lambda, sigma)
-##   nll <- -1 * dnormtz(X = Xt, acf = Toep, log = TRUE)
-##   attr(nll, "gradient") <- -1 * Snorm.grad(X = Xt, acf = Toep, dacf = dacf)
-##   attr(nll, "hessian") <- -1 * Snorm.hess(X = Xt, acf = Toep,
-##                                           dacf = dacf, d2acf = d2acf)
-##   nll
-## }
+# optimization
+system.time({
+  mle_fit <- nlm(f = exp_negloglik, p = c(1,1), hessian = TRUE)
+})
 
-## # optimization
-## system.time({
-##   mle.fit <- nlm(f = exp.negloglik, p = c(1,1), hessian = TRUE)
-## })
-
-## # display estimates with standard errors
-## rbind(true = c(lambda = lambda, sigma = sigma),
-##       est = mle.fit$estimate,
-##       se = sqrt(diag(solve(mle.fit$hessian))))
+# display estimates with standard errors
+rbind(true = c(lambda = lambda, sigma = sigma),
+      est = mle_fit$estimate,
+      se = sqrt(diag(solve(mle_fit$hessian))))
 
 ```
 
