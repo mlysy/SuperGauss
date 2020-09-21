@@ -6,40 +6,40 @@
 // [[Rcpp::depends(RcppEigen)]]
 #include <RcppEigen.h>
 // FIXME: shouldn't happen whenever this file gets included
-using namespace Eigen; 
+// using namespace Eigen; 
 
 /// @brief Durbin-Levinson methods for Toeplitz matrices.
 class DurbinLevinson {
  private:
   int N_; ///< Size of Toeplitz matrix.
   // temporary storage
-  VectorXd phi1_;
-  VectorXd phi2_;
-  VectorXd eps_;
+  Eigen::VectorXd phi1_;
+  Eigen::VectorXd phi2_;
+  Eigen::VectorXd eps_;
   // the following vectors are dynamically reallocated only if their sizes change. 
-  VectorXd rx_;
-  VectorXd ry_;
+  Eigen::VectorXd rx_;
+  Eigen::VectorXd ry_;
   // Update the Durbin-Levinson coefficients.
-  void update_phi(const Ref<const VectorXd>& acf, double nu, int ii);
+  void update_phi(const Eigen::Ref<const Eigen::VectorXd>& acf, double nu, int ii);
  public:
   /// Constructor.
   DurbinLevinson(int N);
   /// Cross product with inverse Toeplitz.
   template <typename T1>
     double cross_prod(const Eigen::MatrixBase<T1>& M,
-		      const Ref <const MatrixXd>& Xt,
-		      const Ref <const MatrixXd>& Yt,
-		      const Ref <const VectorXd>& acf, int calc_mode);
+		      const Eigen::Ref <const Eigen::MatrixXd>& Xt,
+		      const Eigen::Ref <const Eigen::MatrixXd>& Yt,
+		      const Eigen::Ref <const Eigen::VectorXd>& acf, int calc_mode);
   /// Solve Toeplitz system.
-  double solve(Ref <MatrixXd> X,
-	       const Ref <const VectorXd>& acf,
-	       const Ref <const MatrixXd>& Y);
+  double solve(Eigen::Ref <Eigen::MatrixXd> X,
+	       const Eigen::Ref <const Eigen::VectorXd>& acf,
+	       const Eigen::Ref <const Eigen::MatrixXd>& Y);
   /// Multiply matrix by Cholesky of Toeplitz matrix or its inverse.
-  void cholXZ(Ref <MatrixXd> Xt, Ref<MatrixXd> Zt,
-	      const Ref <const VectorXd>& acf, bool ZtoX);
+  void cholXZ(Eigen::Ref <Eigen::MatrixXd> Xt, Eigen::Ref<Eigen::MatrixXd> Zt,
+	      const Eigen::Ref <const Eigen::VectorXd>& acf, bool ZtoX);
 };
 
-inline void DurbinLevinson::update_phi(const Ref<const VectorXd>& acf,
+inline void DurbinLevinson::update_phi(const Eigen::Ref<const Eigen::VectorXd>& acf,
 				       double nu, int ii) {
   phi2_.head(ii) = phi1_.head(ii).reverse();
   double rp = phi2_.head(ii).dot(acf.segment(1,ii));
@@ -54,11 +54,11 @@ inline void DurbinLevinson::update_phi(const Ref<const VectorXd>& acf,
 /// @param[in] N Size of Toeplitz matrix.
 inline DurbinLevinson::DurbinLevinson(int N) {
   N_ = N;
-  phi1_ = VectorXd::Zero(N_);
-  phi2_ = VectorXd::Zero(N_);
-  eps_ = VectorXd::Zero(N_);
-  rx_ = VectorXd::Zero(1);
-  ry_ = VectorXd::Zero(1);
+  phi1_ = Eigen::VectorXd::Zero(N_);
+  phi2_ = Eigen::VectorXd::Zero(N_);
+  eps_ = Eigen::VectorXd::Zero(N_);
+  rx_ = Eigen::VectorXd::Zero(1);
+  ry_ = Eigen::VectorXd::Zero(1);
 }
 
 /// For `Tz = toeplitz(acf)`, calculates one of the following depending on the value of `calc_mode`:
@@ -75,9 +75,9 @@ inline DurbinLevinson::DurbinLevinson(int N) {
 /// @return Log-determinant of `Tz` as a biproduct of the cross-product calculation.
 template <typename T1>
 inline double DurbinLevinson::cross_prod(const Eigen::MatrixBase<T1>& M,
-					 const Ref <const MatrixXd>& Xt,
-					 const Ref <const MatrixXd>& Yt,
-					 const Ref <const VectorXd>& acf,
+					 const Eigen::Ref <const Eigen::MatrixXd>& Xt,
+					 const Eigen::Ref <const Eigen::MatrixXd>& Yt,
+					 const Eigen::Ref <const Eigen::VectorXd>& acf,
 					 int calc_mode) {
   // required to use SelfAdjointView: https://eigen.tuxfamily.org/dox/TopicFunctionTakingEigenTypes.html
 #define _M const_cast<Eigen::MatrixBase<T1>& >(M)
@@ -86,8 +86,8 @@ inline double DurbinLevinson::cross_prod(const Eigen::MatrixBase<T1>& M,
   d = Xt.rows();
   k = (calc_mode != 1) ? Yt.rows() : 0;
   // resize rx_ and ry_ if necessary
-  if(rx_.size() != d) rx_ = VectorXd::Zero(d);
-  if((calc_mode != 1) && (ry_.size() != k)) ry_ = VectorXd::Zero(k);
+  if(rx_.size() != d) rx_ = Eigen::VectorXd::Zero(d);
+  if((calc_mode != 1) && (ry_.size() != k)) ry_ = Eigen::VectorXd::Zero(k);
   // initialize
   nu = acf(0);
   ldV = 0.0;
@@ -143,12 +143,12 @@ inline double DurbinLevinson::cross_prod(const Eigen::MatrixBase<T1>& M,
 /// @param[in/out] Zt Transpose of `Z`: a matrix of size `d x N`.
 /// @param[in] acf Vector of length `N` giving the first row/column of `Tz`.
 /// @param[in] ZtoX Whether to multiply by the Cholesky factor (`ZtoX = false`) or its inverse (`ZtoX = true`).
-void DurbinLevinson::cholXZ(Ref <MatrixXd> Xt, Ref<MatrixXd> Zt,
-			    const Ref <const VectorXd>& acf, bool ZtoX) {
+void DurbinLevinson::cholXZ(Eigen::Ref <Eigen::MatrixXd> Xt, Eigen::Ref<Eigen::MatrixXd> Zt,
+			    const Eigen::Ref <const Eigen::VectorXd>& acf, bool ZtoX) {
   double nu, sqrt_nu;
   nu = acf(0);
   // resize rx_ if necessary
-  if(rx_.size() != Xt.rows()) rx_ = VectorXd::Zero(Xt.rows());
+  if(rx_.size() != Xt.rows()) rx_ = Eigen::VectorXd::Zero(Xt.rows());
   for(int ii = 0; ii < N_; ii++) {
     // variance
     if(ii > 0) nu *= (1-phi1_(ii-1)*phi1_(ii-1));
@@ -186,12 +186,12 @@ void DurbinLevinson::cholXZ(Ref <MatrixXd> Xt, Ref<MatrixXd> Zt,
 /// @param[in] acf Vector of length `N` giving the first row/column of `Tz`.
 /// @param[in] Y Transpose of `Y`: a matrix of size `d x N`.
 /// @return Log-determinant of `Tz` as a biproduct of the calculation.
-inline double DurbinLevinson::solve(Ref <MatrixXd> Xt,
-				    const Ref <const VectorXd>& acf,
-				    const Ref <const MatrixXd>& Yt) {
+inline double DurbinLevinson::solve(Eigen::Ref <Eigen::MatrixXd> Xt,
+				    const Eigen::Ref <const Eigen::VectorXd>& acf,
+				    const Eigen::Ref <const Eigen::MatrixXd>& Yt) {
   double xi, ldV;
   // resize rx_ = lambda if necessary
-  if(rx_.size() != Xt.rows()) rx_ = VectorXd::Zero(Xt.rows());
+  if(rx_.size() != Xt.rows()) rx_ = Eigen::VectorXd::Zero(Xt.rows());
   // initialization
   phi1_(0) = 1.0; // phi1 = aa
   eps_(0) = acf(0);

@@ -26,9 +26,9 @@ Eigen::MatrixXd DurbinLevinson_XZ(Eigen::MatrixXd X, Eigen::VectorXd acf) {
   N = acf.size();
   k = X.cols();
   // output
-  MatrixXd Zt(k,N);
+  Eigen::MatrixXd Zt(k,N);
   // temporary
-  MatrixXd Xt = X.transpose();
+  Eigen::MatrixXd Xt = X.transpose();
   DurbinLevinson dl(N);
 
   dl.cholXZ(Xt, Zt, acf, false);
@@ -60,9 +60,9 @@ Eigen::MatrixXd DurbinLevinson_ZX(Eigen::MatrixXd Z, Eigen::VectorXd acf) {
   N = acf.size();
   k = Z.cols();
   // output
-  MatrixXd Xt(k,N);
+  Eigen::MatrixXd Xt(k,N);
   // temporary
-  MatrixXd Zt = Z.transpose();
+  Eigen::MatrixXd Zt = Z.transpose();
   DurbinLevinson dl(N);
 
   dl.cholXZ(Xt, Zt, acf, true);
@@ -103,11 +103,11 @@ Rcpp::List DurbinLevinson_crossprod(Eigen::MatrixXd X, Eigen::MatrixXd Y,
   d = X.cols();
   k = calc_mode == 1 ? d : Y.cols();
   // output
-  MatrixXd M(d, calc_mode != 2 ? k : 1);
+  Eigen::MatrixXd M(d, calc_mode != 2 ? k : 1);
   double ldV;
   // temporaries
-  MatrixXd Xt = X.transpose();
-  MatrixXd Yt;
+  Eigen::MatrixXd Xt = X.transpose();
+  Eigen::MatrixXd Yt;
   if(calc_mode != 1) Yt = Y.transpose();
   DurbinLevinson dl(N);
 
@@ -115,7 +115,7 @@ Rcpp::List DurbinLevinson_crossprod(Eigen::MatrixXd X, Eigen::MatrixXd Y,
   if(calc_mode != 2) {
     return List::create(_["IP"] = wrap(M), _["ldV"] = wrap(ldV));
   } else {
-    return List::create(_["IP"] = wrap(VectorXd(M)), _["ldV"] = wrap(ldV));
+    return List::create(_["IP"] = wrap(Eigen::VectorXd(M)), _["ldV"] = wrap(ldV));
   }
 }
 // Rcpp::List DurbinLevinson_Eigen(Eigen::MatrixXd X, Eigen::MatrixXd Y,
@@ -150,9 +150,9 @@ Eigen::MatrixXd DurbinLevinson_solve(Eigen::MatrixXd X, Eigen::VectorXd acf) {
   int N = X.rows();
   int d = X.cols();
   // output
-  MatrixXd Yt(d, N);
+  Eigen::MatrixXd Yt(d, N);
   // temporary
-  MatrixXd Xt = X.transpose();
+  Eigen::MatrixXd Xt = X.transpose();
   DurbinLevinson dl(N);
 
   dl.solve(Yt, acf, Xt);
