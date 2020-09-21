@@ -38,8 +38,12 @@ Version 1.0.2 is available on [CRAN](https://CRAN.R-project.org/package=SuperGau
 Once you have successfully installed FFTW, **SuperGauss** can be installed from GitHub via the command:
 
 ```r
-devtools::install_github("mlysy/SuperGauss", ref = "devel_martin")
+devtools::install_github("mlysy/SuperGauss")
 ```
+
+### R API
+
+Please see the package [vignette](http://htmlpreview.github.com/?https://github.com/mlysy/SuperGauss/blob/master/doc/SuperGauss-quicktut.html).
 
 ### C++ API
 
@@ -64,8 +68,3 @@ ld = NTz.logdens(z, acf);
 // when e.g., `calc_dldz = false`, `dldz` is not modified.
 NTz.grad_full(dldz, dlda, z, acf, calc_dldz, calc_dlda)
 ```
-
-### R API
-
-Please see the package [vignette](http://htmlpreview.github.com/?https://github.com/mlysy/SuperGauss/tree/devel_martin/doc/SuperGauss-quicktut.html).
-
