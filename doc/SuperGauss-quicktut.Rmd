@@ -9,7 +9,7 @@ bibliography: references.bib
 csl: taylor-and-francis-harvard-x.csl
 link-citations: true
 vignette: >
-  %\VignetteIndexEntry{SuperGauss}
+  %\VignetteIndexEntry{Superfast Likelihood Inference for Stationary Gaussian Time Series}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
