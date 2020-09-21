@@ -1,8 +1,8 @@
 Package: SuperGauss
 Type: Package
 Title: Superfast Likelihood Inference for Stationary Gaussian Time Series
-Version: 1.0.2.9000
-Date: 2020-04-02
+Version: 2.0.0
+Date: 2020-09-21
 Authors@R: c(person("Yun", "Ling", role = "aut"),
              person("Martin", "Lysy",
 	            email = "mlysy@uwaterloo.ca",

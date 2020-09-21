@@ -1,5 +1,10 @@
 library(SuperGauss)
 
+# set the seed when on CRAN
+if(!identical(Sys.getenv("NOT_CRAN"), "true")) {
+  set.seed(1)
+}
+
 test_fbm_acf <- function(alpha, dT, N) {
   msd <- fbm_msd(dT*(1:N), alpha/2)
   msd2acf(msd)
