@@ -67,30 +67,5 @@ NTz.grad_full(dldz, dlda, z, acf, calc_dldz, calc_dlda)
 
 ### R API
 
-TBD
+Please see the package [vignette](http://htmlpreview.github.com/?https://github.com/mlysy/SuperGauss/tree/devel_martin/doc/SuperGauss-quicktut.html).
 
-### TODO
-
-- [x] Fix R documentation for `Toeplitz` class.
-
-- [x] Create `set_acf()` and `has_acf()` methods to `NormalToeplitz` and `NormalCirculant`, to make `logdens()`, `grad()`, etc are more efficient for multiple `z` with same `acf`.
-
-- [x] Have `grad()`, etc. output the log-density as well.
-
-- [x] Reimplement R-level `NormalToeplitz` convenience functions `dSnorm()`, `dSnorm.grad()`, etc.
-
-	In fact, we'll only provide convenience functions `rnormtz()` and `dnormtz()`.  For the gradient and Hessian let's just use the `NormalToeplitz` class.
-	
-- [x] Create class for Durbin-Levinson methods and add LTZ solve method.
-
-- [x] Convert R `.` to `_` and rename other things.
-
-- [x] Update vignette with new API.
-
-- [ ] Document `src/*Exports.cpp`.
-
-- [ ] Document PCG class.
-
-- [ ] Remove `using namespace` from header files.  Probably by wrapping the whole C++ library into a namespace.
-
-- [ ] Finish this `README.md`.

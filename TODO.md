@@ -1,6 +1,34 @@
 ## TODO
 
-- [ ] Update function documentation to use `man-roxygen` and `examples`.  For the former, it means using the `@template` tags extensively for **roxygen2** documentation (don't forget to add `man-roxygen` to `.Rbuildignore`).  For the latter, it means that examples for R function `foo` should be in plain R format (i.e., no `'#`) in `examples/foo.R`, and referenced in the documentation via `@example examples/foo.R`.  The point is that it's much easier to write examples directly in R than have to comment them out all the time.  Also, you can share examples between functions this way, etc.
+- [x] Fix R documentation for `Toeplitz` class.
+
+- [x] Create `set_acf()` and `has_acf()` methods to `NormalToeplitz` and `NormalCirculant`, to make `logdens()`, `grad()`, etc are more efficient for multiple `z` with same `acf`.
+
+- [x] Have `grad()`, etc. output the log-density as well.
+
+- [x] Reimplement R-level `NormalToeplitz` convenience functions `dSnorm()`, `dSnorm.grad()`, etc.
+
+	In fact, we'll only provide convenience functions `rnormtz()` and `dnormtz()`.  For the gradient and Hessian let's just use the `NormalToeplitz` class.
+	
+- [x] Add deprecation notes for `dSnorm()`, `rSnorm()`, etc.
+	
+- [x] Create class for Durbin-Levinson methods and add LTZ solve method.
+
+- [x] Convert R `.` to `_` and rename other things.
+
+- [x] Update vignette with new API.
+
+- [ ] Document `src/*Exports.cpp`.
+
+- [ ] Document PCG class.
+
+- [x] Remove `using namespace` from header files.  Probably by wrapping the whole C++ library into a namespace.
+
+	For simplicity just ended up using `Eigen::` to prefix its library members.
+
+- [x] Finish `README.md`.
+
+- [x] Update function documentation to use `man-roxygen` and `examples`.  For the former, it means using the `@template` tags extensively for **roxygen2** documentation (don't forget to add `man-roxygen` to `.Rbuildignore`).  For the latter, it means that examples for R function `foo` should be in plain R format (i.e., no `'#`) in `examples/foo.R`, and referenced in the documentation via `@example examples/foo.R`.  The point is that it's much easier to write examples directly in R than have to comment them out all the time.  Also, you can share examples between functions this way, etc.
 
 - [x] Need to `.gitignore` some files and/or hide things in `tests/dontrun`.
 
@@ -65,7 +93,7 @@
 
 - [x] **Optimize code for `Snorm.grad` and `Snorm.hess`** *(Martin)*.  Perhaps fewer for-loops, fewer `apply`s, etc.
 
-- [ ] Separate C++ `Toeplitz` class from `GSchur` class, and `NormalToeplitz` class.  The point is that `Toeplitz` is templated on either `GSchur` or `LTZ`.
+- [x] Separate C++ `Toeplitz` class from `GSchur` class, and `NormalToeplitz` class.  The point is that `Toeplitz` is templated on either `GSchur` or `LTZ`.
 
     As for `NormalToeplitz`, here's a potential class design:
 	
@@ -118,7 +146,7 @@
 	```
 
 
-- [ ] Implement gradient in Stan.  We will need to talk to the Stan development team about this.  Here are some of the links I found for help:
+- [x] Implement gradient in Stan.  We will need to talk to the Stan development team about this.  Here are some of the links I found for help:
 
     - [Full reference](https://arxiv.org/abs/1509.07164)
 	- [Simple example]( https://github.com/stan-dev/math/wiki/Adding-a-new-function-with-known-gradients).  What this is missing however is memory allocation, i.e., you do not want to allocate memory every time Stan computes the gradient!
