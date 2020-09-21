@@ -294,131 +294,131 @@ BEGIN_RCPP
 END_RCPP
 }
 // PCG_ctor
-SEXP PCG_ctor(int n);
-RcppExport SEXP _SuperGauss_PCG_ctor(SEXP nSEXP) {
+SEXP PCG_ctor(int N);
+RcppExport SEXP _SuperGauss_PCG_ctor(SEXP NSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(PCG_ctor(n));
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    rcpp_result_gen = Rcpp::wrap(PCG_ctor(N));
     return rcpp_result_gen;
 END_RCPP
 }
 // PCG_solve
-NumericMatrix PCG_solve(SEXP PCG_ptr, NumericVector acf, NumericMatrix y, double tol);
-RcppExport SEXP _SuperGauss_PCG_solve(SEXP PCG_ptrSEXP, SEXP acfSEXP, SEXP ySEXP, SEXP tolSEXP) {
+NumericMatrix PCG_solve(SEXP pPTz, NumericVector acf, NumericMatrix y, double tol);
+RcppExport SEXP _SuperGauss_PCG_solve(SEXP pPTzSEXP, SEXP acfSEXP, SEXP ySEXP, SEXP tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type PCG_ptr(PCG_ptrSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type pPTz(pPTzSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type acf(acfSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type y(ySEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
-    rcpp_result_gen = Rcpp::wrap(PCG_solve(PCG_ptr, acf, y, tol));
+    rcpp_result_gen = Rcpp::wrap(PCG_solve(pPTz, acf, y, tol));
     return rcpp_result_gen;
 END_RCPP
 }
 // Toeplitz_ctor
-SEXP Toeplitz_ctor(int n);
-RcppExport SEXP _SuperGauss_Toeplitz_ctor(SEXP nSEXP) {
+SEXP Toeplitz_ctor(int N);
+RcppExport SEXP _SuperGauss_Toeplitz_ctor(SEXP NSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(Toeplitz_ctor(n));
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    rcpp_result_gen = Rcpp::wrap(Toeplitz_ctor(N));
     return rcpp_result_gen;
 END_RCPP
 }
 // Toeplitz_set_acf
-void Toeplitz_set_acf(SEXP Toep_ptr, NumericVector acf);
-RcppExport SEXP _SuperGauss_Toeplitz_set_acf(SEXP Toep_ptrSEXP, SEXP acfSEXP) {
+void Toeplitz_set_acf(SEXP pToep, NumericVector acf);
+RcppExport SEXP _SuperGauss_Toeplitz_set_acf(SEXP pToepSEXP, SEXP acfSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type Toep_ptr(Toep_ptrSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type pToep(pToepSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type acf(acfSEXP);
-    Toeplitz_set_acf(Toep_ptr, acf);
+    Toeplitz_set_acf(pToep, acf);
     return R_NilValue;
 END_RCPP
 }
 // Toeplitz_get_acf
-NumericVector Toeplitz_get_acf(SEXP Toep_ptr);
-RcppExport SEXP _SuperGauss_Toeplitz_get_acf(SEXP Toep_ptrSEXP) {
+NumericVector Toeplitz_get_acf(SEXP pToep);
+RcppExport SEXP _SuperGauss_Toeplitz_get_acf(SEXP pToepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type Toep_ptr(Toep_ptrSEXP);
-    rcpp_result_gen = Rcpp::wrap(Toeplitz_get_acf(Toep_ptr));
+    Rcpp::traits::input_parameter< SEXP >::type pToep(pToepSEXP);
+    rcpp_result_gen = Rcpp::wrap(Toeplitz_get_acf(pToep));
     return rcpp_result_gen;
 END_RCPP
 }
 // Toeplitz_prod
-NumericMatrix Toeplitz_prod(SEXP Toep_ptr, NumericMatrix X);
-RcppExport SEXP _SuperGauss_Toeplitz_prod(SEXP Toep_ptrSEXP, SEXP XSEXP) {
+NumericMatrix Toeplitz_prod(SEXP pToep, NumericMatrix X);
+RcppExport SEXP _SuperGauss_Toeplitz_prod(SEXP pToepSEXP, SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type Toep_ptr(Toep_ptrSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type pToep(pToepSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(Toeplitz_prod(Toep_ptr, X));
+    rcpp_result_gen = Rcpp::wrap(Toeplitz_prod(pToep, X));
     return rcpp_result_gen;
 END_RCPP
 }
 // Toeplitz_solve
-NumericMatrix Toeplitz_solve(SEXP Toep_ptr, NumericMatrix X);
-RcppExport SEXP _SuperGauss_Toeplitz_solve(SEXP Toep_ptrSEXP, SEXP XSEXP) {
+NumericMatrix Toeplitz_solve(SEXP pToep, NumericMatrix X);
+RcppExport SEXP _SuperGauss_Toeplitz_solve(SEXP pToepSEXP, SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type Toep_ptr(Toep_ptrSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type pToep(pToepSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(Toeplitz_solve(Toep_ptr, X));
+    rcpp_result_gen = Rcpp::wrap(Toeplitz_solve(pToep, X));
     return rcpp_result_gen;
 END_RCPP
 }
 // Toeplitz_log_det
-double Toeplitz_log_det(SEXP Toep_ptr);
-RcppExport SEXP _SuperGauss_Toeplitz_log_det(SEXP Toep_ptrSEXP) {
+double Toeplitz_log_det(SEXP pToep);
+RcppExport SEXP _SuperGauss_Toeplitz_log_det(SEXP pToepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type Toep_ptr(Toep_ptrSEXP);
-    rcpp_result_gen = Rcpp::wrap(Toeplitz_log_det(Toep_ptr));
+    Rcpp::traits::input_parameter< SEXP >::type pToep(pToepSEXP);
+    rcpp_result_gen = Rcpp::wrap(Toeplitz_log_det(pToep));
     return rcpp_result_gen;
 END_RCPP
 }
 // Toeplitz_trace_grad
-double Toeplitz_trace_grad(SEXP Toep_ptr, NumericVector acf2);
-RcppExport SEXP _SuperGauss_Toeplitz_trace_grad(SEXP Toep_ptrSEXP, SEXP acf2SEXP) {
+double Toeplitz_trace_grad(SEXP pToep, NumericVector acf0);
+RcppExport SEXP _SuperGauss_Toeplitz_trace_grad(SEXP pToepSEXP, SEXP acf0SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type Toep_ptr(Toep_ptrSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type acf2(acf2SEXP);
-    rcpp_result_gen = Rcpp::wrap(Toeplitz_trace_grad(Toep_ptr, acf2));
+    Rcpp::traits::input_parameter< SEXP >::type pToep(pToepSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type acf0(acf0SEXP);
+    rcpp_result_gen = Rcpp::wrap(Toeplitz_trace_grad(pToep, acf0));
     return rcpp_result_gen;
 END_RCPP
 }
 // Toeplitz_trace_hess
-double Toeplitz_trace_hess(SEXP Toep_ptr, NumericVector acf2, NumericVector acf3);
-RcppExport SEXP _SuperGauss_Toeplitz_trace_hess(SEXP Toep_ptrSEXP, SEXP acf2SEXP, SEXP acf3SEXP) {
+double Toeplitz_trace_hess(SEXP pToep, NumericVector acf1, NumericVector acf2);
+RcppExport SEXP _SuperGauss_Toeplitz_trace_hess(SEXP pToepSEXP, SEXP acf1SEXP, SEXP acf2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type Toep_ptr(Toep_ptrSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type pToep(pToepSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type acf1(acf1SEXP);
     Rcpp::traits::input_parameter< NumericVector >::type acf2(acf2SEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type acf3(acf3SEXP);
-    rcpp_result_gen = Rcpp::wrap(Toeplitz_trace_hess(Toep_ptr, acf2, acf3));
+    rcpp_result_gen = Rcpp::wrap(Toeplitz_trace_hess(pToep, acf1, acf2));
     return rcpp_result_gen;
 END_RCPP
 }
 // Toeplitz_has_acf
-bool Toeplitz_has_acf(SEXP Toep_ptr);
-RcppExport SEXP _SuperGauss_Toeplitz_has_acf(SEXP Toep_ptrSEXP) {
+bool Toeplitz_has_acf(SEXP pToep);
+RcppExport SEXP _SuperGauss_Toeplitz_has_acf(SEXP pToepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type Toep_ptr(Toep_ptrSEXP);
-    rcpp_result_gen = Rcpp::wrap(Toeplitz_has_acf(Toep_ptr));
+    Rcpp::traits::input_parameter< SEXP >::type pToep(pToepSEXP);
+    rcpp_result_gen = Rcpp::wrap(Toeplitz_has_acf(pToep));
     return rcpp_result_gen;
 END_RCPP
 }

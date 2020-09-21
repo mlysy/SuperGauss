@@ -108,8 +108,8 @@ inline int NormalToeplitz::size() {
   return N_;
 }
 
-/// @param[in] x First vector of length `N`.
-/// @param[in] y Second vector of length `N`.
+/// @param[in] v1 First vector of length `N`.
+/// @param[in] v2 Second vector of length `N`.
 /// @return Dot product `sum_i=1^n v1_i * v2_i`.
 inline double NormalToeplitz::dot_prod(const double* v1, const double* v2) {
   double ans = 0.0;

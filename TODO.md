@@ -18,9 +18,9 @@
 
 - [x] Update vignette with new API.
 
-- [ ] Document `src/*Exports.cpp`.
+- [x] Document `src/*Exports.cpp`.
 
-- [ ] Document PCG class.
+- [x] Document PCG class.
 
 - [x] Remove `using namespace` from header files.  Probably by wrapping the whole C++ library into a namespace.
 

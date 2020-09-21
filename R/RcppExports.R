@@ -93,47 +93,47 @@ NormalToeplitz_grad_full <- function(NTz_ptr, z, acf, calc_dldz = TRUE, calc_dld
     .Call(`_SuperGauss_NormalToeplitz_grad_full`, NTz_ptr, z, acf, calc_dldz, calc_dlda)
 }
 
-PCG_ctor <- function(n) {
-    .Call(`_SuperGauss_PCG_ctor`, n)
+PCG_ctor <- function(N) {
+    .Call(`_SuperGauss_PCG_ctor`, N)
 }
 
-PCG_solve <- function(PCG_ptr, acf, y, tol) {
-    .Call(`_SuperGauss_PCG_solve`, PCG_ptr, acf, y, tol)
+PCG_solve <- function(pPTz, acf, y, tol) {
+    .Call(`_SuperGauss_PCG_solve`, pPTz, acf, y, tol)
 }
 
-Toeplitz_ctor <- function(n) {
-    .Call(`_SuperGauss_Toeplitz_ctor`, n)
+Toeplitz_ctor <- function(N) {
+    .Call(`_SuperGauss_Toeplitz_ctor`, N)
 }
 
-Toeplitz_set_acf <- function(Toep_ptr, acf) {
-    invisible(.Call(`_SuperGauss_Toeplitz_set_acf`, Toep_ptr, acf))
+Toeplitz_set_acf <- function(pToep, acf) {
+    invisible(.Call(`_SuperGauss_Toeplitz_set_acf`, pToep, acf))
 }
 
-Toeplitz_get_acf <- function(Toep_ptr) {
-    .Call(`_SuperGauss_Toeplitz_get_acf`, Toep_ptr)
+Toeplitz_get_acf <- function(pToep) {
+    .Call(`_SuperGauss_Toeplitz_get_acf`, pToep)
 }
 
-Toeplitz_prod <- function(Toep_ptr, X) {
-    .Call(`_SuperGauss_Toeplitz_prod`, Toep_ptr, X)
+Toeplitz_prod <- function(pToep, X) {
+    .Call(`_SuperGauss_Toeplitz_prod`, pToep, X)
 }
 
-Toeplitz_solve <- function(Toep_ptr, X) {
-    .Call(`_SuperGauss_Toeplitz_solve`, Toep_ptr, X)
+Toeplitz_solve <- function(pToep, X) {
+    .Call(`_SuperGauss_Toeplitz_solve`, pToep, X)
 }
 
-Toeplitz_log_det <- function(Toep_ptr) {
-    .Call(`_SuperGauss_Toeplitz_log_det`, Toep_ptr)
+Toeplitz_log_det <- function(pToep) {
+    .Call(`_SuperGauss_Toeplitz_log_det`, pToep)
 }
 
-Toeplitz_trace_grad <- function(Toep_ptr, acf2) {
-    .Call(`_SuperGauss_Toeplitz_trace_grad`, Toep_ptr, acf2)
+Toeplitz_trace_grad <- function(pToep, acf0) {
+    .Call(`_SuperGauss_Toeplitz_trace_grad`, pToep, acf0)
 }
 
-Toeplitz_trace_hess <- function(Toep_ptr, acf2, acf3) {
-    .Call(`_SuperGauss_Toeplitz_trace_hess`, Toep_ptr, acf2, acf3)
+Toeplitz_trace_hess <- function(pToep, acf1, acf2) {
+    .Call(`_SuperGauss_Toeplitz_trace_hess`, pToep, acf1, acf2)
 }
 
-Toeplitz_has_acf <- function(Toep_ptr) {
-    .Call(`_SuperGauss_Toeplitz_has_acf`, Toep_ptr)
+Toeplitz_has_acf <- function(pToep) {
+    .Call(`_SuperGauss_Toeplitz_has_acf`, pToep)
 }
 

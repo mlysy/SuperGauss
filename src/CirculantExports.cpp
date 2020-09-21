@@ -81,11 +81,11 @@ bool Circulant_has_acf(SEXP pCirc) {
   return Circ->has_acf();
 }
 
-/// Circulant matrix-vector product.
+/// Circulant matrix product.
 ///
 /// @param[in] pCirc `externalptr` pointer to a Circulant matrix of size `N`.
 /// @param[in] X Matrix of size `N x p`.
-/// @return Output matrix of size `N x p` for the matrix-vector multiplication `Y = Circulant(acf) * X`.
+/// @return Output matrix of size `N x p` for the matrix multiplication `Y = Circulant(acf) * X`.
 // [[Rcpp::export]]
 NumericVector Circulant_prod(SEXP pCirc, NumericMatrix X) {
    XPtr<Circulant> Circ(pCirc);
