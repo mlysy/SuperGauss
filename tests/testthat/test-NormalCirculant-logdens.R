@@ -3,6 +3,7 @@ source("SuperGauss-testfunctions.R")
 context("NormalCirculant - Log-Density.")
 
 test_that("NormalCirculant$logdens gives correct result.", {
+  skip_on_cran()
   case_par <- expand.grid(N = c(1, sample(2:20, 10)),
                           n_obs = 1:3)
   ncase <- nrow(case_par)

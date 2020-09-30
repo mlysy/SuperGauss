@@ -24,6 +24,7 @@ test_that("set_acf/get_acf work as expected.", {
 })
 
 test_that("set_psd/get_psd work as expected.", {
+  skip_on_cran()
   case_par <- expand.grid(N = c(1, 2, sample(3:20, 10)),
                           input = c("acf", "psd"),
                           sep = c(TRUE, FALSE))

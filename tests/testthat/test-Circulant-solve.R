@@ -3,6 +3,7 @@ source("SuperGauss-testfunctions.R")
 context("Circulant - Solve.")
 
 test_that("Circulant$solve works as expected.", {
+  skip_on_cran()
   case_par <- expand.grid(N = c(1, sample(2:20, 10)),
                           p = 1:3)
   ncase <- nrow(case_par)

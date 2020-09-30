@@ -4,6 +4,7 @@ context("NormalCirculant - Loglikelihood Gradient (autodiff).")
 
 ntest <- 10
 test_that("NormalCirculant$grad_full gives correct result.", {
+  skip_on_cran()
   case_par <- expand.grid(N = c(1, sample(2:20, ntest-1)))
   ncase <- nrow(case_par)
   for(ii in 1:ncase) {

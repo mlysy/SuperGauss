@@ -28,6 +28,7 @@ test_that("Complex-to-Real ifft gives the correct result.", {
 
 ntest <- 15
 test_that("Real-Even fft gives the correct result.", {
+  skip_on_cran()
   for(ii in 1:ntest) {
     N <- sample(10, 1)
     Nu <- floor(N/2) + 1
@@ -40,6 +41,7 @@ test_that("Real-Even fft gives the correct result.", {
 
 ntest <- 15
 test_that("Real-Even ifft gives the correct result.", {
+  skip_on_cran()
   for(ii in 1:ntest) {
     N <- sample(10, 1)
     Nu <- floor(N/2) + 1

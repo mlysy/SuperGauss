@@ -3,6 +3,7 @@ source("SuperGauss-testfunctions.R")
 context("Circulant - Determiant.")
 
 test_that("Circulant$log_det works as expected.", {
+  skip_on_cran()
   case_par <- expand.grid(N = c(1, sample(2:20, 10)))
   ncase <- nrow(case_par)
   for(ii in 1:ncase) {
