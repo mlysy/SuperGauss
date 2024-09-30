@@ -1,3 +1,7 @@
+# SuperGauss 2.0.3
+
+- Patch to support UCRT for R 4.2 on Windows.
+
 # SuperGauss 2.0.0
 
 ## Major Changes
