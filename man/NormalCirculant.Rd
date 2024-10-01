@@ -4,26 +4,30 @@
 \alias{NormalCirculant}
 \title{Multivariate normal with Circulant variance matrix.}
 \description{
-Provides methods for the Normal-Circulant (NCt) distribution, which for a random vector \code{z} of length \code{N} is defined as\preformatted{z ~ NCt(uacf)   <=>   z ~ Normal(0, toeplitz(acf)),
-}
+Provides methods for the Normal-Circulant (NCt) distribution, which for a random vector \code{z} of length \code{N} is defined as
 
-where \code{uacf} are the \code{Nu = floor(N/2)+1} unique elements of the autocorrelation vector \code{acf}, i.e.,\preformatted{acf = (uacf, rev(uacf[2:(Nu-1)]),   N even,
+\if{html}{\out{<div class="sourceCode">}}\preformatted{z ~ NCt(uacf)   <=>   z ~ Normal(0, toeplitz(acf)),
+}\if{html}{\out{</div>}}
+
+where \code{uacf} are the \code{Nu = floor(N/2)+1} unique elements of the autocorrelation vector \code{acf}, i.e.,
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{acf = (uacf, rev(uacf[2:(Nu-1)]),   N even,
     = (uacf, rev(uacf[2:Nu])),      N odd.
-}
+}\if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{NormalCirculant$new()}}
-\item \href{#method-size}{\code{NormalCirculant$size()}}
-\item \href{#method-logdens}{\code{NormalCirculant$logdens()}}
-\item \href{#method-grad_full}{\code{NormalCirculant$grad_full()}}
-\item \href{#method-clone}{\code{NormalCirculant$clone()}}
+\item \href{#method-NormalCirculant-new}{\code{NormalCirculant$new()}}
+\item \href{#method-NormalCirculant-size}{\code{NormalCirculant$size()}}
+\item \href{#method-NormalCirculant-logdens}{\code{NormalCirculant$logdens()}}
+\item \href{#method-NormalCirculant-grad_full}{\code{NormalCirculant$grad_full()}}
+\item \href{#method-NormalCirculant-clone}{\code{NormalCirculant$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-NormalCirculant-new"></a>}}
+\if{latex}{\out{\hypertarget{method-NormalCirculant-new}{}}}
 \subsection{Method \code{new()}}{
 Class constructor.
 \subsection{Usage}{
@@ -42,8 +46,8 @@ A \code{NormalCirculant} object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-size"></a>}}
-\if{latex}{\out{\hypertarget{method-size}{}}}
+\if{html}{\out{<a id="method-NormalCirculant-size"></a>}}
+\if{latex}{\out{\hypertarget{method-NormalCirculant-size}{}}}
 \subsection{Method \code{size()}}{
 Get the size of the NCt random vector.
 \subsection{Usage}{
@@ -55,8 +59,8 @@ Size of the NCt random vector.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-logdens"></a>}}
-\if{latex}{\out{\hypertarget{method-logdens}{}}}
+\if{html}{\out{<a id="method-NormalCirculant-logdens"></a>}}
+\if{latex}{\out{\hypertarget{method-NormalCirculant-logdens}{}}}
 \subsection{Method \code{logdens()}}{
 Log-density function.
 \subsection{Usage}{
@@ -77,8 +81,8 @@ A scalar or vector of length \code{n_obs} containing the log-density of the NCt 
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-grad_full"></a>}}
-\if{latex}{\out{\hypertarget{method-grad_full}{}}}
+\if{html}{\out{<a id="method-NormalCirculant-grad_full"></a>}}
+\if{latex}{\out{\hypertarget{method-NormalCirculant-grad_full}{}}}
 \subsection{Method \code{grad_full()}}{
 Full gradient of log-density function.
 \subsection{Usage}{
@@ -108,8 +112,8 @@ A list with elements:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-NormalCirculant-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-NormalCirculant-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

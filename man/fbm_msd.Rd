@@ -18,8 +18,10 @@ Length-\code{N} vector of mean square displacements.
 Mean square displacement of fractional Brownian motion.
 }
 \details{
-The mean squared displacement (MSD) of a stochastic process \code{X_t} is defined as\preformatted{MSD(t) = E[(X_t - X_0)^2].
-}
+The mean squared displacement (MSD) of a stochastic process \code{X_t} is defined as
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{MSD(t) = E[(X_t - X_0)^2].
+}\if{html}{\out{</div>}}
 
 Fractional Brownian motion (fBM) is a continuous Gaussian process with stationary increments, such that its covariance function is entirely defined the MSD, which in this case is \verb{MSD(t) = |t|^(2H)}.
 }

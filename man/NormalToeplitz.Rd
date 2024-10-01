@@ -4,26 +4,28 @@
 \alias{NormalToeplitz}
 \title{Multivariate normal with Toeplitz variance matrix.}
 \description{
-Provides methods for the Normal-Toeplitz (NTz) distribution defined as\preformatted{z ~ NTz(acf)   <=>   z ~ Normal(0, toeplitz(acf)),
-}
+Provides methods for the Normal-Toeplitz (NTz) distribution defined as
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{z ~ NTz(acf)   <=>   z ~ Normal(0, toeplitz(acf)),
+}\if{html}{\out{</div>}}
 
 i.e., for a multivariate normal with mean zero and variance \code{Tz = toeplitz(acf)}.
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{NormalToeplitz$new()}}
-\item \href{#method-size}{\code{NormalToeplitz$size()}}
-\item \href{#method-logdens}{\code{NormalToeplitz$logdens()}}
-\item \href{#method-grad}{\code{NormalToeplitz$grad()}}
-\item \href{#method-hess}{\code{NormalToeplitz$hess()}}
-\item \href{#method-grad_full}{\code{NormalToeplitz$grad_full()}}
-\item \href{#method-clone}{\code{NormalToeplitz$clone()}}
+\item \href{#method-NormalToeplitz-new}{\code{NormalToeplitz$new()}}
+\item \href{#method-NormalToeplitz-size}{\code{NormalToeplitz$size()}}
+\item \href{#method-NormalToeplitz-logdens}{\code{NormalToeplitz$logdens()}}
+\item \href{#method-NormalToeplitz-grad}{\code{NormalToeplitz$grad()}}
+\item \href{#method-NormalToeplitz-hess}{\code{NormalToeplitz$hess()}}
+\item \href{#method-NormalToeplitz-grad_full}{\code{NormalToeplitz$grad_full()}}
+\item \href{#method-NormalToeplitz-clone}{\code{NormalToeplitz$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-NormalToeplitz-new"></a>}}
+\if{latex}{\out{\hypertarget{method-NormalToeplitz-new}{}}}
 \subsection{Method \code{new()}}{
 Class constructor.
 \subsection{Usage}{
@@ -42,8 +44,8 @@ A \code{NormalToeplitz} object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-size"></a>}}
-\if{latex}{\out{\hypertarget{method-size}{}}}
+\if{html}{\out{<a id="method-NormalToeplitz-size"></a>}}
+\if{latex}{\out{\hypertarget{method-NormalToeplitz-size}{}}}
 \subsection{Method \code{size()}}{
 Get the size of the NTz random vector.
 \subsection{Usage}{
@@ -55,8 +57,8 @@ Size of the NTz random vector.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-logdens"></a>}}
-\if{latex}{\out{\hypertarget{method-logdens}{}}}
+\if{html}{\out{<a id="method-NormalToeplitz-logdens"></a>}}
+\if{latex}{\out{\hypertarget{method-NormalToeplitz-logdens}{}}}
 \subsection{Method \code{logdens()}}{
 Log-density function.
 \subsection{Usage}{
@@ -77,8 +79,8 @@ A scalar or vector of length \code{n_obs} containing the log-density of the NTz 
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-grad"></a>}}
-\if{latex}{\out{\hypertarget{method-grad}{}}}
+\if{html}{\out{<a id="method-NormalToeplitz-grad"></a>}}
+\if{latex}{\out{\hypertarget{method-NormalToeplitz-grad}{}}}
 \subsection{Method \code{grad()}}{
 Gradient of the log-density with respect to parameters.
 \subsection{Usage}{
@@ -105,8 +107,8 @@ A vector of length \code{n_theta} containing the gradient of the NTz log-density
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-hess"></a>}}
-\if{latex}{\out{\hypertarget{method-hess}{}}}
+\if{html}{\out{<a id="method-NormalToeplitz-hess"></a>}}
+\if{latex}{\out{\hypertarget{method-NormalToeplitz-hess}{}}}
 \subsection{Method \code{hess()}}{
 Hessian of log-density with respect to parameters.
 \subsection{Usage}{
@@ -137,8 +139,8 @@ An \verb{n_theta x n_theta} matrix containing the Hessian of the NTz log-density
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-grad_full"></a>}}
-\if{latex}{\out{\hypertarget{method-grad_full}{}}}
+\if{html}{\out{<a id="method-NormalToeplitz-grad_full"></a>}}
+\if{latex}{\out{\hypertarget{method-NormalToeplitz-grad_full}{}}}
 \subsection{Method \code{grad_full()}}{
 Full gradient of log-density function.
 \subsection{Usage}{
@@ -168,8 +170,8 @@ A list with elements:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-NormalToeplitz-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-NormalToeplitz-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

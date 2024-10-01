@@ -57,23 +57,23 @@ determinant(Tz) # log-determinant
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Toeplitz$new()}}
-\item \href{#method-print}{\code{Toeplitz$print()}}
-\item \href{#method-size}{\code{Toeplitz$size()}}
-\item \href{#method-set_acf}{\code{Toeplitz$set_acf()}}
-\item \href{#method-get_acf}{\code{Toeplitz$get_acf()}}
-\item \href{#method-has_acf}{\code{Toeplitz$has_acf()}}
-\item \href{#method-prod}{\code{Toeplitz$prod()}}
-\item \href{#method-solve}{\code{Toeplitz$solve()}}
-\item \href{#method-log_det}{\code{Toeplitz$log_det()}}
-\item \href{#method-trace_grad}{\code{Toeplitz$trace_grad()}}
-\item \href{#method-trace_hess}{\code{Toeplitz$trace_hess()}}
-\item \href{#method-clone}{\code{Toeplitz$clone()}}
+\item \href{#method-Toeplitz-new}{\code{Toeplitz$new()}}
+\item \href{#method-Toeplitz-print}{\code{Toeplitz$print()}}
+\item \href{#method-Toeplitz-size}{\code{Toeplitz$size()}}
+\item \href{#method-Toeplitz-set_acf}{\code{Toeplitz$set_acf()}}
+\item \href{#method-Toeplitz-get_acf}{\code{Toeplitz$get_acf()}}
+\item \href{#method-Toeplitz-has_acf}{\code{Toeplitz$has_acf()}}
+\item \href{#method-Toeplitz-prod}{\code{Toeplitz$prod()}}
+\item \href{#method-Toeplitz-solve}{\code{Toeplitz$solve()}}
+\item \href{#method-Toeplitz-log_det}{\code{Toeplitz$log_det()}}
+\item \href{#method-Toeplitz-trace_grad}{\code{Toeplitz$trace_grad()}}
+\item \href{#method-Toeplitz-trace_hess}{\code{Toeplitz$trace_hess()}}
+\item \href{#method-Toeplitz-clone}{\code{Toeplitz$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Toeplitz-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Toeplitz-new}{}}}
 \subsection{Method \code{new()}}{
 Class constructor.
 \subsection{Usage}{
@@ -94,8 +94,8 @@ A \code{Toeplitz} object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-print"></a>}}
-\if{latex}{\out{\hypertarget{method-print}{}}}
+\if{html}{\out{<a id="method-Toeplitz-print"></a>}}
+\if{latex}{\out{\hypertarget{method-Toeplitz-print}{}}}
 \subsection{Method \code{print()}}{
 Print method.
 \subsection{Usage}{
@@ -104,8 +104,8 @@ Print method.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-size"></a>}}
-\if{latex}{\out{\hypertarget{method-size}{}}}
+\if{html}{\out{<a id="method-Toeplitz-size"></a>}}
+\if{latex}{\out{\hypertarget{method-Toeplitz-size}{}}}
 \subsection{Method \code{size()}}{
 Get the size of the Toeplitz matrix.
 \subsection{Usage}{
@@ -117,8 +117,8 @@ Size of the Toeplitz matrix.  \code{\link[base:nrow]{ncol()}}, \code{\link[base:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-set_acf"></a>}}
-\if{latex}{\out{\hypertarget{method-set_acf}{}}}
+\if{html}{\out{<a id="method-Toeplitz-set_acf"></a>}}
+\if{latex}{\out{\hypertarget{method-Toeplitz-set_acf}{}}}
 \subsection{Method \code{set_acf()}}{
 Set the autocorrelation of the Toeplitz matrix.
 \subsection{Usage}{
@@ -134,8 +134,8 @@ Set the autocorrelation of the Toeplitz matrix.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_acf"></a>}}
-\if{latex}{\out{\hypertarget{method-get_acf}{}}}
+\if{html}{\out{<a id="method-Toeplitz-get_acf"></a>}}
+\if{latex}{\out{\hypertarget{method-Toeplitz-get_acf}{}}}
 \subsection{Method \code{get_acf()}}{
 Get the autocorrelation of the Toeplitz matrix.
 \subsection{Usage}{
@@ -147,8 +147,8 @@ The autocorrelation vector of length \code{N}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-has_acf"></a>}}
-\if{latex}{\out{\hypertarget{method-has_acf}{}}}
+\if{html}{\out{<a id="method-Toeplitz-has_acf"></a>}}
+\if{latex}{\out{\hypertarget{method-Toeplitz-has_acf}{}}}
 \subsection{Method \code{has_acf()}}{
 Check whether the autocorrelation of the Toeplitz matrix has been set.
 \subsection{Usage}{
@@ -160,8 +160,8 @@ Logical; \code{TRUE} if \code{Toeplitz$set_acf()} has been called.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-prod"></a>}}
-\if{latex}{\out{\hypertarget{method-prod}{}}}
+\if{html}{\out{<a id="method-Toeplitz-prod"></a>}}
+\if{latex}{\out{\hypertarget{method-Toeplitz-prod}{}}}
 \subsection{Method \code{prod()}}{
 Toeplitz matrix-matrix product.
 \subsection{Usage}{
@@ -180,8 +180,8 @@ The matrix product \code{Tz \%*\% x}. \code{Tz \%*\% x} and \code{x \%*\% Tz} al
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-solve"></a>}}
-\if{latex}{\out{\hypertarget{method-solve}{}}}
+\if{html}{\out{<a id="method-Toeplitz-solve"></a>}}
+\if{latex}{\out{\hypertarget{method-Toeplitz-solve}{}}}
 \subsection{Method \code{solve()}}{
 Solve a Toeplitz system of equations.
 \subsection{Usage}{
@@ -204,8 +204,8 @@ The solution in \code{z} to the system of equations \code{Tz \%*\% z = x}.  If \
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-log_det"></a>}}
-\if{latex}{\out{\hypertarget{method-log_det}{}}}
+\if{html}{\out{<a id="method-Toeplitz-log_det"></a>}}
+\if{latex}{\out{\hypertarget{method-Toeplitz-log_det}{}}}
 \subsection{Method \code{log_det()}}{
 Calculate the log-determinant of the Toeplitz matrix.
 \subsection{Usage}{
@@ -217,8 +217,8 @@ The log-determinant \code{log(det(Tz))}.  \code{determinant(Tz)} also works as e
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-trace_grad"></a>}}
-\if{latex}{\out{\hypertarget{method-trace_grad}{}}}
+\if{html}{\out{<a id="method-Toeplitz-trace_grad"></a>}}
+\if{latex}{\out{\hypertarget{method-Toeplitz-trace_grad}{}}}
 \subsection{Method \code{trace_grad()}}{
 Computes the trace-gradient with respect to Toeplitz matrices.
 \subsection{Usage}{
@@ -233,15 +233,17 @@ Computes the trace-gradient with respect to Toeplitz matrices.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Computes the trace of\preformatted{solve(Tz, toeplitz(acf2)).
-}
+Computes the trace of
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{solve(Tz, toeplitz(acf2)).
+}\if{html}{\out{</div>}}
 
 This is used in the computation of the gradient of \code{log(det(Tz(theta)))} with respect to \code{theta}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-trace_hess"></a>}}
-\if{latex}{\out{\hypertarget{method-trace_hess}{}}}
+\if{html}{\out{<a id="method-Toeplitz-trace_hess"></a>}}
+\if{latex}{\out{\hypertarget{method-Toeplitz-trace_hess}{}}}
 \subsection{Method \code{trace_hess()}}{
 Computes the trace-Hessian with respect to Toeplitz matrices.
 \subsection{Usage}{
@@ -258,15 +260,17 @@ Computes the trace-Hessian with respect to Toeplitz matrices.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Computes the trace of\preformatted{solve(Tz, toeplitz(acf2)) \%*\% solve(Tz, toeplitz(acf3)).
-}
+Computes the trace of
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{solve(Tz, toeplitz(acf2)) \%*\% solve(Tz, toeplitz(acf3)).
+}\if{html}{\out{</div>}}
 
 This is used in the computation of the Hessian of \code{log(det(Tz(theta)))} with respect to \code{theta}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Toeplitz-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Toeplitz-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

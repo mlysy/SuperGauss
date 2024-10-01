@@ -9,22 +9,22 @@ Constructor and methods for Circulant matrix objects.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Circulant$new()}}
-\item \href{#method-size}{\code{Circulant$size()}}
-\item \href{#method-set_acf}{\code{Circulant$set_acf()}}
-\item \href{#method-get_acf}{\code{Circulant$get_acf()}}
-\item \href{#method-set_psd}{\code{Circulant$set_psd()}}
-\item \href{#method-get_psd}{\code{Circulant$get_psd()}}
-\item \href{#method-has_acf}{\code{Circulant$has_acf()}}
-\item \href{#method-prod}{\code{Circulant$prod()}}
-\item \href{#method-solve}{\code{Circulant$solve()}}
-\item \href{#method-log_det}{\code{Circulant$log_det()}}
-\item \href{#method-clone}{\code{Circulant$clone()}}
+\item \href{#method-Circulant-new}{\code{Circulant$new()}}
+\item \href{#method-Circulant-size}{\code{Circulant$size()}}
+\item \href{#method-Circulant-set_acf}{\code{Circulant$set_acf()}}
+\item \href{#method-Circulant-get_acf}{\code{Circulant$get_acf()}}
+\item \href{#method-Circulant-set_psd}{\code{Circulant$set_psd()}}
+\item \href{#method-Circulant-get_psd}{\code{Circulant$get_psd()}}
+\item \href{#method-Circulant-has_acf}{\code{Circulant$has_acf()}}
+\item \href{#method-Circulant-prod}{\code{Circulant$prod()}}
+\item \href{#method-Circulant-solve}{\code{Circulant$solve()}}
+\item \href{#method-Circulant-log_det}{\code{Circulant$log_det()}}
+\item \href{#method-Circulant-clone}{\code{Circulant$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Circulant-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Circulant-new}{}}}
 \subsection{Method \code{new()}}{
 Class constructor.
 \subsection{Usage}{
@@ -47,8 +47,8 @@ A \code{Circulant} object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-size"></a>}}
-\if{latex}{\out{\hypertarget{method-size}{}}}
+\if{html}{\out{<a id="method-Circulant-size"></a>}}
+\if{latex}{\out{\hypertarget{method-Circulant-size}{}}}
 \subsection{Method \code{size()}}{
 Get the size of the Circulant matrix.
 \subsection{Usage}{
@@ -60,8 +60,8 @@ Size of the Circulant matrix.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-set_acf"></a>}}
-\if{latex}{\out{\hypertarget{method-set_acf}{}}}
+\if{html}{\out{<a id="method-Circulant-set_acf"></a>}}
+\if{latex}{\out{\hypertarget{method-Circulant-set_acf}{}}}
 \subsection{Method \code{set_acf()}}{
 Set the autocorrelation of the Circulant matrix.
 \subsection{Usage}{
@@ -77,8 +77,8 @@ Set the autocorrelation of the Circulant matrix.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_acf"></a>}}
-\if{latex}{\out{\hypertarget{method-get_acf}{}}}
+\if{html}{\out{<a id="method-Circulant-get_acf"></a>}}
+\if{latex}{\out{\hypertarget{method-Circulant-get_acf}{}}}
 \subsection{Method \code{get_acf()}}{
 Get the autocorrelation of the Circulant matrix.
 \subsection{Usage}{
@@ -90,8 +90,8 @@ The complete autocorrelation vector of length \code{N}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-set_psd"></a>}}
-\if{latex}{\out{\hypertarget{method-set_psd}{}}}
+\if{html}{\out{<a id="method-Circulant-set_psd"></a>}}
+\if{latex}{\out{\hypertarget{method-Circulant-set_psd}{}}}
 \subsection{Method \code{set_psd()}}{
 Set the PSD of the Circulant matrix.
 
@@ -109,8 +109,8 @@ The power spectral density (PSD) of a Circulant matrix \code{Ct = Circulant(acf)
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_psd"></a>}}
-\if{latex}{\out{\hypertarget{method-get_psd}{}}}
+\if{html}{\out{<a id="method-Circulant-get_psd"></a>}}
+\if{latex}{\out{\hypertarget{method-Circulant-get_psd}{}}}
 \subsection{Method \code{get_psd()}}{
 Get the PSD of the Circulant matrix.
 \subsection{Usage}{
@@ -122,8 +122,8 @@ The complete PSD vector of length \code{N}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-has_acf"></a>}}
-\if{latex}{\out{\hypertarget{method-has_acf}{}}}
+\if{html}{\out{<a id="method-Circulant-has_acf"></a>}}
+\if{latex}{\out{\hypertarget{method-Circulant-has_acf}{}}}
 \subsection{Method \code{has_acf()}}{
 Check whether the autocorrelation of the Circulant matrix has been set.
 \subsection{Usage}{
@@ -135,8 +135,8 @@ Logical; \code{TRUE} if \code{Circulant$set_acf()} has been called.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-prod"></a>}}
-\if{latex}{\out{\hypertarget{method-prod}{}}}
+\if{html}{\out{<a id="method-Circulant-prod"></a>}}
+\if{latex}{\out{\hypertarget{method-Circulant-prod}{}}}
 \subsection{Method \code{prod()}}{
 Circulant matrix-matrix product.
 \subsection{Usage}{
@@ -155,8 +155,8 @@ The matrix product \code{Ct \%*\% x}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-solve"></a>}}
-\if{latex}{\out{\hypertarget{method-solve}{}}}
+\if{html}{\out{<a id="method-Circulant-solve"></a>}}
+\if{latex}{\out{\hypertarget{method-Circulant-solve}{}}}
 \subsection{Method \code{solve()}}{
 Solve a Circulant system of equations.
 \subsection{Usage}{
@@ -175,8 +175,8 @@ The solution in \code{z} to the system of equations \code{Ct \%*\% z = x}.  If \
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-log_det"></a>}}
-\if{latex}{\out{\hypertarget{method-log_det}{}}}
+\if{html}{\out{<a id="method-Circulant-log_det"></a>}}
+\if{latex}{\out{\hypertarget{method-Circulant-log_det}{}}}
 \subsection{Method \code{log_det()}}{
 Calculate the log-determinant of the Circulant matrix.
 \subsection{Usage}{
@@ -188,8 +188,8 @@ The log-determinant \code{log(det(Ct))}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Circulant-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Circulant-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
