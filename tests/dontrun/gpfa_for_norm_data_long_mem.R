@@ -22,7 +22,7 @@ beta <- rbind(c(runif(proc_per_group, 3, 5), runif(proc_per_group, 0, 1), runif(
 alpha <- rnorm(n_proc, mean=7, sd=2)
 theta <- list(c(0.05, 0.05),
               c(0.05, 0.1),
-              c(0.05, 0.12, 0.1))
+              c(0.05, 0.12, 0.4))
 
 # Simulate factor processes
 # x_sim <- sapply(1:n_factor,
@@ -35,7 +35,7 @@ theta <- list(c(0.05, 0.05),
 acf1 <- rbf_acf((0:(n_time-1))*delta_t, var=theta[[1]][1], ell=theta[[1]][2])
 acf2 <- rbf_acf((0:(n_time-1))*delta_t, var=theta[[2]][1], ell=theta[[2]][2])
 #acf3 <- arfima_acf((0:(n_time-1))*delta_t, var=theta[[3]][1], d=theta[[3]][2])
-acf3 <- rquad_acf((0:(n_time-1))*delta_t, var=theta[[3]][1], k=theta[[3]][2], alpha=theta[[3]][3])
+acf3 <- rquad_acf((0:(n_time-1))*delta_t, var=theta[[3]][1], k=theta[[3]][2], d=theta[[3]][3])
 par(mfrow=c(1,1))
 plot(acf1, type="l", xlab="", ylab="acf", main="Black acf1 Blue acf2 Red acf3")
 lines(acf2, col="blue")
@@ -66,7 +66,15 @@ prior_list <- list(sig_alpha=rep(1, n_proc),  # length D
                    nu=rep(0,n_proc),
                    tau=rep(100,n_proc),
                    ell_alpha=rep(NA, 3),
-                   ell_beta=rep(NA, 3))
+                   ell_beta=rep(NA, 3),
+                   theta_additional_prior=function(theta){
+                     # Only apply this prior on the rf kernel d parameter
+                     if (length(theta)==3){
+                       dunif(theta[3], -0.5, 0.5, log=TRUE)
+                     } else{
+                       0
+                     }
+                   })
 init_param <- list(X=x_sim, 
                    beta=beta, 
                    alpha=alpha,
@@ -77,11 +85,13 @@ init_x <- matrix(rep(0, n_time*n_factor), nrow=n_time, ncol=n_factor)
 for (i in 1:n_factor){
   init_x[,i] <- ksmooth(1:n_time, y_sim[,i], "normal", bandwidth = 20)$y-alpha[i]
 }
+# Very bad initial values
 init_param <- list(X=init_x,
                    beta=matrix(1, nrow=n_factor, ncol=n_proc),
                    alpha=rep(1, n_proc),
                    sig2=rep(1, n_proc),
                    theta=list(rep(0.05, 2), rep(0.05, 2), rep(0.05, 3)))
+# Better initial values
 init_param <- list(X=x_sim+matrix(rnorm(length(x_sim),sd=0.05),nrow(x_sim),ncol(x_sim)), 
                    beta=beta+matrix(rnorm(length(beta),sd=1),nrow(beta),ncol(beta)), 
                    alpha=alpha+rnorm(length(alpha),sd=1),
@@ -96,8 +106,8 @@ test <- gpfa_gibbs_sampler(100, y_sim, init_param, prior_list, delta_t,
 
 # Start MCMC
 n_chain <- 2
-n_sam <- 500
-n_warmup <- 10
+n_sam <- 5000
+n_warmup <- 1000
 cl <- makeCluster(n_chain)
 registerDoParallel(cl)
 sample_time <- system.time({
@@ -186,14 +196,14 @@ theta_pos_plots[[n_factor+1]] <-
          aes(x=theta))+
   geom_density()+
   geom_vline(xintercept=theta[[n_factor]][3], color="red", linetype="dashed")+
-  labs(x="", y="", title=expression(alpha))
+  labs(x="", y="", title=expression(d))
 theta_trace_plots[[n_factor+1]] <-
   ggplot(data=data.frame(iter=seq_len(tot_sam/2),
                          chain1=sam_list$theta_sam[1:(tot_sam/2),n_factor+1],
                          chain2=sam_list$theta_sam[(tot_sam/2+1):tot_sam,n_factor+1]))+
   geom_line(aes(x=iter, y=chain1, col="Chain1"))+
   geom_line(aes(x=iter, y=chain2, col="Chain2"))+
-  labs(x="Iter", y="", title=expression(alpha))
+  labs(x="Iter", y="", title=expression(d))
 ggarrange(plotlist=theta_pos_plots, ncol=4)
 if (save_figs) ggsave("ggpfa-theta-pos-dist.pdf", width=10, height=2)
 ggarrange(plotlist=theta_trace_plots, nrow=4)

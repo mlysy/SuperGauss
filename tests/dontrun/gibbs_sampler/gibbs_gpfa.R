@@ -221,13 +221,15 @@ cond_alpha_d <- function(y_d, X, sig_d, beta_d, nu_d, tau_d,
 #' for all thetas.
 #' @param fix_gp_widthscale Is the widthscale fixed for each factor process? 
 #' If TRUE, the the widthscale values are fixed to be the first row of `theta`.
+#' @param additional_prior Additional prior function to be applied on theta.
 #' @return Length 2 list of `theta` and `accept`.
 #' @noRd
 #' @export
 cond_theta_k <- function(x_k, current_theta, delta_t, acf=rbf_acf,
                          ell_alpha=NULL, ell_beta=NULL,
                          prop_var_scale=NULL,
-                         fix_gp_widthscale=FALSE){
+                         fix_gp_widthscale=FALSE,
+                         additional_prior=NULL){
   n_theta <- length(current_theta)
   if (is.null(prop_var_scale)) {
     prop_var_scale <- rep(.5*delta_t, length(current_theta))
@@ -262,6 +264,13 @@ cond_theta_k <- function(x_k, current_theta, delta_t, acf=rbf_acf,
     current_prior <- dgamma(x=1/current_theta[2], shape=ell_alpha,
                             rate=ell_beta, log=TRUE) - 2*log(new_theta[2])
   }
+  
+  # Additional prior
+  if (!is.null(additional_prior)){
+    new_prior <- new_prior + additional_prior(new_theta)
+    current_prior <- current_prior + additional_prior(current_theta)
+  }
+  
   new_acf <- do.call(function(...){acf(lag, ...)}, as.list(new_theta))
   new_lpdf <- dnormtz(X=x_k, acf=new_acf, log=T, method="gschur")
   if (is.na(new_lpdf)) new_lpdf <- -Inf
@@ -360,7 +369,8 @@ gpfa_gibbs_sampler <- function(n_iter, Y, init_param, prior_list, delta_t,
       theta_update <- cond_theta_k(X[,k], theta[[k]], delta_t, acf_list[[k]],
                                    prior_list$ell_alpha[k], 
                                    prior_list$ell_beta[k],
-                                   theta_prop_scale[[k]], fix_gp_widthscale)
+                                   theta_prop_scale[[k]], fix_gp_widthscale,
+                                   prior_list$theta_additional_prior)
       theta[[k]] <- theta_update$current
       thetak_accept[k] <- thetak_accept[k] + theta_update$accept
     }
