@@ -7,12 +7,22 @@ require(ggpubr)
 sampler_scripts <- list.files("gibbs_sampler", pattern="*.R$", 
                               full.names=TRUE, ignore.case=TRUE)
 sapply(sampler_scripts, source, .GlobalEnv)
-save_figs <- FALSE
+
+# Set what to save
+save_figs <- TRUE
+save_samples_as_rds <- TRUE
+
+# Set MCMC parameters
+n_chain <- 4
+n_sam <- 3e4
+n_warmup <- 1e4
+
+# Set simulation parameters
 fix_theta1 <- TRUE
-set.seed(123)
-n_proc <- 12
+set.seed(1234)
+n_proc <- 30
 n_factor <- 3
-n_time <- 2000
+n_time <- 10000
 delta_t <- 0.1
 Sigma_diag <- rnorm(n_proc, 0.5, 0.1)^2
 proc_per_group <- n_proc/n_factor
@@ -24,17 +34,11 @@ theta <- list(c(0.05, 0.05),
               c(0.05, 0.1),
               c(0.05, 0.12, 0.4))
 
-# Simulate factor processes
-# x_sim <- sapply(1:n_factor,
-#                 function(k){
-#                   x_acf <- rbf_acf((0:(n_time-1))*delta_t,
-#                                    var=theta[[k]][1], ell=theta[[k]][2])
-#                   rnormtz(n = 1, x_acf)
-#                 })
+#------- Simulate factor processes ----------
 # Short memory latent process
 acf1 <- rbf_acf((0:(n_time-1))*delta_t, var=theta[[1]][1], ell=theta[[1]][2])
 acf2 <- rbf_acf((0:(n_time-1))*delta_t, var=theta[[2]][1], ell=theta[[2]][2])
-#acf3 <- arfima_acf((0:(n_time-1))*delta_t, var=theta[[3]][1], d=theta[[3]][2])
+# Long memory latent process
 acf3 <- rquad_acf((0:(n_time-1))*delta_t, var=theta[[3]][1], k=theta[[3]][2], d=theta[[3]][3])
 par(mfrow=c(1,1))
 plot(acf1, type="l", xlab="", ylab="acf", main="Black acf1 Blue acf2 Red acf3")
@@ -44,20 +48,23 @@ x1 <- rnormtz(n=1, acf1)
 x2 <- rnormtz(n=1, acf2)
 x3 <- rnormtz(n=1, acf3)
 x_sim <- cbind(x1, x2, x3)
-par(mfrow=c(3,1))
-xk_titles <- c("Short memory x1", "Short memory x2", "Long memory x3")
-for (k in 1:n_factor) {
-  plot(x_sim[,k],type="l", ylab=paste0("x", k), main=xk_titles[k])
-}
+# Plot x
+xk_titles <- factor(c("Short memory X1", "Short memory X2", "Long memory X3"),
+                    levels=c("Short memory X1", "Short memory X2", "Long memory X3"))
+x_plot_df <- data.frame(latent_x=c(x1, x2, x3), 
+                        time=rep(1:n_time, times=n_factor),
+                        type=rep(xk_titles, each=n_time))
+ggplot(data=x_plot_df)+
+  geom_line(aes(x=time, y=latent_x))+facet_grid(rows=vars(type))+
+  labs(x="Time", y="Simulated latent path")
+if (save_figs) ggsave("ggpfa-simulated-x.pdf", width=10, height=6)
 
 # Simulate observed data
 y_sim <- x_sim %*% beta + 
   matrix(rep(alpha, n_time), nrow=n_time, ncol=n_proc, byrow = TRUE) +
   mvrnorm(n=n_time, mu=rep(0, n_proc), Sigma=diag(Sigma_diag))
-plot(y_sim[,1], type="l", ylab="y1")
-plot(y_sim[,2], type="l", ylab="y2")
-plot(y_sim[,7], type="l", ylab="y7")
-range(y_sim)
+cat("Number of simulated Y_i smaller than 0 is:\n",
+    sum(y_sim < 0), "\n")
 # Define priors and random initial values
 prior_list <- list(sig_alpha=rep(1, n_proc),  # length D
                    sig_beta=rep(1, n_proc),   # length D
@@ -75,41 +82,44 @@ prior_list <- list(sig_alpha=rep(1, n_proc),  # length D
                        0
                      }
                    })
-init_param <- list(X=x_sim, 
-                   beta=beta, 
-                   alpha=alpha,
-                   sig2=Sigma_diag, 
-                   theta=theta)
-# More random initial values for x, just to test how the sampler performs...
-init_x <- matrix(rep(0, n_time*n_factor), nrow=n_time, ncol=n_factor)
-for (i in 1:n_factor){
-  init_x[,i] <- ksmooth(1:n_time, y_sim[,i], "normal", bandwidth = 20)$y-alpha[i]
-}
-# Very bad initial values
-init_param <- list(X=init_x,
-                   beta=matrix(1, nrow=n_factor, ncol=n_proc),
-                   alpha=rep(1, n_proc),
-                   sig2=rep(1, n_proc),
-                   theta=list(rep(0.05, 2), rep(0.05, 2), rep(0.05, 3)))
-# Better initial values
+
+# # Good initial values: true values
+# init_param <- list(X=x_sim, 
+#                    beta=beta, 
+#                    alpha=alpha,
+#                    sig2=Sigma_diag, 
+#                    theta=theta)
+
+# # Very bad initial values: random
+# init_x <- matrix(rep(0, n_time*n_factor), nrow=n_time, ncol=n_factor)
+# for (i in 1:n_factor){
+#   init_x[,i] <- ksmooth(1:n_time, y_sim[,i], "normal", bandwidth = 20)$y-alpha[i]
+# }
+# init_param <- list(X=init_x,
+#                    beta=matrix(1, nrow=n_factor, ncol=n_proc),
+#                    alpha=rep(1, n_proc),
+#                    sig2=rep(1, n_proc),
+#                    theta=list(rep(0.05, 2), rep(0.05, 2), rep(0.05, 3)))
+
+# Better initial values: assuming we can get some noisy point estimates close to the truth
 init_param <- list(X=x_sim+matrix(rnorm(length(x_sim),sd=0.05),nrow(x_sim),ncol(x_sim)), 
                    beta=beta+matrix(rnorm(length(beta),sd=1),nrow(beta),ncol(beta)), 
                    alpha=alpha+rnorm(length(alpha),sd=1),
                    sig2=Sigma_diag+rnorm(length(Sigma_diag),sd=0.05), 
                    theta=lapply(theta, function(e){e+c(0, rnorm(length(e)-1, sd=0.01))}))
-# Tune theta_prop_scale to get an acceptance rate around 0.4
-theta_prop_scale <- list(0.001, 0.001, 0.005)
-test <- gpfa_gibbs_sampler(100, y_sim, init_param, prior_list, delta_t, 
-                           acf_list = list(rbf_acf, rbf_acf, rquad_acf),
-                           theta_prop_scale = theta_prop_scale, 
-                           fix_gp_widthscale = fix_theta1)
+# Tune theta_prop_scale
+theta_prop_scale <- list(c(0, 0.001),  # first element set to 0 because fixing widthscale
+                         c(0, 0.001), 
+                         c(0, 0.004, 0.01))
+# test <- gpfa_gibbs_sampler(300, y_sim, init_param, prior_list, delta_t,
+#                            acf_list = list(rbf_acf, rbf_acf, rquad_acf),
+#                            theta_prop_scale = theta_prop_scale,
+#                            fix_gp_widthscale = fix_theta1)
 
-# Start MCMC
-n_chain <- 2
-n_sam <- 5000
-n_warmup <- 1000
+#--------------- Start MCMC ---------------------
 cl <- makeCluster(n_chain)
 registerDoParallel(cl)
+cat("---------- Sampling started --------------\n")
 sample_time <- system.time({
   all_samples <- foreach(i=1:n_chain, .packages = c("SuperGauss")) %dopar%{
     gpfa_gibbs_sampler(n_sam, y_sim, init_param, prior_list, delta_t, 
@@ -118,7 +128,10 @@ sample_time <- system.time({
   }
 })
 stopCluster(cl)
+cat("---------- Sampling completed --------------\n")
+print(sample_time)
 
+#------------ Process the samples ----------------------
 beta_sam <- abind(lapply(all_samples, function(chain) chain$beta_sam[-(1:n_warmup),,]), along=1)
 theta_sam <- abind(lapply(all_samples, function(chain) chain$theta_sam[-(1:n_warmup),]), along=1)
 sig2_sam <- abind(lapply(all_samples, function(chain) chain$sig2_sam[-(1:n_warmup),]), along=1)
@@ -132,8 +145,14 @@ if (fix_theta1){
 sam_list <- list(beta_sam=beta_sam, theta_sam=theta_sam, sig2_sam=sig2_sam,
                  alpha_sam=alpha_sam, X_mean=X_mean, 
                  X_95ci_lo=X_ci["2.5%",,], X_95ci_hi=X_ci["97.5%",,])
+if (save_samples_as_rds) {
+  saveRDS(sam_list, "gaussian-gpfa-samples.rds")
+  for (k in seq_len(n_factor)){
+    saveRDS(X_sam[,,k], paste0("gaussian-gpfa-X-samples", k, ".rds"))
+  }
+  cat("------------- Samples saved ------------\n")
+}
 rm("beta_sam", "theta_sam", "sig2_sam", "alpha_sam", "X_sam")
-#saveRDS(sam_list, "gaussian-gpfa-samples.rds")
 
 #----------- Plots ----------------
 #sam_list <- readRDS("gaussian-gpfa-samples.rds")
@@ -173,6 +192,10 @@ data.frame(rbind(theta_mean, theta_sd, unlist(true_theta)),
                          paste0("Est_theta_SD"),
                          paste0("True_theta")))
 
+# Posterior density and trace plots for GP hyperparameters
+n_sam_rm <- n_sam-n_warmup
+iter_inds <- seq_len(n_sam_rm)
+chain_inds <- split(iter_inds, ceiling(iter_inds/(n_sam_rm)))
 theta_pos_plots <- list()
 theta_trace_plots <- list()
 for (k in 1:(n_factor)){
@@ -181,15 +204,14 @@ for (k in 1:(n_factor)){
            aes(x=theta))+
     geom_density()+
     geom_vline(xintercept=theta[[k]][2], color="red", linetype="dashed")+
-    labs(x="", y="", title=bquote(theta[.(k)]^ell))
-  tot_sam <- length(sam_list$theta_sam[,k])
+    labs(x="", y="", title=bquote(lambda[.(k)]))
   theta_trace_plots[[k]] <-
-    ggplot(data=data.frame(iter=seq_len(tot_sam/2),
-                           chain1=sam_list$theta_sam[1:(tot_sam/2),k],
-                           chain2=sam_list$theta_sam[(tot_sam/2+1):tot_sam,k]))+
-    geom_line(aes(x=iter, y=chain1, col="Chain1"))+
-    geom_line(aes(x=iter, y=chain2, col="Chain2"))+
-    labs(x="Iter", y="", title=bquote(theta[.(k)]^ell))
+    ggplot(data=data.frame(iter=rep(seq_len(n_sam_rm), times=n_chain),
+                           sam=sam_list$theta_sam[,k],
+                           chain=unlist(lapply(seq_len(n_chain), 
+                                               function(i)paste(rep("Chain", n_sam_rm), i)))))+
+    geom_line(aes(x=iter, y=sam, col=chain))+
+    labs(x="Iter", y="", title=bquote(lambda[.(k)]))
 }
 theta_pos_plots[[n_factor+1]] <- 
   ggplot(data=data.frame(theta=sam_list$theta_sam[,n_factor+1]),
@@ -198,16 +220,16 @@ theta_pos_plots[[n_factor+1]] <-
   geom_vline(xintercept=theta[[n_factor]][3], color="red", linetype="dashed")+
   labs(x="", y="", title=expression(d))
 theta_trace_plots[[n_factor+1]] <-
-  ggplot(data=data.frame(iter=seq_len(tot_sam/2),
-                         chain1=sam_list$theta_sam[1:(tot_sam/2),n_factor+1],
-                         chain2=sam_list$theta_sam[(tot_sam/2+1):tot_sam,n_factor+1]))+
-  geom_line(aes(x=iter, y=chain1, col="Chain1"))+
-  geom_line(aes(x=iter, y=chain2, col="Chain2"))+
+  ggplot(data=data.frame(iter=rep(seq_len(n_sam_rm), times=n_chain),
+                         sam=sam_list$theta_sam[,n_factor+1],
+                         chain=unlist(lapply(seq_len(n_chain), 
+                                             function(i)paste(rep("Chain", n_sam_rm), i)))))+
+  geom_line(aes(x=iter, y=sam, col=chain))+
   labs(x="Iter", y="", title=expression(d))
 ggarrange(plotlist=theta_pos_plots, ncol=4)
 if (save_figs) ggsave("ggpfa-theta-pos-dist.pdf", width=10, height=2)
 ggarrange(plotlist=theta_trace_plots, nrow=4)
-if (save_figs) ggsave("ggpfa-theta-trace-plots.pdf", width=2, height=10)
+if (save_figs) ggsave("ggpfa-theta-trace-plots.pdf", width=10, height=8)
 
 
 
@@ -236,64 +258,39 @@ ggplot(data=beta_df, aes(x=true, y=est))+
   labs(x="True", y="Posterior mean", title=expression(beta))
 if (save_figs) ggsave("ggpfa-beta-scatterplot.pdf", width=3, height=3)
 
+n_time_to_show <- 500
 x_est_plots <- list()
 for (k in 1:n_factor){
-  x_df <- data.frame(time=1:n_time, est=sam_list$X_mean[,k], true=x_sim[,k], 
-                     ci_lo=sam_list$X_95ci_lo[,k], ci_hi=sam_list$X_95ci_hi[,k])
+  x_df <- data.frame(time=1:n_time_to_show, est=sam_list$X_mean[1:n_time_to_show,k], true=x_sim[1:n_time_to_show,k], 
+                     ci_lo=sam_list$X_95ci_lo[1:n_time_to_show,k], ci_hi=sam_list$X_95ci_hi[1:n_time_to_show,k])
   x_est_plots[[k]] <- 
     ggplot(data=x_df)+
-    geom_line(aes(x=time, y=true, color="True X"), alpha=0.8)+
-    geom_line(aes(x=time, y=est, col="Pos. mean of X"), alpha=0.8)+
-    geom_ribbon(aes(x=time, ymin=ci_lo, ymax=ci_hi, linetype=NA), alpha=0.4)+
+    geom_line(aes(x=time, y=true, color="True X"))+
+    geom_line(aes(x=time, y=est, col="Pos. mean of X"))+
+    geom_ribbon(aes(x=time, ymin=ci_lo, ymax=ci_hi), alpha=0.8, fill = "grey")+
     labs(x="Time", y="x", title=bquote(x[.(k)]))
 }
 ggarrange(plotlist=x_est_plots, nrow=3, common.legend = TRUE)
 if (save_figs) ggsave("ggpfa-x-path-est.pdf", width=7, height=5)
 
 
-#--------------------- Test against Stan samples ----------------------------
-# require(rstan)
-# require(dplyr)
-# n_sam <- 5000
-# n_warmup <- 1000
-# n_chain <- 4
-# mod <- stan_model(file="gpfa.stan")
-# options(mc.cores=n_chain)
-# stan_sam <- sampling(mod, chains=n_chain, iter=n_sam, warmup=n_warmup,
-#                      data=c(list(n_time=n_time, n_proc=n_proc, n_factor=n_factor, 
-#                                  Y=y_sim, 
-#                                  timestamps=(1:n_time)*delta_t), prior_list),
-#                      init=function() init_param)
-# saveRDS(stan_sam, "stan_ggpfa.rds")
-# all_samples <- data.frame(as.matrix(stan_sam))
-# fill_ind <- ((nrow(all_samples)+1):(nrow(all_samples)+n_sam-n_warmup))
-# all_samples$Method <- "Stan"
-# all_samples <- all_samples %>% 
-#   select(-lp__) %>%
-#   mutate(Method="Stan")
-# all_samples[fill_ind, ] <- NA
-# all_samples$Method[fill_ind] <- "Gibbs"
-# all_samples <- all_samples %>% select(-starts_with("X."))
-# # Add samples from the Gibbs sampler
-# for (ff in 1:n_factor){
-#   for (pp in 1:n_proc){
-#     all_samples[fill_ind, paste("beta", ff, pp, "" ,sep=".")] <- sam_list$beta_sam[(n_warmup+1):n_sam, ff, pp]
-#   }
-#   all_samples[fill_ind, paste("theta", 1, ff, "", sep=".")] <- sam_list$theta_sam[(n_warmup+1):n_sam, 1, ff]
-#   all_samples[fill_ind, paste("theta", 2, ff, "", sep=".")] <- sam_list$theta_sam[(n_warmup+1):n_sam, 2, ff]
-# }
-# for (pp in 1:n_proc){
-#   all_samples[fill_ind, paste("sig2", pp, "", sep=".")] <- sam_list$sig2_sam[(n_warmup+1):n_sam, pp]
-# }
-# 
-# # Compare posterior dist in plots
-# vars_to_plot <- c("theta.2.1.", "theta.2.2.", "theta.2.3.", colnames(all_samples)[7:66])
-# true_vals <- c(as.vector(theta[2,]), as.vector(beta), alpha, Sigma_diag)
-# test_plot_list <- vector("list", length(vars_to_plot))
-# for (ii in 1:length(vars_to_plot)){
-#   test_plot_list[[ii]] <- ggplot(data=all_samples, 
-#                                  aes_string(x=vars_to_plot[ii], col="Method"))+
-#     geom_density()+geom_vline(xintercept = true_vals[ii],linetype="dotted",color="green")+
-#     xlab(vars_to_plot[ii])
-#   print(test_plot_list[[ii]])
-# }
+# QQ plot for X
+qq_plot <- function(zscore, title="", 
+                    x_lab="Theoretical Quantile", 
+                    y_lab="Sample Quantile") {
+  tibble(z = zscore) %>%
+    ggplot(aes(sample = z)) +
+    stat_qq_line(linewidth = 1, color = "blue") +
+    stat_qq() +
+    ylab(y_lab) + xlab(x_lab)+
+    ggtitle(title)
+}
+for (k in seq_len(n_factor)){
+  x_sam_k <- readRDS(paste0("gaussian-gpfa-X-samples", k, ".rds"))
+  qnorm_x <- rep(0, n_time)
+  for (t in seq_len(n_time)){
+    qnorm_x[t] <- qnorm(mean(x_sam_k[,t] <= x_sim[t, k]))
+  }
+  qq_plot(qnorm_x)
+  if (save_figs) ggsave(paste0("ggpfa-x-qqplot-", k, ".pdf"), width=4, height=4)
+}
