@@ -14,8 +14,8 @@ save_samples_as_rds <- TRUE
 
 # Set MCMC parameters
 n_chain <- 4
-n_sam <- 3e4
-n_warmup <- 1e4
+n_sam <- 1e4
+n_warmup <- 5e3
 
 # Set simulation parameters
 fix_theta1 <- TRUE
@@ -32,7 +32,7 @@ beta <- rbind(c(runif(proc_per_group, 3, 5), runif(proc_per_group, 0, 1), runif(
 alpha <- rnorm(n_proc, mean=7, sd=2)
 theta <- list(c(0.05, 0.05),
               c(0.05, 0.1),
-              c(0.05, 0.12, 0.4))
+              c(0.05, 0.12, 0.3))
 
 #------- Simulate factor processes ----------
 # Short memory latent process
@@ -40,10 +40,18 @@ acf1 <- rbf_acf((0:(n_time-1))*delta_t, var=theta[[1]][1], ell=theta[[1]][2])
 acf2 <- rbf_acf((0:(n_time-1))*delta_t, var=theta[[2]][1], ell=theta[[2]][2])
 # Long memory latent process
 acf3 <- rquad_acf((0:(n_time-1))*delta_t, var=theta[[3]][1], k=theta[[3]][2], d=theta[[3]][3])
-par(mfrow=c(1,1))
-plot(acf1, type="l", xlab="", ylab="acf", main="Black acf1 Blue acf2 Red acf3")
-lines(acf2, col="blue")
-lines(acf3, col="red")
+n_lags_to_plot <- 5000
+acf_df <- data.frame(acf=c(acf1[1:n_lags_to_plot], acf2[1:n_lags_to_plot], acf3[1:n_lags_to_plot]), 
+                     lag=rep(0:(n_lags_to_plot-1), 3),
+                     type=c(rep("Short memory 1", n_lags_to_plot),
+                            rep("Short memory 2", n_lags_to_plot),
+                            rep("Long memory", n_lags_to_plot)))
+# Plot ACFs
+ggplot(data=acf_df)+
+  geom_line(aes(x=lag, y=acf))+facet_grid(rows=vars(type))+
+  labs(x="Lag", y="ACF")
+if (save_figs) ggsave("ggpfa-acf.pdf", width=10, height=6)
+
 x1 <- rnormtz(n=1, acf1)
 x2 <- rnormtz(n=1, acf2)
 x3 <- rnormtz(n=1, acf3)
@@ -83,12 +91,12 @@ prior_list <- list(sig_alpha=rep(1, n_proc),  # length D
                      }
                    })
 
-# # Good initial values: true values
-# init_param <- list(X=x_sim, 
-#                    beta=beta, 
-#                    alpha=alpha,
-#                    sig2=Sigma_diag, 
-#                    theta=theta)
+# Good initial values: true values
+init_param <- list(X=x_sim,
+                   beta=beta,
+                   alpha=alpha,
+                   sig2=Sigma_diag,
+                   theta=theta)
 
 # # Very bad initial values: random
 # init_x <- matrix(rep(0, n_time*n_factor), nrow=n_time, ncol=n_factor)
@@ -102,19 +110,25 @@ prior_list <- list(sig_alpha=rep(1, n_proc),  # length D
 #                    theta=list(rep(0.05, 2), rep(0.05, 2), rep(0.05, 3)))
 
 # Better initial values: assuming we can get some noisy point estimates close to the truth
-init_param <- list(X=x_sim+matrix(rnorm(length(x_sim),sd=0.05),nrow(x_sim),ncol(x_sim)), 
-                   beta=beta+matrix(rnorm(length(beta),sd=1),nrow(beta),ncol(beta)), 
-                   alpha=alpha+rnorm(length(alpha),sd=1),
-                   sig2=Sigma_diag+rnorm(length(Sigma_diag),sd=0.05), 
-                   theta=lapply(theta, function(e){e+c(0, rnorm(length(e)-1, sd=0.01))}))
+# init_param <- list(X=x_sim+matrix(rnorm(length(x_sim),sd=0.05),nrow(x_sim),ncol(x_sim)), 
+#                    beta=beta+matrix(rnorm(length(beta),sd=1),nrow(beta),ncol(beta)), 
+#                    alpha=alpha+rnorm(length(alpha),sd=1),
+#                    sig2=Sigma_diag+rnorm(length(Sigma_diag),sd=0.05), 
+#                    theta=lapply(theta, function(e){e+c(0, rnorm(length(e)-1, sd=0.01))}))
+# fix_param <- list(beta = matrix(NA, nrow=nrow(beta), ncol=ncol(beta)),
+#                   alpha = rep(NA, n_proc),
+#                   sig2 = rep(NA, n_proc),
+#                   theta = list(rep(NA, 2), rep(NA, 2), rep(NA, 3)))
+fix_param <- list()
 # Tune theta_prop_scale
 theta_prop_scale <- list(c(0, 0.001),  # first element set to 0 because fixing widthscale
                          c(0, 0.001), 
                          c(0, 0.004, 0.01))
-# test <- gpfa_gibbs_sampler(300, y_sim, init_param, prior_list, delta_t,
-#                            acf_list = list(rbf_acf, rbf_acf, rquad_acf),
-#                            theta_prop_scale = theta_prop_scale,
-#                            fix_gp_widthscale = fix_theta1)
+test <- gpfa_gibbs_sampler(100, y_sim, init_param, prior_list, delta_t,
+                           acf_list = list(rbf_acf, rbf_acf, rquad_acf),
+                           theta_prop_scale = theta_prop_scale,
+                           fix_gp_widthscale = fix_theta1,
+                           fix_param = fix_param)
 
 #--------------- Start MCMC ---------------------
 cl <- makeCluster(n_chain)
@@ -124,7 +138,9 @@ sample_time <- system.time({
   all_samples <- foreach(i=1:n_chain, .packages = c("SuperGauss")) %dopar%{
     gpfa_gibbs_sampler(n_sam, y_sim, init_param, prior_list, delta_t, 
                        acf_list = list(rbf_acf, rbf_acf, rquad_acf),
-                       theta_prop_scale = theta_prop_scale, fix_gp_widthscale = fix_theta1)
+                       theta_prop_scale = theta_prop_scale, 
+                       fix_gp_widthscale = fix_theta1,
+                       fix_param = fix_param)
   }
 })
 stopCluster(cl)

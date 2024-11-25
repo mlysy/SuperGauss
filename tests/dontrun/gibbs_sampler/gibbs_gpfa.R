@@ -317,12 +317,21 @@ cond_theta_k <- function(x_k, current_theta, delta_t, acf=rbf_acf,
 #' If TRUE, the the widthscale values are fixed to be the first row of `theta`.
 #' @param print_every Integer. Print progress and acceptance rate every `print_every`
 #' steps.
+#' @param fix_param Optionally, parameters can be fixed in sampling. This
+#' argument is a named list where 
+#' - `names(fix_param)` is a subset of `names(init_param)`,
+#' - `length(fix_param$p)` equals `length(init_param$p)` for a parameter "p",
+#' - "p" entries with NAs are fixed in sampling.
+#' This argument is only used for development purposes for now and is not 
+#' fully tested. When fixing parameter values, can only fix all values of a column
+#' of `X` and `beta`, or all theta values for a latent path 
+#' (i.e., all of `theta[[k]]`).
 #' @return Samples of parameters.
 #' @export
 gpfa_gibbs_sampler <- function(n_iter, Y, init_param, prior_list, delta_t, 
                                acf_list=rep(list(rbf_acf), nrow(init_param$X)),
                                theta_prop_scale=NULL, fix_gp_widthscale=FALSE, 
-                               print_every=10){
+                               print_every=10, fix_param=list()){
   n_time <- dim(Y)[1]
   n_proc <- dim(Y)[2]
   X <- init_param$X
@@ -340,39 +349,49 @@ gpfa_gibbs_sampler <- function(n_iter, Y, init_param, prior_list, delta_t,
   for (i in 1:n_iter){
     #---------- Update X -----------------
     for (k in 1:n_factor){
-      X[, k] <- cond_x_k(k, Y, X[,-k, drop=F], sig2, beta, alpha, theta[[k]], 
-                         delta_t, acf=acf_list[[k]])$sample
+      if (is.null(fix_param$X) | !all(is.na(fix_param$X[, k]))){
+        X[, k] <- cond_x_k(k, Y, X[,-k, drop=F], sig2, beta, alpha, theta[[k]], 
+                           delta_t, acf=acf_list[[k]])$sample
+      }
     }
     X_sam[i,,] <- X
     #---------- Update variance -------------
     for (d in 1:n_proc){
-      sig2[d] <- cond_sig2_d(Y[,d], X, beta[,d], alpha[d],
-                             prior_list$sig_alpha[d], 
-                             prior_list$sig_beta[d])$sample
+      if (is.null(fix_param$sig2) | !all(is.na(fix_param$sig2[d]))){
+        sig2[d] <- cond_sig2_d(Y[,d], X, beta[,d], alpha[d],
+                               prior_list$sig_alpha[d], 
+                               prior_list$sig_beta[d])$sample
+      }
     }
     sig2_sam[i,] <- sig2
     #---------- Update beta --------------
     XtX <- crossprod(X)
     for (d in 1:n_proc){
-      beta[,d] <- cond_beta_d(Y[,d], X, XtX, sig2[d], alpha[d],
-                              prior_list$psi_d, prior_list$S_d)$sample
+      if (is.null(fix_param$beta) | !all(is.na(fix_param$beta[,d]))){
+        beta[,d] <- cond_beta_d(Y[,d], X, XtX, sig2[d], alpha[d],
+                                prior_list$psi_d, prior_list$S_d)$sample
+      }
     }
     beta_sam[i,,] <- beta
     #---------- Update alpha --------------
     for (d in 1:n_proc){
-      alpha[d] <- cond_alpha_d(Y[,d], X, sig2[d], beta[,d], 
-                               prior_list$nu[d], prior_list$tau[d])$sample
+      if (is.null(fix_param$alpha) | !all(is.na(fix_param$alpha[d]))){
+        alpha[d] <- cond_alpha_d(Y[,d], X, sig2[d], beta[,d], 
+                                 prior_list$nu[d], prior_list$tau[d])$sample
+      }
     }
     alpha_sam[i,] <- alpha
     #---------- Update theta -----------------
     for (k in 1:n_factor){
-      theta_update <- cond_theta_k(X[,k], theta[[k]], delta_t, acf_list[[k]],
-                                   prior_list$ell_alpha[k], 
-                                   prior_list$ell_beta[k],
-                                   theta_prop_scale[[k]], fix_gp_widthscale,
-                                   prior_list$theta_additional_prior)
-      theta[[k]] <- theta_update$current
-      thetak_accept[k] <- thetak_accept[k] + theta_update$accept
+      if (is.null(fix_param$theta) | !all(is.na(fix_param$theta[[k]]))){
+        theta_update <- cond_theta_k(X[,k], theta[[k]], delta_t, acf_list[[k]],
+                                     prior_list$ell_alpha[k], 
+                                     prior_list$ell_beta[k],
+                                     theta_prop_scale[[k]], fix_gp_widthscale,
+                                     prior_list$theta_additional_prior)
+        theta[[k]] <- theta_update$current
+        thetak_accept[k] <- thetak_accept[k] + theta_update$accept
+      }
     }
     theta_sam[i,] <- unlist(theta)
     if((print_every > 0) && (i %% print_every == 0)) {
