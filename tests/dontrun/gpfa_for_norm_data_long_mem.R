@@ -15,14 +15,14 @@ save_samples_as_rds <- TRUE
 # Set MCMC parameters
 n_chain <- 4
 n_sam <- 1e4
-n_warmup <- 5e3
+n_warmup <- 2e3
 
 # Set simulation parameters
 fix_theta1 <- TRUE
 set.seed(1234)
 n_proc <- 30
 n_factor <- 3
-n_time <- 10000
+n_time <- 20000
 delta_t <- 0.1
 Sigma_diag <- rnorm(n_proc, 0.5, 0.1)^2
 proc_per_group <- n_proc/n_factor
@@ -32,7 +32,7 @@ beta <- rbind(c(runif(proc_per_group, 3, 5), runif(proc_per_group, 0, 1), runif(
 alpha <- rnorm(n_proc, mean=7, sd=2)
 theta <- list(c(0.05, 0.05),
               c(0.05, 0.1),
-              c(0.05, 0.12, 0.3))
+              c(0.05, 0.12, 0.4))
 
 #------- Simulate factor processes ----------
 # Short memory latent process
@@ -40,7 +40,7 @@ acf1 <- rbf_acf((0:(n_time-1))*delta_t, var=theta[[1]][1], ell=theta[[1]][2])
 acf2 <- rbf_acf((0:(n_time-1))*delta_t, var=theta[[2]][1], ell=theta[[2]][2])
 # Long memory latent process
 acf3 <- rquad_acf((0:(n_time-1))*delta_t, var=theta[[3]][1], k=theta[[3]][2], d=theta[[3]][3])
-n_lags_to_plot <- 5000
+n_lags_to_plot <- 2e4
 acf_df <- data.frame(acf=c(acf1[1:n_lags_to_plot], acf2[1:n_lags_to_plot], acf3[1:n_lags_to_plot]), 
                      lag=rep(0:(n_lags_to_plot-1), 3),
                      type=c(rep("Short memory 1", n_lags_to_plot),
@@ -74,6 +74,7 @@ y_sim <- x_sim %*% beta +
 cat("Number of simulated Y_i smaller than 0 is:\n",
     sum(y_sim < 0), "\n")
 # Define priors and random initial values
+# log pi(d) = log (d + .5) + log(.5 - d)
 prior_list <- list(sig_alpha=rep(1, n_proc),  # length D
                    sig_beta=rep(1, n_proc),   # length D
                    psi_d=rep(1, n_factor),      # length K
@@ -82,14 +83,13 @@ prior_list <- list(sig_alpha=rep(1, n_proc),  # length D
                    tau=rep(100,n_proc),
                    ell_alpha=rep(NA, 3),
                    ell_beta=rep(NA, 3),
-                   theta_additional_prior=function(theta){
-                     # Only apply this prior on the rf kernel d parameter
-                     if (length(theta)==3){
-                       dunif(theta[3], -0.5, 0.5, log=TRUE)
-                     } else{
-                       0
-                     }
-                   })
+                   theta_additional_prior=list(NULL, NULL,
+                     function(theta){
+                       # Only apply this prior on the rf kernel d parameter
+                       # dunif(theta[3], -0.5, 0.5, log=TRUE)
+                       log(theta[3]+0.5)+log(0.5-theta[3])
+                       }
+                   ))
 
 # Good initial values: true values
 init_param <- list(X=x_sim,
@@ -121,14 +121,16 @@ init_param <- list(X=x_sim,
 #                   theta = list(rep(NA, 2), rep(NA, 2), rep(NA, 3)))
 fix_param <- list()
 # Tune theta_prop_scale
-theta_prop_scale <- list(c(0, 0.001),  # first element set to 0 because fixing widthscale
-                         c(0, 0.001), 
-                         c(0, 0.004, 0.01))
-test <- gpfa_gibbs_sampler(100, y_sim, init_param, prior_list, delta_t,
-                           acf_list = list(rbf_acf, rbf_acf, rquad_acf),
-                           theta_prop_scale = theta_prop_scale,
-                           fix_gp_widthscale = fix_theta1,
-                           fix_param = fix_param)
+theta_prop_scale <- list(c(0, 0.0008),  # first element set to 0 because fixing widthscale
+                         c(0, 0.0008),
+                         c(0, 0.001, 0.008))
+# acf_list <- list(rbf_acf, rbf_acf, 
+#                  function(lag, var, k) {rquad_acf(lag=lag, var=var, k=k,d=theta[[3]][3])})
+# test <- gpfa_gibbs_sampler(100, y_sim, init_param, prior_list, delta_t,
+#                            acf_list = list(rbf_acf, rbf_acf, rquad_acf),
+#                            theta_prop_scale = theta_prop_scale,
+#                            fix_gp_widthscale = fix_theta1,
+#                            fix_param = fix_param)
 
 #--------------- Start MCMC ---------------------
 cl <- makeCluster(n_chain)
@@ -136,6 +138,8 @@ registerDoParallel(cl)
 cat("---------- Sampling started --------------\n")
 sample_time <- system.time({
   all_samples <- foreach(i=1:n_chain, .packages = c("SuperGauss")) %dopar%{
+  #   acf_list <- list(rbf_acf, rbf_acf,
+  #                    function(lag, var, k) {rquad_acf(lag=lag, var=var, k=k,d=theta[[3]][3])})
     gpfa_gibbs_sampler(n_sam, y_sim, init_param, prior_list, delta_t, 
                        acf_list = list(rbf_acf, rbf_acf, rquad_acf),
                        theta_prop_scale = theta_prop_scale, 
@@ -229,7 +233,7 @@ for (k in 1:(n_factor)){
     geom_line(aes(x=iter, y=sam, col=chain))+
     labs(x="Iter", y="", title=bquote(lambda[.(k)]))
 }
-theta_pos_plots[[n_factor+1]] <- 
+theta_pos_plots[[n_factor+1]] <-
   ggplot(data=data.frame(theta=sam_list$theta_sam[,n_factor+1]),
          aes(x=theta))+
   geom_density()+
@@ -238,7 +242,7 @@ theta_pos_plots[[n_factor+1]] <-
 theta_trace_plots[[n_factor+1]] <-
   ggplot(data=data.frame(iter=rep(seq_len(n_sam_rm), times=n_chain),
                          sam=sam_list$theta_sam[,n_factor+1],
-                         chain=unlist(lapply(seq_len(n_chain), 
+                         chain=unlist(lapply(seq_len(n_chain),
                                              function(i)paste(rep("Chain", n_sam_rm), i)))))+
   geom_line(aes(x=iter, y=sam, col=chain))+
   labs(x="Iter", y="", title=expression(d))

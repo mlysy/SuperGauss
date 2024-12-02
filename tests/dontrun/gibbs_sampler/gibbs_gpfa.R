@@ -221,7 +221,7 @@ cond_alpha_d <- function(y_d, X, sig_d, beta_d, nu_d, tau_d,
 #' for all thetas.
 #' @param fix_gp_widthscale Is the widthscale fixed for each factor process? 
 #' If TRUE, the the widthscale values are fixed to be the first row of `theta`.
-#' @param additional_prior Additional prior function to be applied on theta.
+#' @param additional_prior Additional log prior function to be applied on theta.
 #' @return Length 2 list of `theta` and `accept`.
 #' @noRd
 #' @export
@@ -388,7 +388,7 @@ gpfa_gibbs_sampler <- function(n_iter, Y, init_param, prior_list, delta_t,
                                      prior_list$ell_alpha[k], 
                                      prior_list$ell_beta[k],
                                      theta_prop_scale[[k]], fix_gp_widthscale,
-                                     prior_list$theta_additional_prior)
+                                     prior_list$theta_additional_prior[[k]])
         theta[[k]] <- theta_update$current
         thetak_accept[k] <- thetak_accept[k] + theta_update$accept
       }
