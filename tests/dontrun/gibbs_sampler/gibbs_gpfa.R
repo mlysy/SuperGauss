@@ -274,6 +274,7 @@ cond_theta_k <- function(x_k, current_theta, delta_t, acf=rbf_acf,
   new_acf <- do.call(function(...){acf(lag, ...)}, as.list(new_theta))
   new_lpdf <- dnormtz(X=x_k, acf=new_acf, log=T, method="gschur")
   if (is.na(new_lpdf)) new_lpdf <- -Inf
+  if (is.na(new_prior)) new_prior <- -Inf
   if ((new_lpdf+new_prior-current_lpdf-current_prior) > log(runif(1))){
     list(current=new_theta, accept=1, lproposal=lproposal,
          new_lpdf=new_lpdf, current_lpdf=current_lpdf)
