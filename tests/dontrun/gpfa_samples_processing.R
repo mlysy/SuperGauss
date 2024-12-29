@@ -1,6 +1,9 @@
 batch_ids <- 2:5 # the first batch is discarded as warm-up
-
+plot_x_sam <- FALSE
+plot_theta_sam <- FALSE
+plot_param_scatterplots <- TRUE
 #------------------ Process X samples -------------------
+if (plot_x_sam){
 dir.create("X_samples_temp", showWarnings = FALSE)
 for (chain_id in 1:n_chain){
   for (batch_id in batch_ids){
@@ -33,8 +36,9 @@ for (k in seq_len(n_factor)){
   if (save_figs) ggsave(paste0("ggpfa-x-qqplot-", k, ".pdf"), width=4, height=4)
 }
 unlink("X_samples_temp", recursive = TRUE)
-
+}
 #----------------- Process theta samples -----------------
+if (plot_theta_sam){
 theta_sam_list <- vector("list", n_chain*length(batch_ids))
 count <- 1
 for (chain_id in 1:n_chain){
@@ -83,9 +87,12 @@ ggarrange(plotlist=theta_pos_plots, ncol=4)
 if (save_figs) ggsave("ggpfa-theta-pos-dist.pdf", width=10, height=2)
 ggarrange(plotlist=theta_trace_plots, nrow=4)
 if (save_figs) ggsave("ggpfa-theta-trace-plots.pdf", width=10, height=8)
+}
 
 
+if (plot_param_scatterplots){
 param_names <- c("sig2_sam", "beta_sam", "alpha_sam")
+errorbar_width <- list("sig2_sam"=0.05, "beta_sam"=0.15, "alpha_sam"=0.3)
 map_true_vals <- function(param){
   if (param=="sig2_sam"){
     return(Sigma_diag)
@@ -98,8 +105,8 @@ map_true_vals <- function(param){
 for (param in param_names){
   batch_list <- vector("list", n_chain*length(batch_ids))
   count <- 1
-  for (c_id in 1:n_chain){
-    for (b_id in batch_ids){
+  for (chain_id in 1:n_chain){
+    for (batch_id in batch_ids){
       batch_list[[count]] <- readRDS(batch_obj_name(chain_id=chain_id, batch_id=batch_id, 
                                                     param_name=param))
       count <- count+1
@@ -123,8 +130,10 @@ for (param in param_names){
                         true=as.numeric(map_true_vals(param)))
   ggplot(data=plot_df, aes(x=true, y=est))+
     geom_point()+
-    geom_errorbar(aes(ymin=ci_low, ymax=ci_hi), width=.1)+
+    geom_errorbar(aes(ymin=ci_low, ymax=ci_hi), width=errorbar_width[[param]])+
     geom_abline(slope=1, linetype="dashed", col="red")+
-    labs(x="True", y="Posterior mean", title=param)
+    labs(x="True", y="Posterior mean")
   if (save_figs) ggsave(paste0("ggpfa-", param, "-scatterplot.pdf"), width=3, height=3)
+}
+
 }
