@@ -11,5 +11,6 @@ src/.vscode
 vignettes/.build.timestamp
 # fftw-specific
 src/Makevars
+src/Makevars.win
 config.log
 config.status

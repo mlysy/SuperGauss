@@ -1,4 +1,4 @@
 #! /bin/sh
 # execute cleanup script
 
-rm -f config.* src/Makevars
+rm -f config.* src/Makevars src/Makevars.win

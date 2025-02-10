@@ -1,3 +1,0 @@
-LIB_FFTW=C:/fftw
-PKG_CXXFLAGS=-I"../inst/include" -I$(LIB_FFTW)
-PKG_LIBS=-L$(LIB_FFTW) -lfftw3-3
