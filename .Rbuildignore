@@ -1,6 +1,7 @@
 ^\.vscode$
 ^inst/doxygen$
 ^inst/include/old$
+^inst/include/SuperGauss/\.clang-format$
 ^vignettes/Makefile$
 ^vignettes/old$
 ^config\.status$
