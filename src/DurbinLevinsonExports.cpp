@@ -26,13 +26,13 @@ Eigen::MatrixXd DurbinLevinson_XZ(Eigen::MatrixXd X, Eigen::VectorXd acf) {
   N = acf.size();
   k = X.cols();
   // output
-  Eigen::MatrixXd Zt(k,N);
+  Eigen::MatrixXd Zt(k, N);
   // temporary
   Eigen::MatrixXd Xt = X.transpose();
   DurbinLevinson dl(N);
 
   dl.cholXZ(Xt, Zt, acf, false);
-  return(Zt.transpose());
+  return (Zt.transpose());
 }
 // Eigen::MatrixXd DurbinLevinson_XZ(Eigen::MatrixXd X, Eigen::VectorXd acf) {
 //   int n, k;
@@ -60,13 +60,13 @@ Eigen::MatrixXd DurbinLevinson_ZX(Eigen::MatrixXd Z, Eigen::VectorXd acf) {
   N = acf.size();
   k = Z.cols();
   // output
-  Eigen::MatrixXd Xt(k,N);
+  Eigen::MatrixXd Xt(k, N);
   // temporary
   Eigen::MatrixXd Zt = Z.transpose();
   DurbinLevinson dl(N);
 
   dl.cholXZ(Xt, Zt, acf, true);
-  return(Xt.transpose());
+  return (Xt.transpose());
 }
 // Eigen::MatrixXd DurbinLevinson_ZX(Eigen::MatrixXd Z, Eigen::VectorXd acf) {
 //   int n, k;
@@ -96,8 +96,7 @@ Eigen::MatrixXd DurbinLevinson_ZX(Eigen::MatrixXd Z, Eigen::VectorXd acf) {
 // DurbinLevinsonEigen
 //[[Rcpp::export]]
 Rcpp::List DurbinLevinson_crossprod(Eigen::MatrixXd X, Eigen::MatrixXd Y,
-				    Eigen::VectorXd acf,
-				    int calc_mode = 1) {
+                                    Eigen::VectorXd acf, int calc_mode = 1) {
   int N, d, k;
   N = acf.size();
   d = X.cols();
@@ -108,14 +107,16 @@ Rcpp::List DurbinLevinson_crossprod(Eigen::MatrixXd X, Eigen::MatrixXd Y,
   // temporaries
   Eigen::MatrixXd Xt = X.transpose();
   Eigen::MatrixXd Yt;
-  if(calc_mode != 1) Yt = Y.transpose();
+  if (calc_mode != 1)
+    Yt = Y.transpose();
   DurbinLevinson dl(N);
 
   ldV = dl.cross_prod(M, Xt, Yt, acf, calc_mode);
-  if(calc_mode != 2) {
+  if (calc_mode != 2) {
     return List::create(_["IP"] = wrap(M), _["ldV"] = wrap(ldV));
   } else {
-    return List::create(_["IP"] = wrap(Eigen::VectorXd(M)), _["ldV"] = wrap(ldV));
+    return List::create(_["IP"] = wrap(Eigen::VectorXd(M)),
+                        _["ldV"] = wrap(ldV));
   }
 }
 // Rcpp::List DurbinLevinson_Eigen(Eigen::MatrixXd X, Eigen::MatrixXd Y,
@@ -158,7 +159,7 @@ Eigen::MatrixXd DurbinLevinson_solve(Eigen::MatrixXd X, Eigen::VectorXd acf) {
   dl.solve(Yt, acf, Xt);
   return Yt.transpose();
 }
-  
+
 // // DurbinLevinsonBase
 // //[[Rcpp::export]]
 // Rcpp::List DurbinLevinson_Base(NumericMatrix X, NumericMatrix Y,
