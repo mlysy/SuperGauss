@@ -4,37 +4,42 @@
 #define RealFFT_h 1
 
 // usual header
-#include <complex>
 #include <algorithm>
+#include <complex>
 #include <fftw3.h>
 // #include <Rcpp.h>
 // #include <iostream>
 
 /// @brief FFT for real to complex and corresponding iFFT for complex to real.
 ///
-/// Allocates memory for the corresponding `fftw` operations within the object, copies memory in and out each time the FFT and iFFT members are called.
+/// Allocates memory for the corresponding `fftw` operations within the object,
+/// copies memory in and out each time the FFT and iFFT members are called.
 ///
-/// The FFT of a real vector `x = (x_0, ..., x_{N-1})` produces a complex vector `y = (y_0, ..., y_{N-1})` such that `y_k = conj(y_{k mod N})`.  Therefore, `y` is completely determined from its first `Nu = floor(N/2)+1` elements, such that only these `Nu` elements are returned as FFT output and queried as iFFT input.
+/// The FFT of a real vector `x = (x_0, ..., x_{N-1})` produces a complex vector
+/// `y = (y_0, ..., y_{N-1})` such that `y_k = conj(y_{k mod N})`.  Therefore,
+/// `y` is completely determined from its first `Nu = floor(N/2)+1` elements,
+/// such that only these `Nu` elements are returned as FFT output and queried as
+/// iFFT input.
 class RealFFT {
 private:
   typedef std::complex<double> dcomplex; ///< Typedef for complex double
-  fftw_plan planfwd_;  ///< Plan for forward FFT.
-  fftw_plan planback_;  ///< Plan for backward FFT.
-  fftw_complex* y_; ///< Where to compute FFT.
-  double* x_; ///< Where to compute iFFT.
-  int N_; ///< Size of input vector.
-  int Nu_; ///< Padded size of input.
+  fftw_plan planfwd_;                    ///< Plan for forward FFT.
+  fftw_plan planback_;                   ///< Plan for backward FFT.
+  fftw_complex *y_;                      ///< Where to compute FFT.
+  double *x_;                            ///< Where to compute iFFT.
+  int N_;                                ///< Size of input vector.
+  int Nu_;                               ///< Padded size of input.
 public:
   /// Constructor.
   RealFFT(int N);
   /// Destructor.
   ~RealFFT();
   /// Perform the FFT on the input data.
-  void fft(std::complex<double>* y, const double* x);
+  void fft(std::complex<double> *y, const double *x);
   /// Perform the inverse FFT on the input data.
-  void ifft(double* x, const std::complex<double>* y);
+  void ifft(double *x, const std::complex<double> *y);
   /// Get size of FFT.
-  int size() {return N_;}
+  int size() { return N_; }
 };
 
 /// @param[in] N Size of FFT/iFFT to be computed.
@@ -62,8 +67,7 @@ inline RealFFT::~RealFFT() {
 ///
 /// @param[out] y Complex vector output of length `Nu = floor(N/2)+1`.
 /// @param[in] x  Real vector input of length `N`.
-inline void RealFFT::fft(std::complex<double>* y,
-			   const double* x) {
+inline void RealFFT::fft(std::complex<double> *y, const double *x) {
   std::copy(x, x + N_, x_);
   fftw_execute(planfwd_);
   for (int ii = 0; ii < Nu_; ++ii) {
@@ -76,7 +80,7 @@ inline void RealFFT::fft(std::complex<double>* y,
 ///
 /// @param[out] x Real vector output of length `N`.
 /// @param[in] y Complex vector input of length `Nu = floor(N/2)+1`.
-inline void RealFFT::ifft(double* x, const std::complex<double>* y) {
+inline void RealFFT::ifft(double *x, const std::complex<double> *y) {
   for (int ii = 0; ii < Nu_; ++ii) {
     y_[ii][0] = y[ii].real();
     y_[ii][1] = y[ii].imag();

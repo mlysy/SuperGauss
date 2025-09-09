@@ -9,45 +9,49 @@
 
 #include "RealFFT.h"
 // #include "ComplexMult.h"
-#include <vector>
-#include <complex>
 #include <algorithm>
+#include <complex>
+#include <vector>
 
 /// @brief Memory allocation for the Generalized Schur Algorithm.
 ///
-/// The GSchur algorithm involves several polynomial multiplications, for which the `GSchur2K` class provides storage to compute efficiently via the FFT.  The notation follows that of Ling & Lysy (2020).
+/// The GSchur algorithm involves several polynomial multiplications, for which
+/// the `GSchur2K` class provides storage to compute efficiently via the FFT.
+/// The notation follows that of Ling & Lysy (2020).
 ///
-/// @note Size of input is `2*n` for original GSchur algorithm and `n+m` for the merge algorithm.
+/// @note Size of input is `2*n` for original GSchur algorithm and `n+m` for the
+/// merge algorithm.
 struct GSchur2K {
 private:
   typedef std::complex<double> dcomplex;
+
 public:
-  RealFFT* FFT; ///< Memory for the FFT itself.
-  double* alpha0; ///< Coefficients of polynomial \f$\alpha_{0,2n}(x)\f$.
-  dcomplex* alpha0_fft; ///< FFT of `alpha0`.
-  double* alphan; ///< Coefficients of polynomial \f$\alpha_{n,n}(x)\f$.
-  dcomplex* alphan_fft; ///< FFT of `alphan`.
-  double* beta0; ///< Coefficients of polynomial \f$\beta_{0,2n}(x)\f$.
-  dcomplex* beta0_fft; ///< FFT of `beta0`.
-  double* betan; ///< Coefficients of polynomial \f$\beta_{n,n}(x)\f$.
-  dcomplex* betan_fft; ///< FFT of `betan`.
-  double* eta0; ///< Coefficients of polynomial \f$\eta_{0,n}(x)\f$.
-  dcomplex* eta0_fft; ///< FFT of `eta0`.
-  double* etat; ///< Coefficients of polynomial \f$\tilde\eta_{0,n}(x)\f$.
-  dcomplex* etat_fft; ///< FFT of `etat`;
-  double* etan; ///< Coefficients of polynomial \f$\eta_{n,n}(x)\f$.
-  dcomplex* etan_fft; ///< FFT of `etan`.
-  double* eta2n; ///< Coefficients of polynomial \f$\eta_{0,2n}(x)\f$.
-  dcomplex* eta2n_fft; ///< FFT of `eta2n`.
-  double* xi0; ///< Coefficients of polynomial \f$\xi_{0,n}(x)\f$.
-  dcomplex* xi0_fft; ///< FFT of `xi0`.
-  double* xit; ///< Coefficients of polynomial \f$\tilde\xi_{0,n}(x)\f$.
-  dcomplex* xit_fft; ///< FFT of `xit`.
-  double* xin; ///< Coefficients of polynomial \f$\xi_{n,n}(x)\f$.
-  dcomplex* xin_fft; ///< FFT of `xin`.
-  double* xi2n; ///< Coefficients of polynomial \f$\xi_{0,2n}(x)\f$.
-  dcomplex* xi2n_fft; ///< FFT of `xi2n`.
-  double* gamma;  ///< Coefficients of polynomial \f$\gamma(x)\f$.
+  RealFFT *FFT;         ///< Memory for the FFT itself.
+  double *alpha0;       ///< Coefficients of polynomial \f$\alpha_{0,2n}(x)\f$.
+  dcomplex *alpha0_fft; ///< FFT of `alpha0`.
+  double *alphan;       ///< Coefficients of polynomial \f$\alpha_{n,n}(x)\f$.
+  dcomplex *alphan_fft; ///< FFT of `alphan`.
+  double *beta0;        ///< Coefficients of polynomial \f$\beta_{0,2n}(x)\f$.
+  dcomplex *beta0_fft;  ///< FFT of `beta0`.
+  double *betan;        ///< Coefficients of polynomial \f$\beta_{n,n}(x)\f$.
+  dcomplex *betan_fft;  ///< FFT of `betan`.
+  double *eta0;         ///< Coefficients of polynomial \f$\eta_{0,n}(x)\f$.
+  dcomplex *eta0_fft;   ///< FFT of `eta0`.
+  double *etat;       ///< Coefficients of polynomial \f$\tilde\eta_{0,n}(x)\f$.
+  dcomplex *etat_fft; ///< FFT of `etat`;
+  double *etan;       ///< Coefficients of polynomial \f$\eta_{n,n}(x)\f$.
+  dcomplex *etan_fft; ///< FFT of `etan`.
+  double *eta2n;      ///< Coefficients of polynomial \f$\eta_{0,2n}(x)\f$.
+  dcomplex *eta2n_fft; ///< FFT of `eta2n`.
+  double *xi0;         ///< Coefficients of polynomial \f$\xi_{0,n}(x)\f$.
+  dcomplex *xi0_fft;   ///< FFT of `xi0`.
+  double *xit;         ///< Coefficients of polynomial \f$\tilde\xi_{0,n}(x)\f$.
+  dcomplex *xit_fft;   ///< FFT of `xit`.
+  double *xin;         ///< Coefficients of polynomial \f$\xi_{n,n}(x)\f$.
+  dcomplex *xin_fft;   ///< FFT of `xin`.
+  double *xi2n;        ///< Coefficients of polynomial \f$\xi_{0,2n}(x)\f$.
+  dcomplex *xi2n_fft;  ///< FFT of `xi2n`.
+  double *gamma;       ///< Coefficients of polynomial \f$\gamma(x)\f$.
   /// Constructor.
   GSchur2K(int n);
   /// Destructor.
@@ -121,38 +125,50 @@ inline GSchur2K::~GSchur2K() {
 
 /// @brief The Generalized Schur Algorithm.
 ///
-/// Given a symmetric positive-definite `N x N` Toeplitz matrix `Tz = Toeplitz(acf)` with first row/column `acf`, calculates `delta`, the first row/column of `Tz^{-1}` and `log(det(Tz))`.  This is done using a modified version of the "superfast" `O(N log^2(N))` algorithm of Ammar & Gragg (1988) which consists of the following steps:
+/// Given a symmetric positive-definite `N x N` Toeplitz matrix `Tz =
+/// Toeplitz(acf)` with first row/column `acf`, calculates `delta`, the first
+/// row/column of `Tz^{-1}` and `log(det(Tz))`.  This is done using a modified
+/// version of the "superfast" `O(N log^2(N))` algorithm of Ammar & Gragg (1988)
+/// which consists of the following steps:
 ///
-/// 1. Decompose `N` into a vectors `s = (s_1, ..., s_k)`, where each `s_i` is a power of 2 and `sum(s) = N`.
+/// 1. Decompose `N` into a vectors `s = (s_1, ..., s_k)`, where each `s_i` is a
+/// power of 2 and `sum(s) = N`.
 ///
-/// 2. Divide the problem into pieces of size `s_i`, and solve each using the recursive algorithm of Ammar & Gragg (1988).  This is done with the private method `recur_step()`.
+/// 2. Divide the problem into pieces of size `s_i`, and solve each using the
+/// recursive algorithm of Ammar & Gragg (1988).  This is done with the private
+/// method `recur_step()`.
 ///
-/// 3. Merge the pieces of size `s_i` in order to solve the original problem.  This is done using the private method `merge_step()`.
+/// 3. Merge the pieces of size `s_i` in order to solve the original problem.
+/// This is done using the private method `merge_step()`.
 /// \f[
 ///   T_{0,N} = T_{0, r} \circ T_{r, s_1} \circ ... \circ T_{..., s_m}.
 /// \f]
 class GSchurN {
 private:
-  int N_;  ///< Size of input vector
-  int bmod_;  ///< Integer giving binary modulus. Binary pieces of size smaller than `bmod_` are computed using PSchur algorithm.
-  double* alpha_; ///< First input polynomial as a function of `acf`.
-  double* beta_;  ///< Second input polynomial as a function of `acf`.
-  std::vector<int> sbin_;  ///< Vector that records the binary decomposition of `N`.
-  int nbin_; ///< Length of `sbin_`.
-  GSchur2K** gsb_;  ///< Memory allocation for the binary pieces. There are `sbin_size()` pieces, each of size `sbin_[i]`.
-  GSchur2K** gsm_;  ///< Memory allocation for merging the pieces.
+  int N_;    ///< Size of input vector
+  int bmod_; ///< Integer giving binary modulus. Binary pieces of size smaller
+             ///< than `bmod_` are computed using PSchur algorithm.
+  double *alpha_; ///< First input polynomial as a function of `acf`.
+  double *beta_;  ///< Second input polynomial as a function of `acf`.
+  std::vector<int>
+      sbin_;       ///< Vector that records the binary decomposition of `N`.
+  int nbin_;       ///< Length of `sbin_`.
+  GSchur2K **gsb_; ///< Memory allocation for the binary pieces. There are
+                   ///< `sbin_size()` pieces, each of size `sbin_[i]`.
+  GSchur2K **gsm_; ///< Memory allocation for merging the pieces.
   /// Convert integer to modulo-binary representation.
   std::vector<int> int2bin(int n, int b);
   /// Compute `alphan` and `betan` from `alpha0`, `beta0`, `eta0`, and `xi0`.
-  void compute_nn(GSchur2K* gsr, int n1, int n2);
+  void compute_nn(GSchur2K *gsr, int n1, int n2);
   /// Compute `eta2n` and `xi2n` from `etan` and `xin`.
-  void compute_2n(GSchur2K* gsr, int n);
+  void compute_2n(GSchur2K *gsr, int n);
   /// Progressive Schur algorithm.
-  void prog_step(const double* alpha0, const double* beta0, int n);
+  void prog_step(const double *alpha0, const double *beta0, int n);
   /// Generalized Schur algorithm.
-  void recur_step(const double* alpha0, const double* beta0, int si, int layer);
+  void recur_step(const double *alpha0, const double *beta0, int si, int layer);
   /// Merge pieces of Schur algorithm contained in `gsb_`.
   void merge_step();
+
 public:
   // double* delta;  ///< The first column of `Toeplitz(acf)^{-1}`.
   // double ldV;   ///< The log-determinant `log(|Toeplitz(acf)|)`.
@@ -161,7 +177,7 @@ public:
   /// Destructor.
   ~GSchurN();
   /// Perform the Generalized Schur algorithm on the input data.
-  void compute(double* delta, double& ldV, const double* acf);
+  void compute(double *delta, double &ldV, const double *acf);
 };
 
 /// @param[in] N Size of Toeplitz matrix (input to GSchur algorithm is `N-1`).
@@ -177,18 +193,17 @@ inline GSchurN::GSchurN(int N, int bmod = 64) {
   nbin_ = sbin_.size();
   int gs_size = bmod_;
   int gs_layer = log2(ceil((double)sbin_[nbin_ - 1] / bmod_));
-  gsb_ = new GSchur2K * [gs_layer + 1];
+  gsb_ = new GSchur2K *[gs_layer + 1];
   gsb_[0] = new GSchur2K(2 * gs_size);
   for (int ii = 0; ii < gs_layer; ++ii) {
     gsb_[ii + 1] = new GSchur2K(2 * gs_size);
     gs_size <<= 1;
   }
   // Length of gsm_ is max(nbin_, 2) - 1
-  gsm_ = new GSchur2K * [nbin_ > 2 ? nbin_ : 2 - 1];
+  gsm_ = new GSchur2K *[nbin_ > 2 ? nbin_ : 2 - 1];
   if (nbin_ == 1) {
     gsm_[0] = new GSchur2K(sbin_[0]);
-  }
-  else {
+  } else {
     int gsm_size = sbin_[0];
     for (int ii = 0; ii < nbin_ - 1; ++ii) {
       gsm_size = gsm_size + sbin_[ii + 1];
@@ -207,8 +222,7 @@ inline GSchurN::~GSchurN() {
   delete[] gsb_;
   if (nbin_ == 1) {
     delete gsm_[0];
-  }
-  else {
+  } else {
     for (int ii = 0; ii < nbin_ - 1; ++ii) {
       delete gsm_[ii];
     }
@@ -216,11 +230,13 @@ inline GSchurN::~GSchurN() {
   delete[] gsm_;
 }
 
-/// Given an integer `n` and modulus `b`, returns the unique integer vector `s = (s_1, ..., s_k)` or `s = (s_0, ..., s_k)` such that:
+/// Given an integer `n` and modulus `b`, returns the unique integer vector `s =
+/// (s_1, ..., s_k)` or `s = (s_0, ..., s_k)` such that:
 ///
 /// - `0 < s_0 < s_1 < ... < s_k`,
 /// - `s_i = b * 2^(m_i)` for some integer `m_i`, for `1 <= i <= k`.
-/// - If `n` is a multiple of `b`, `s = (s_1, ..., s_k)`.  Otherwise, `s = (s_0, ..., s_k)` and `0 < s_0 < b`.
+/// - If `n` is a multiple of `b`, `s = (s_1, ..., s_k)`.  Otherwise, `s = (s_0,
+/// ..., s_k)` and `0 < s_0 < b`.
 /// - `n = sum(s)`.
 ///
 /// @param[in] n Integer for whic the modulo-binary represention is computed.
@@ -243,7 +259,9 @@ inline std::vector<int> GSchurN::int2bin(int n, int b = 1) {
   return s;
 }
 
-/// Given polynomials `alpha0(x)`, `beta0(x)`, `eta0(x)`, and `xi0(x)` each represented by a double array `alpha0`, `beta0`, etc., compute polynomials `alphan(x)` and `betan(x)` defined as
+/// Given polynomials `alpha0(x)`, `beta0(x)`, `eta0(x)`, and `xi0(x)` each
+/// represented by a double array `alpha0`, `beta0`, etc., compute polynomials
+/// `alphan(x)` and `betan(x)` defined as
 ///
 /// ```
 /// alphan(x) = (alpha0(x) * eta0(x) - beta0(x) * xi0(x)) / x^n,
@@ -251,12 +269,16 @@ inline std::vector<int> GSchurN::int2bin(int n, int b = 1) {
 /// ```
 /// where `tilde(poly(x)) = x^deg(poly) * poly(1/x)`.
 ///
-/// @note By negating the odd parts of the complex conjugate of `fft(eta0, 0, 0, ..., 0)`, we can directly get `fft(0, rev(eta0), 0, ..., 0)`. However, this only works when the amount of zero-padding is also `n`.
+/// @note By negating the odd parts of the complex conjugate of `fft(eta0, 0, 0,
+/// ..., 0)`, we can directly get `fft(0, rev(eta0), 0, ..., 0)`. However, this
+/// only works when the amount of zero-padding is also `n`.
 ///
-/// @param[in,out] gsr Pointer to the GSchur storage object containing `alpha0`, `beta0`, etc.  Output is stored in `gsr->alphan` and `grs->betan`.
+/// @param[in,out] gsr Pointer to the GSchur storage object containing `alpha0`,
+/// `beta0`, etc.  Output is stored in `gsr->alphan` and `grs->betan`.
 /// @param[in] n Size of each polynomial `alpha0` and `beta0`, etc.
-/// @param[in] npad Integer amount of zero-padding.  The size of each FFT/iFFT is `n + npad`.
-inline void GSchurN::compute_nn(GSchur2K* gsr, int n, int npad) {
+/// @param[in] npad Integer amount of zero-padding.  The size of each FFT/iFFT
+/// is `n + npad`.
+inline void GSchurN::compute_nn(GSchur2K *gsr, int n, int npad) {
   int nn = (n + npad) / 2 + 1; // size of elementwise complex products
   // fft of alpha0, beta0, eta0, xi0, etat, xit
   gsr->FFT->fft(gsr->alpha0_fft, gsr->alpha0);
@@ -270,8 +292,7 @@ inline void GSchurN::compute_nn(GSchur2K* gsr, int n, int npad) {
     }
     gsr->FFT->fft(gsr->etat_fft, gsr->etat);
     gsr->FFT->fft(gsr->xit_fft, gsr->xit);
-  }
-  else {
+  } else {
     for (int ii = 0; ii < n; ++ii) {
       gsr->etat_fft[2 * ii] = std::conj(gsr->eta0_fft[2 * ii]);
       gsr->etat_fft[2 * ii + 1] = -std::conj(gsr->eta0_fft[2 * ii + 1]);
@@ -280,9 +301,11 @@ inline void GSchurN::compute_nn(GSchur2K* gsr, int n, int npad) {
     }
   }
   // elementwise complex products
-  for(int ii=0; ii<nn; ii++) {
-    gsr->alphan_fft[ii] = gsr->alpha0_fft[ii] * gsr->eta0_fft[ii] - gsr->xi0_fft[ii] * gsr->beta0_fft[ii];
-    gsr->betan_fft[ii] = gsr->beta0_fft[ii] * gsr->etat_fft[ii] - gsr->xit_fft[ii] * gsr->alpha0_fft[ii];
+  for (int ii = 0; ii < nn; ii++) {
+    gsr->alphan_fft[ii] = gsr->alpha0_fft[ii] * gsr->eta0_fft[ii] -
+                          gsr->xi0_fft[ii] * gsr->beta0_fft[ii];
+    gsr->betan_fft[ii] = gsr->beta0_fft[ii] * gsr->etat_fft[ii] -
+                         gsr->xit_fft[ii] * gsr->alpha0_fft[ii];
   }
   // complex_mult(gsr->alphan_fft, gsr->alpha0_fft, gsr->eta0_fft, nn);
   // complex_mult_minus(gsr->alphan_fft, gsr->xi0_fft, gsr->beta0_fft, nn);
@@ -293,24 +316,29 @@ inline void GSchurN::compute_nn(GSchur2K* gsr, int n, int npad) {
   gsr->FFT->ifft(gsr->betan, gsr->betan_fft);
 }
 
-/// Given polynomials `etan(x)`, `xin(x)`, `eta0(x)`, and `xi0(x)` each represented by a double array `etan`, `xin`, etc., compute polynomials `eta2n(x)` and `xi2n(x)` defined as
+/// Given polynomials `etan(x)`, `xin(x)`, `eta0(x)`, and `xi0(x)` each
+/// represented by a double array `etan`, `xin`, etc., compute polynomials
+/// `eta2n(x)` and `xi2n(x)` defined as
 ///
 /// ```
 /// eta2n(x) = tilde(xi0(x)) * xin(x) + eta0(x) * etan(x),
 /// xi2n(x) = tilde(eta0(x)) * xin(x) + xi0(x) * etan(x).
 /// ```
 ///
-/// @param[in,out] gsr Pointer to the GSchur storage object containing `etan`, `xin`, etc.  Output is stored in `gsr->eta2n` and `grs->xin`.
+/// @param[in,out] gsr Pointer to the GSchur storage object containing `etan`,
+/// `xin`, etc.  Output is stored in `gsr->eta2n` and `grs->xin`.
 /// @param[in] n Size of each polynomial `etan`, `xin`, etc.
-inline void GSchurN::compute_2n(GSchur2K* gsr, int n) {
+inline void GSchurN::compute_2n(GSchur2K *gsr, int n) {
   int nn = n / 2 + 1; // size of elementwise complex products
   // fft of xin and etan
   gsr->FFT->fft(gsr->xin_fft, gsr->xin);
   gsr->FFT->fft(gsr->etan_fft, gsr->etan);
   // elementwise complex products
-  for(int ii=0; ii<nn; ii++) {
-    gsr->xi2n_fft[ii] = gsr->etat_fft[ii] * gsr->xin_fft[ii] + gsr->xi0_fft[ii] * gsr->etan_fft[ii];
-    gsr->eta2n_fft[ii] = gsr->xit_fft[ii] * gsr->xin_fft[ii] + gsr->eta0_fft[ii] * gsr->etan_fft[ii];
+  for (int ii = 0; ii < nn; ii++) {
+    gsr->xi2n_fft[ii] = gsr->etat_fft[ii] * gsr->xin_fft[ii] +
+                        gsr->xi0_fft[ii] * gsr->etan_fft[ii];
+    gsr->eta2n_fft[ii] = gsr->xit_fft[ii] * gsr->xin_fft[ii] +
+                         gsr->eta0_fft[ii] * gsr->etan_fft[ii];
   }
   // complex_mult(gsr->xi2n_fft, gsr->etat_fft, gsr->xin_fft, nn);
   // complex_mult_plus(gsr->xi2n_fft, gsr->xi0_fft, gsr->etan_fft, nn);
@@ -321,13 +349,23 @@ inline void GSchurN::compute_2n(GSchur2K* gsr, int n) {
   gsr->FFT->ifft(gsr->eta2n, gsr->eta2n_fft);
 }
 
-/// The Progressive Schur (PSchur) algorithm is used for pieces of size less than or equal to the "binary modulus" `bmod_`.  This is because it is faster than the recursive Generalized Schur (GSchur) algorithm for small sizes.  The output of either algorithm is the same, so both can be merged as is done in `recur_step()` and `merge_step()`.  Because of the construction of the GSchur algorithm, PSchur always uses memory in `gsb_[0]`.  The final output of the algorithm is stored in `gsb_[0]->eta2n`, `gsb_[0]->xi2n`, and `gsb_[0]->gamma`.
+/// The Progressive Schur (PSchur) algorithm is used for pieces of size less
+/// than or equal to the "binary modulus" `bmod_`.  This is because it is faster
+/// than the recursive Generalized Schur (GSchur) algorithm for small sizes. The
+/// output of either algorithm is the same, so both can be merged as is done in
+/// `recur_step()` and `merge_step()`.  Because of the construction of the
+/// GSchur algorithm, PSchur always uses memory in `gsb_[0]`.  The final output
+/// of the algorithm is stored in `gsb_[0]->eta2n`, `gsb_[0]->xi2n`, and
+/// `gsb_[0]->gamma`.
 ///
 /// @param[in] alpha0 First input real vector.
 /// @param[in] beta0 Second input real vector.
-/// @param[in] n Size of each input (integer).  This is either `sbin_[0]` or `bmod_`.
-inline void GSchurN::prog_step(const double* alpha0, const double* beta0, int n) {
-  double *xi1, *xi2, *eta1, *eta2, *swap_ptr; // some pointers to simplify notation
+/// @param[in] n Size of each input (integer).  This is either `sbin_[0]` or
+/// `bmod_`.
+inline void GSchurN::prog_step(const double *alpha0, const double *beta0,
+                               int n) {
+  double *xi1, *xi2, *eta1, *eta2,
+      *swap_ptr; // some pointers to simplify notation
   double alpha1, alpha2;
   // Initialize the memory
   std::fill(gsb_[0]->xin, gsb_[0]->xin + 2 * n, 0);
@@ -364,19 +402,26 @@ inline void GSchurN::prog_step(const double* alpha0, const double* beta0, int n)
     swap_ptr = eta1;
     eta1 = eta2;
     eta2 = swap_ptr;
-  }	
+  }
   std::copy(xi1, xi1 + n, gsb_[0]->xi2n);
   std::copy(eta1, eta1 + n, gsb_[0]->eta2n);
   return;
 }
 
-/// The Generalized Schur (GSchur) algorithm is a recursive doubling procedure.  It has the same output as PSchur, and shares the same first three inputs as `prog_step()`.  However, it stores the output in `gsb_[layer]` by recursively building up the pieces from `gsb_[0]`.  The final output of the algorithm is stored in `gsb_[layer]->eta2n`, `gsb_[layer]->xi2n`, and `gsb_[layer]->gamma`.
+/// The Generalized Schur (GSchur) algorithm is a recursive doubling procedure.
+/// It has the same output as PSchur, and shares the same first three inputs as
+/// `prog_step()`.  However, it stores the output in `gsb_[layer]` by
+/// recursively building up the pieces from `gsb_[0]`.  The final output of the
+/// algorithm is stored in `gsb_[layer]->eta2n`, `gsb_[layer]->xi2n`, and
+/// `gsb_[layer]->gamma`.
 ///
 /// @param[in] alpha0 First input real vector.
 /// @param[in] beta0 Second input real vector.
 /// @param[in] n Size of each input (integer).
-/// @param[in] layer In which element of `gsb_` array to store computation (integer).
-inline void GSchurN::recur_step(const double* alpha0, const double* beta0, int n, int layer) {
+/// @param[in] layer In which element of `gsb_` array to store computation
+/// (integer).
+inline void GSchurN::recur_step(const double *alpha0, const double *beta0,
+                                int n, int layer) {
   if (n <= bmod_) {
     // for small n use prog_step only
     prog_step(alpha0, beta0, n);
@@ -384,7 +429,7 @@ inline void GSchurN::recur_step(const double* alpha0, const double* beta0, int n
   }
   prog_step(alpha0, beta0, bmod_);
   int n_ = bmod_;
-  for(int mm = 0; mm < layer; mm++) {
+  for (int mm = 0; mm < layer; mm++) {
     // Prepare the following inputs for compute_nn:
     // alpha0, beta0, xi0, eta0, and gamma
     std::copy(alpha0, alpha0 + 2 * n_, gsb_[mm + 1]->alpha0);
@@ -410,29 +455,33 @@ inline void GSchurN::recur_step(const double* alpha0, const double* beta0, int n
   return;
 }
 
-/// The final output of the algorithm is stored in `gsm_[0]->eta2n`, `gsm_[0]->xi2n`, and `gsm_[0]->gamma`.
+/// The final output of the algorithm is stored in `gsm_[0]->eta2n`,
+/// `gsm_[0]->xi2n`, and `gsm_[0]->gamma`.
 inline void GSchurN::merge_step() {
   // calculate each piece of GSchur to a different layer of gsm_
   int layer = log2(ceil((double)sbin_[0] / bmod_));
   recur_step(alpha_, beta_, sbin_[0], layer);
   if (nbin_ == 1) {
-    // When vector `sbin_` has only one element, directly pass the results to output.
-    std::copy(gsb_[layer]->eta2n, gsb_[layer]->eta2n + sbin_[0], gsm_[0]->eta2n);
+    // When vector `sbin_` has only one element, directly pass the results to
+    // output.
+    std::copy(gsb_[layer]->eta2n, gsb_[layer]->eta2n + sbin_[0],
+              gsm_[0]->eta2n);
     std::copy(gsb_[layer]->xi2n, gsb_[layer]->xi2n + sbin_[0], gsm_[0]->xi2n);
-    std::copy(gsb_[layer]->gamma, gsb_[layer]->gamma + sbin_[0], gsm_[0]->gamma);
+    std::copy(gsb_[layer]->gamma, gsb_[layer]->gamma + sbin_[0],
+              gsm_[0]->gamma);
     return;
   }
   int n_ = 0;
-  for(int mm = 0; mm < nbin_ - 1; mm++) {
+  for (int mm = 0; mm < nbin_ - 1; mm++) {
     n_ += sbin_[mm];
-    if(mm) {
+    if (mm) {
       std::copy(gsm_[mm - 1]->eta2n, gsm_[mm - 1]->eta2n + n_, gsm_[mm]->eta0);
       std::copy(gsm_[mm - 1]->xi2n, gsm_[mm - 1]->xi2n + n_, gsm_[mm]->xi0);
-    }
-    else {	
+    } else {
       std::copy(gsb_[layer]->eta2n, gsb_[layer]->eta2n + n_, gsm_[mm]->eta0);
       std::copy(gsb_[layer]->xi2n, gsb_[layer]->xi2n + n_, gsm_[mm]->xi0);
-      std::copy(gsb_[layer]->gamma, gsb_[layer]->gamma + n_, gsm_[nbin_ - 2]->gamma);
+      std::copy(gsb_[layer]->gamma, gsb_[layer]->gamma + n_,
+                gsm_[nbin_ - 2]->gamma);
     }
     // First paste alpha_{0,n} and beta_{0,n} into gsm_[0]->alpha and
     // gsm_[0]->beta, length is n_
@@ -444,23 +493,34 @@ inline void GSchurN::merge_step() {
     // Computation of recur_step happens inside gsb_[0,1,...,layer].
     // We just need alphan [sbin_[mm]+(1:sbin_[mm+1])]
     layer = log2(ceil((double)sbin_[mm + 1] / bmod_));
-    recur_step(gsm_[mm]->alphan + n_, gsm_[mm]->betan + n_, sbin_[mm + 1], layer);
-    std::copy(gsb_[layer]->eta2n, gsb_[layer]->eta2n + sbin_[mm + 1], gsm_[mm]->etan);
-    std::fill(gsm_[mm]->etan + sbin_[mm + 1], gsm_[mm]->etan + n_ + sbin_[mm + 1], 0);
-    std::copy(gsb_[layer]->xi2n, gsb_[layer]->xi2n + sbin_[mm + 1], gsm_[mm]->xin);
-    std::fill(gsm_[mm]->xin + sbin_[mm + 1], gsm_[mm]->xin + n_ + sbin_[mm + 1], 0);
-    std::copy(gsb_[layer]->gamma, gsb_[layer]->gamma + sbin_[mm + 1], gsm_[nbin_ - 2]->gamma + n_);
+    recur_step(gsm_[mm]->alphan + n_, gsm_[mm]->betan + n_, sbin_[mm + 1],
+               layer);
+    std::copy(gsb_[layer]->eta2n, gsb_[layer]->eta2n + sbin_[mm + 1],
+              gsm_[mm]->etan);
+    std::fill(gsm_[mm]->etan + sbin_[mm + 1],
+              gsm_[mm]->etan + n_ + sbin_[mm + 1], 0);
+    std::copy(gsb_[layer]->xi2n, gsb_[layer]->xi2n + sbin_[mm + 1],
+              gsm_[mm]->xin);
+    std::fill(gsm_[mm]->xin + sbin_[mm + 1], gsm_[mm]->xin + n_ + sbin_[mm + 1],
+              0);
+    std::copy(gsb_[layer]->gamma, gsb_[layer]->gamma + sbin_[mm + 1],
+              gsm_[nbin_ - 2]->gamma + n_);
     // uses xi_t_fft, xi_0_fft, xi_n_fft (eta), returns xi_0_ifft
     compute_2n(gsm_[mm], sbin_[mm + 1] + n_);
   }
 }
 
-/// First generates the input polynomials `alpha0` and `beta0` from the first column `acf` of a symmetric positive-definite Toeplitz matrix `Tz = Toeplitz(acf)`, then applies the Generalized Schur algorithm to each piece in the binary-module representation, and finally merges these pieces to produce the first column of `Tz^{-1}` and calculate the log-determinant of `Tz`. 
+/// First generates the input polynomials `alpha0` and `beta0` from the first
+/// column `acf` of a symmetric positive-definite Toeplitz matrix `Tz =
+/// Toeplitz(acf)`, then applies the Generalized Schur algorithm to each piece
+/// in the binary-module representation, and finally merges these pieces to
+/// produce the first column of `Tz^{-1}` and calculate the log-determinant of
+/// `Tz`.
 ///
 /// @param[out] delta The first column of `Tz^{-1}`.
 /// @param[out] ldV The log-determinant of `Tz`.
 /// @param[in] acf The first column of `Tz`.
-inline void GSchurN::compute(double* delta, double& ldV, const double* acf) {
+inline void GSchurN::compute(double *delta, double &ldV, const double *acf) {
   // generate alpha0 and beta0 from acf.
   for (int ii = 0; ii < N_ - 1; ++ii) {
     alpha_[ii] = -1 * acf[ii + 1];
